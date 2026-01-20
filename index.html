@@ -1,543 +1,588 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Plane, Hotel, MapPin, Phone, Calendar, ChevronRight, 
-  X, Coffee, Utensils, Camera, Wine, Ship, Award, Sun,
-  UtensilsCrossed, BedDouble, Mountain, Info
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITA Awards New Zealand</title>
+    
+    <!-- 1. 리액트와 테일윈드 CSS를 불러옵니다 (설치 불필요) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 2. 아이콘 라이브러리 (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* 스크롤바 숨김 등 추가 스타일 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#f8fafc]">
+    <div id="root"></div>
 
-/**
- * ------------------------------------------------------------------
- * [Data Structure]
- * Updated: 2026 ITA 인스펙션 보고서 기반 상세 데이터
- * Images updated to more reliable URLs
- * ------------------------------------------------------------------
- */
-const travelData = {
-  meta: {
-    title: "ITA Awards New Zealand",
-    subtitle: "Only YOU, New Zealand",
-    dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
-    coverImage: "https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop", 
-    themeColor: {
-      primary: "#1e293b",
-      accent: "#d97706",
-      bg: "#f8fafc"
-    }
-  },
-  contacts: [
-    { name: "현지 상황실 (비상)", phone: "010-0000-0000", type: "emergency" },
-    { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "guide" },
-    { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "guide" }
-  ],
-  itinerary: [
-    {
-      day: "1-2",
-      date: "04. 10-11 (Fri-Sat)",
-      title: "뉴질랜드 도착 및 퀸즈타운 이동",
-      activities: [
-        { time: "18:00", title: "인천공항 출발", type: "flight", desc: "KE (제2터미널 C,D구역)" },
-        { time: "08:30", title: "오클랜드 도착 (+1)", type: "flight", desc: "입국 심사 및 수하물 수령" },
-        { time: "11:30", title: "점심 (Harbourside)", type: "food", desc: "오클랜드 항구 뷰 다이닝" },
-        { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "transport", desc: "약 2시간 소요" },
-        { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "호수 전망 객실 배정" },
-        { time: "19:00", title: "웰컴 디너", type: "food", desc: "호텔 뷔페" }
-      ]
-    },
-    {
-      day: 3,
-      date: "04. 12 (Sun)",
-      title: "ITA 시상식 & 갈라 디너",
-      activities: [
-        { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 & 번지점프대" },
-        { time: "12:00", title: "점심 (Winery)", type: "food", desc: "양갈비 스테이크 & 리조또" },
-        { time: "15:00", title: "ITA 시상식", type: "award", desc: "2층 야외 가든 (우천 시 텐트)" },
-        { time: "18:00", title: "시상식 만찬", type: "wine", desc: "스테이크 코스 요리" },
-        { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임" }
-      ]
-    },
-    {
-      day: 4,
-      date: "04. 13 (Mon)",
-      title: "밀포드사운드 & 경비행기 투어",
-      activities: [
-        { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "전용 버스 (피오르드랜드 국립공원)" },
-        { time: "13:00", title: "크루즈 & 선상 뷔페", type: "ship", desc: "대자연 속 점심 식사" },
-        { time: "15:30", title: "경비행기 투어", type: "flight", desc: "하늘에서 보는 만년설 (우천 시 버스)" },
-        { time: "18:30", title: "저녁 (Mandarin)", type: "food", desc: "특선 해산물 (랍스터, 전복)" }
-      ]
-    },
-    {
-      day: 5,
-      date: "04. 14 (Tue)",
-      title: "증기선 투어 & 페어웰 파티",
-      activities: [
-        { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
-        { time: "13:00", title: "TSS 언슬로우 증기선", type: "ship", desc: "월터 피크 농장 이동" },
-        { time: "13:40", title: "BBQ 런치 & 팜쇼", type: "food", desc: "호수 전망 야외 바비큐" },
-        { time: "19:00", title: "페어웰 디너", type: "wine", desc: "사슴 스테이크 & 와인" }
-      ]
-    },
-    {
-      day: "6-7",
-      date: "04. 15-16 (Wed-Thu)",
-      title: "오클랜드 이동 및 귀국",
-      activities: [
-        { time: "13:30", title: "점심 (Lao Guangzhou)", type: "food", desc: "중국식 훠궈" },
-        { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "비아덕트 하버 인근" },
-        { time: "17:00", title: "자유 관광", type: "sightseeing", desc: "스카이타워 조망" },
-        { time: "08:00", title: "공항 이동 (+1)", type: "transport", desc: "귀국행 항공편 탑승" }
-      ]
-    }
-  ],
-  hotels: [
-    {
-      id: 1,
-      name: "Hilton Queenstown Resort & Spa",
-      sub: "5-Star Luxury Resort",
-      desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.",
-      features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"],
-      checkIn: "04. 11 (Sat)",
-      checkOut: "04. 15 (Wed)",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop",
-      link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa"
-    },
-    {
-      id: 2,
-      name: "Hilton Auckland",
-      sub: "Harbor View Hotel",
-      desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.",
-      features: ["Ocean View", "Outdoor Pool", "City Center"],
-      checkIn: "04. 15 (Wed)",
-      checkOut: "04. 16 (Thu)",
-      image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop",
-      link: "https://maps.google.com/?q=Hilton+Auckland"
-    }
-  ],
-  dining: [
-    {
-      name: "Mandarin Seafood",
-      type: "Premium Seafood Dinner",
-      desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.",
-      menu: ["Rock Lobster (크레이피쉬)", "자연산 전복 (12cm 이상)", "Fresh Salmon", "푸른잎 홍합 요리"],
-      day: "Day 4 Dinner",
-      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2074&auto=format&fit=crop"
-    },
-    {
-      name: "Gibbston Valley Winery",
-      type: "Farewell Course Dinner",
-      desc: "와이너리 투어 후 즐기는 품격 있는 페어웰 만찬입니다.",
-      menu: ["Venison Steak (사슴 스테이크)", "Pinot Noir Wine Pairing", "Seasonal Dessert"],
-      day: "Day 5 Dinner",
-      image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-      name: "Walter Peak BBQ",
-      type: "Gourmet BBQ Buffet",
-      desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.",
-      menu: ["Grilled Lamb/Beef", "Fresh Salad Bar", "NZ Cheeses"],
-      day: "Day 5 Lunch",
-      image: "https://images.unsplash.com/photo-1544025162-d76690b6d015?q=80&w=1974&auto=format&fit=crop"
-    }
-  ],
-  spots: [
-    {
-      name: "Milford Sound Flight",
-      tag: "Main Event",
-      desc: "버스 이동의 피로를 덜고, 하늘에서 뉴질랜드의 만년설과 피오르드를 내려다보는 VIP 전용 경비행기 투어입니다.",
-      note: "우천 시 버스로 대체될 수 있습니다.",
-      image: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-      name: "TSS Earnslaw & Farm",
-      tag: "Culture",
-      desc: "100년 된 증기선을 타고 호수를 건너, 뉴질랜드 전통 농장을 체험합니다. 양털 깎기와 양몰이 쇼를 관람합니다.",
-      note: "동시 통역 송수신기 제공",
-      image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-      name: "Arrowtown",
-      tag: "History",
-      desc: "골드러시 시절의 정취가 남아있는 아름다운 마을입니다. 단풍이 든 가로수길 산책이 유명합니다.",
-      image: "https://images.unsplash.com/photo-1579760773022-2976b921356a?q=80&w=2071&auto=format&fit=crop"
-    }
-  ]
-};
+    <!-- 3. 리액트 코드를 실행하기 위한 스크립트 -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-/**
- * ------------------------------------------------------------------
- * [UI Components]
- * ------------------------------------------------------------------
- */
+        // --- 아이콘 처리 (Lucide React 대신 일반 Lucide 사용을 위한 래퍼) ---
+        const LucideIcon = ({ name, size = 16, className = "", ...props }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className} {...props}></i>;
+        };
 
-const getIcon = (type) => {
-  switch (type) {
-    case 'flight': return <Plane size={16} />;
-    case 'hotel': return <Hotel size={16} />;
-    case 'food': return <Utensils size={16} />;
-    case 'coffee': return <Coffee size={16} />;
-    case 'sightseeing': return <Camera size={16} />;
-    case 'transport': return <ChevronRight size={16} />;
-    case 'wine': return <Wine size={16} />;
-    case 'ship': return <Ship size={16} />;
-    case 'award': return <Award size={16} />;
-    case 'activity': return <Sun size={16} />;
-    default: return <MapPin size={16} />;
-  }
-};
+        // 기존 코드의 컴포넌트 이름과 매핑
+        const Plane = (p) => <LucideIcon name="plane" {...p} />;
+        const Hotel = (p) => <LucideIcon name="hotel" {...p} />;
+        const MapPin = (p) => <LucideIcon name="map-pin" {...p} />;
+        const Phone = (p) => <LucideIcon name="phone" {...p} />;
+        const Calendar = (p) => <LucideIcon name="calendar" {...p} />;
+        const ChevronRight = (p) => <LucideIcon name="chevron-right" {...p} />;
+        const X = (p) => <LucideIcon name="x" {...p} />;
+        const Coffee = (p) => <LucideIcon name="coffee" {...p} />;
+        const Utensils = (p) => <LucideIcon name="utensils" {...p} />;
+        const Camera = (p) => <LucideIcon name="camera" {...p} />;
+        const Wine = (p) => <LucideIcon name="wine" {...p} />;
+        const Ship = (p) => <LucideIcon name="ship" {...p} />;
+        const Award = (p) => <LucideIcon name="award" {...p} />;
+        const Sun = (p) => <LucideIcon name="sun" {...p} />;
+        const UtensilsCrossed = (p) => <LucideIcon name="utensils-crossed" {...p} />;
+        const BedDouble = (p) => <LucideIcon name="bed-double" {...p} />;
+        const Mountain = (p) => <LucideIcon name="mountain" {...p} />;
+        const Info = (p) => <LucideIcon name="info" {...p} />;
 
-const handleImageError = (e) => {
-  e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; 
-};
 
-// --- Loading Component (New) ---
-const LoadingIntro = () => (
-  <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden">
-    {/* Background Image with heavy overlay */}
-    <div className="absolute inset-0">
-      <img 
-        src={travelData.meta.coverImage} 
-        alt="Background" 
-        className="w-full h-full object-cover opacity-30 scale-110 animate-[pulse_8s_ease-in-out_infinite]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
-    </div>
+        /**
+         * ------------------------------------------------------------------
+         * [Data Structure]
+         * ------------------------------------------------------------------
+         */
+        const travelData = {
+          meta: {
+            title: "ITA Awards New Zealand",
+            subtitle: "Only YOU, New Zealand",
+            dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
+            coverImage: "https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop", 
+            themeColor: {
+              primary: "#1e293b",
+              accent: "#d97706",
+              bg: "#f8fafc"
+            }
+          },
+          contacts: [
+            { name: "현지 상황실 (비상)", phone: "010-0000-0000", type: "emergency" },
+            { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "guide" },
+            { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "guide" }
+          ],
+          itinerary: [
+            {
+              day: "1-2",
+              date: "04. 10-11 (Fri-Sat)",
+              title: "뉴질랜드 도착 및 퀸즈타운 이동",
+              activities: [
+                { time: "18:00", title: "인천공항 출발", type: "flight", desc: "KE (제2터미널 C,D구역)" },
+                { time: "08:30", title: "오클랜드 도착 (+1)", type: "flight", desc: "입국 심사 및 수하물 수령" },
+                { time: "11:30", title: "점심 (Harbourside)", type: "food", desc: "오클랜드 항구 뷰 다이닝" },
+                { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "transport", desc: "약 2시간 소요" },
+                { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "호수 전망 객실 배정" },
+                { time: "19:00", title: "웰컴 디너", type: "food", desc: "호텔 뷔페" }
+              ]
+            },
+            {
+              day: 3,
+              date: "04. 12 (Sun)",
+              title: "ITA 시상식 & 갈라 디너",
+              activities: [
+                { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 & 번지점프대" },
+                { time: "12:00", title: "점심 (Winery)", type: "food", desc: "양갈비 스테이크 & 리조또" },
+                { time: "15:00", title: "ITA 시상식", type: "award", desc: "2층 야외 가든 (우천 시 텐트)" },
+                { time: "18:00", title: "시상식 만찬", type: "wine", desc: "스테이크 코스 요리" },
+                { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임" }
+              ]
+            },
+            {
+              day: 4,
+              date: "04. 13 (Mon)",
+              title: "밀포드사운드 & 경비행기 투어",
+              activities: [
+                { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "전용 버스 (피오르드랜드 국립공원)" },
+                { time: "13:00", title: "크루즈 & 선상 뷔페", type: "ship", desc: "대자연 속 점심 식사" },
+                { time: "15:30", title: "경비행기 투어", type: "flight", desc: "하늘에서 보는 만년설 (우천 시 버스)" },
+                { time: "18:30", title: "저녁 (Mandarin)", type: "food", desc: "특선 해산물 (랍스터, 전복)" }
+              ]
+            },
+            {
+              day: 5,
+              date: "04. 14 (Tue)",
+              title: "증기선 투어 & 페어웰 파티",
+              activities: [
+                { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
+                { time: "13:00", title: "TSS 언슬로우 증기선", type: "ship", desc: "월터 피크 농장 이동" },
+                { time: "13:40", title: "BBQ 런치 & 팜쇼", type: "food", desc: "호수 전망 야외 바비큐" },
+                { time: "19:00", title: "페어웰 디너", type: "wine", desc: "사슴 스테이크 & 와인" }
+              ]
+            },
+            {
+              day: "6-7",
+              date: "04. 15-16 (Wed-Thu)",
+              title: "오클랜드 이동 및 귀국",
+              activities: [
+                { time: "13:30", title: "점심 (Lao Guangzhou)", type: "food", desc: "중국식 훠궈" },
+                { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "비아덕트 하버 인근" },
+                { time: "17:00", title: "자유 관광", type: "sightseeing", desc: "스카이타워 조망" },
+                { time: "08:00", title: "공항 이동 (+1)", type: "transport", desc: "귀국행 항공편 탑승" }
+              ]
+            }
+          ],
+          hotels: [
+            {
+              id: 1,
+              name: "Hilton Queenstown Resort & Spa",
+              sub: "5-Star Luxury Resort",
+              desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.",
+              features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"],
+              checkIn: "04. 11 (Sat)",
+              checkOut: "04. 15 (Wed)",
+              image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop",
+              link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa"
+            },
+            {
+              id: 2,
+              name: "Hilton Auckland",
+              sub: "Harbor View Hotel",
+              desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.",
+              features: ["Ocean View", "Outdoor Pool", "City Center"],
+              checkIn: "04. 15 (Wed)",
+              checkOut: "04. 16 (Thu)",
+              image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop",
+              link: "https://maps.google.com/?q=Hilton+Auckland"
+            }
+          ],
+          dining: [
+            {
+              name: "Mandarin Seafood",
+              type: "Premium Seafood Dinner",
+              desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.",
+              menu: ["Rock Lobster (크레이피쉬)", "자연산 전복 (12cm 이상)", "Fresh Salmon", "푸른잎 홍합 요리"],
+              day: "Day 4 Dinner",
+              image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2074&auto=format&fit=crop"
+            },
+            {
+              name: "Gibbston Valley Winery",
+              type: "Farewell Course Dinner",
+              desc: "와이너리 투어 후 즐기는 품격 있는 페어웰 만찬입니다.",
+              menu: ["Venison Steak (사슴 스테이크)", "Pinot Noir Wine Pairing", "Seasonal Dessert"],
+              day: "Day 5 Dinner",
+              image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop"
+            },
+            {
+              name: "Walter Peak BBQ",
+              type: "Gourmet BBQ Buffet",
+              desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.",
+              menu: ["Grilled Lamb/Beef", "Fresh Salad Bar", "NZ Cheeses"],
+              day: "Day 5 Lunch",
+              image: "https://images.unsplash.com/photo-1544025162-d76690b6d015?q=80&w=1974&auto=format&fit=crop"
+            }
+          ],
+          spots: [
+            {
+              name: "Milford Sound Flight",
+              tag: "Main Event",
+              desc: "버스 이동의 피로를 덜고, 하늘에서 뉴질랜드의 만년설과 피오르드를 내려다보는 VIP 전용 경비행기 투어입니다.",
+              note: "우천 시 버스로 대체될 수 있습니다.",
+              image: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?q=80&w=2070&auto=format&fit=crop"
+            },
+            {
+              name: "TSS Earnslaw & Farm",
+              tag: "Culture",
+              desc: "100년 된 증기선을 타고 호수를 건너, 뉴질랜드 전통 농장을 체험합니다. 양털 깎기와 양몰이 쇼를 관람합니다.",
+              note: "동시 통역 송수신기 제공",
+              image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop"
+            },
+            {
+              name: "Arrowtown",
+              tag: "History",
+              desc: "골드러시 시절의 정취가 남아있는 아름다운 마을입니다. 단풍이 든 가로수길 산책이 유명합니다.",
+              image: "https://images.unsplash.com/photo-1579760773022-2976b921356a?q=80&w=2071&auto=format&fit=crop"
+            }
+          ]
+        };
 
-    {/* Content */}
-    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5">
-      
-      {/* Spinner & Logo */}
-      <div className="w-24 h-24 mb-8 rounded-full border-[0.5px] border-amber-500/20 flex items-center justify-center relative backdrop-blur-sm bg-slate-900/30">
-         {/* Rotating Ring */}
-         <div className="absolute inset-0 rounded-full border-t-[1px] border-r-[1px] border-amber-500/80 animate-spin duration-[3s]"></div>
-         <Plane className="text-amber-500 drop-shadow-[0_0_10px_rgba(217,119,6,0.5)]" size={32} strokeWidth={1} />
-      </div>
-      
-      {/* Title */}
-      <h1 className="text-4xl md:text-5xl font-serif tracking-[0.15em] text-white font-light mb-4 drop-shadow-lg text-center">
-        ITA AWARDS
-      </h1>
-      
-      {/* Decorative Line */}
-      <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mb-4 opacity-70"></div>
-      
-      {/* Subtitle */}
-      <p className="text-xs md:text-sm text-amber-500 tracking-[0.4em] uppercase opacity-90 font-light">
-        New Zealand 2026
-      </p>
-    </div>
-  </div>
-);
+        /**
+         * ------------------------------------------------------------------
+         * [UI Components]
+         * ------------------------------------------------------------------
+         */
 
-const Header = ({ data }) => (
-  <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
-    <div className="absolute inset-0">
-      <img 
-        src={data.coverImage} 
-        alt="New Zealand Landscape" 
-        onError={handleImageError}
-        className="w-full h-full object-cover animate-in fade-in duration-1000"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-    </div>
-    <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
-      <div className="inline-flex items-center px-3 py-1 mb-4 border border-white/20 rounded-full bg-black/20 backdrop-blur-md">
-        <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-        <span className="text-xs font-medium tracking-widest text-white uppercase">Invitation</span>
-      </div>
-      <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2 font-serif">{data.title}</h1>
-      <p className="text-slate-200 font-light text-lg">{data.subtitle}</p>
-      <div className="flex items-center mt-4 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
-        <Calendar size={14} className="mr-2 text-amber-400" />
-        {data.dateRange}
-      </div>
-    </div>
-  </header>
-);
+        const getIcon = (type) => {
+          switch (type) {
+            case 'flight': return <Plane size={16} />;
+            case 'hotel': return <Hotel size={16} />;
+            case 'food': return <Utensils size={16} />;
+            case 'coffee': return <Coffee size={16} />;
+            case 'sightseeing': return <Camera size={16} />;
+            case 'transport': return <ChevronRight size={16} />;
+            case 'wine': return <Wine size={16} />;
+            case 'ship': return <Ship size={16} />;
+            case 'award': return <Award size={16} />;
+            case 'activity': return <Sun size={16} />;
+            default: return <MapPin size={16} />;
+          }
+        };
 
-const TabNavigation = ({ activeTab, setActiveTab }) => {
-  const tabs = [
-    { id: 'Schedule', icon: Calendar },
-    { id: 'Hotel', icon: BedDouble },
-    { id: 'Dining', icon: UtensilsCrossed },
-    { id: 'Attractions', icon: Mountain },
-  ];
+        const handleImageError = (e) => {
+          e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; 
+        };
 
-  return (
-    <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
-      <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs font-medium transition-all relative ${
-                activeTab === tab.id 
-                  ? "text-slate-900 scale-105" 
-                  : "text-slate-400 hover:text-slate-600"
-              }`}
-            >
-              <Icon size={20} className={`mb-1 ${activeTab === tab.id ? "text-amber-600" : "text-slate-400"}`} />
-              {tab.id}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>
-              )}
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  );
-};
+        // --- Loading Component (New) ---
+        const LoadingIntro = () => (
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden">
+            {/* Background Image with heavy overlay */}
+            <div className="absolute inset-0">
+              <img 
+                src={travelData.meta.coverImage} 
+                alt="Background" 
+                className="w-full h-full object-cover opacity-30 scale-110 animate-[pulse_8s_ease-in-out_infinite]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
+            </div>
 
-const TimelineItem = ({ activity, isLast }) => (
-  <div className="relative pl-8 pb-8 group">
-    {!isLast && (
-      <div className="absolute left-[11px] top-2 h-full w-[2px] bg-slate-200 group-hover:bg-amber-200 transition-colors"></div>
-    )}
-    <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 bg-white flex items-center justify-center shadow-sm z-10 transition-colors ${
-      activity.type === 'award' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 group-hover:border-amber-400'
-    }`}>
-      <div className={activity.type === 'award' ? 'text-amber-600' : 'text-slate-500'}>
-        {getIcon(activity.type)}
-      </div>
-    </div>
-    <div className={`p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border ml-2 transition-transform active:scale-[0.99] ${
-      activity.type === 'award' ? 'bg-gradient-to-br from-amber-50 to-white border-amber-100' : 'bg-white border-slate-100/50'
-    }`}>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-amber-600 font-bold text-sm font-mono">{activity.time}</span>
-        <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${
-          activity.type === 'award' ? 'bg-amber-100 text-amber-700 font-bold' : 'bg-slate-50 text-slate-400'
-        }`}>{activity.type}</span>
-      </div>
-      <h3 className="text-slate-800 font-semibold text-base mb-1">{activity.title}</h3>
-      <p className="text-slate-500 text-sm leading-relaxed">{activity.desc}</p>
-    </div>
-  </div>
-);
-
-const HotelDetailCard = ({ hotel }) => (
-  <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6 overflow-hidden group">
-    <div className="h-48 bg-slate-200 relative overflow-hidden">
-      <img 
-        src={hotel.image} 
-        alt={hotel.name} 
-        onError={handleImageError}
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-      />
-      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-        {hotel.sub}
-      </div>
-    </div>
-    <div className="p-6">
-      <h3 className="font-serif text-2xl text-slate-900 mb-2">{hotel.name}</h3>
-      <div className="flex items-center text-slate-500 text-sm mb-4">
-        <MapPin size={14} className="mr-1 text-amber-600" />
-        {hotel.location}
-      </div>
-      <p className="text-slate-600 text-sm leading-relaxed mb-4 border-l-2 border-amber-200 pl-3">
-        {hotel.desc}
-      </p>
-      <div className="flex flex-wrap gap-2 mb-5">
-        {hotel.features.map((feature, i) => (
-          <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">
-            {feature}
-          </span>
-        ))}
-      </div>
-      <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
-        <div className="text-slate-500">
-          <span className="block text-xs text-slate-400">Check-in</span>
-          <span className="font-semibold text-slate-800">{hotel.checkIn}</span>
-        </div>
-        <div className="text-slate-300">|</div>
-        <div className="text-slate-500 text-right">
-          <span className="block text-xs text-slate-400">Check-out</span>
-          <span className="font-semibold text-slate-800">{hotel.checkOut}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const DiningCard = ({ item }) => (
-  <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-5 overflow-hidden flex flex-col">
-    <div className="h-40 overflow-hidden relative">
-      <img 
-        src={item.image} 
-        alt={item.name} 
-        onError={handleImageError}
-        className="w-full h-full object-cover" 
-      />
-      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-        <span className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1 block">{item.day}</span>
-        <h3 className="text-white text-lg font-bold leading-none">{item.name}</h3>
-      </div>
-    </div>
-    <div className="p-5">
-      <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
-      <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
-      <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-        <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
-          <Utensils size={12} className="mr-1" /> Menu Highlights
-        </div>
-        <ul className="text-sm text-slate-700 space-y-1">
-          {item.menu.map((menuItem, i) => (
-            <li key={i} className="flex items-start">
-              <span className="mr-2 text-amber-500">•</span>
-              {menuItem}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  </div>
-);
-
-const SpotCard = ({ spot }) => (
-  <div className="relative mb-5 rounded-2xl overflow-hidden shadow-lg h-64 group">
-    <img 
-      src={spot.image} 
-      alt={spot.name} 
-      onError={handleImageError}
-      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-    />
-    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
-    <div className="absolute top-4 left-4">
-      <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">
-        {spot.tag}
-      </span>
-    </div>
-    <div className="absolute bottom-0 p-6 text-white">
-      <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
-      <p className="text-sm text-slate-200 leading-relaxed opacity-90 mb-2">
-        {spot.desc}
-      </p>
-      {spot.note && (
-        <div className="flex items-center text-xs text-amber-300 font-medium">
-          <Info size={12} className="mr-1" /> {spot.note}
-        </div>
-      )}
-    </div>
-  </div>
-);
-
-const FAB = ({ contacts }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      {isOpen && (
-        <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-5 fade-in duration-200">
-          {contacts.map((contact, idx) => (
-            <a key={idx} href={`tel:${contact.phone}`} className="flex items-center justify-between bg-white px-4 py-3 rounded-xl shadow-lg border border-slate-100 min-w-[220px] active:bg-slate-50">
-              <div>
-                <div className="text-xs text-slate-400">{contact.type.toUpperCase()}</div>
-                <div className="text-sm font-bold text-slate-800">{contact.name}</div>
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5">
+              
+              {/* Spinner & Logo */}
+              <div className="w-24 h-24 mb-8 rounded-full border-[0.5px] border-amber-500/20 flex items-center justify-center relative backdrop-blur-sm bg-slate-900/30">
+                 {/* Rotating Ring */}
+                 <div className="absolute inset-0 rounded-full border-t-[1px] border-r-[1px] border-amber-500/80 animate-spin duration-[3s]"></div>
+                 <Plane className="text-amber-500 drop-shadow-[0_0_10px_rgba(217,119,6,0.5)]" size={32} strokeWidth={1} />
               </div>
-              <div className="bg-green-100 p-2 rounded-full text-green-600"><Phone size={16} /></div>
-            </a>
-          ))}
-        </div>
-      )}
-      <button onClick={() => setIsOpen(!isOpen)} className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-all transform hover:scale-105 active:scale-95 ${isOpen ? 'bg-slate-700 rotate-45' : 'bg-amber-600'}`}>
-        {isOpen ? <X size={24} /> : <Phone size={24} />}
-      </button>
-    </div>
-  );
-};
+              
+              {/* Title */}
+              <h1 className="text-4xl md:text-5xl font-serif tracking-[0.15em] text-white font-light mb-4 drop-shadow-lg text-center">
+                ITA AWARDS
+              </h1>
+              
+              {/* Decorative Line */}
+              <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mb-4 opacity-70"></div>
+              
+              {/* Subtitle */}
+              <p className="text-xs md:text-sm text-amber-500 tracking-[0.4em] uppercase opacity-90 font-light">
+                New Zealand 2026
+              </p>
+            </div>
+          </div>
+        );
 
-/**
- * ------------------------------------------------------------------
- * [Main App Component]
- * ------------------------------------------------------------------
- */
-export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('Schedule');
+        const Header = ({ data }) => (
+          <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
+            <div className="absolute inset-0">
+              <img 
+                src={data.coverImage} 
+                alt="New Zealand Landscape" 
+                onError={handleImageError}
+                className="w-full h-full object-cover animate-in fade-in duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
+              <div className="inline-flex items-center px-3 py-1 mb-4 border border-white/20 rounded-full bg-black/20 backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                <span className="text-xs font-medium tracking-widest text-white uppercase">Invitation</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2 font-serif">{data.title}</h1>
+              <p className="text-slate-200 font-light text-lg">{data.subtitle}</p>
+              <div className="flex items-center mt-4 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
+                <Calendar size={14} className="mr-2 text-amber-400" />
+                {data.dateRange}
+              </div>
+            </div>
+          </header>
+        );
 
-  // Loading Simulation Effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 3000); // 3 seconds loading time
-    return () => clearTimeout(timer);
-  }, []);
+        const TabNavigation = ({ activeTab, setActiveTab }) => {
+          const tabs = [
+            { id: 'Schedule', icon: Calendar },
+            { id: 'Hotel', icon: BedDouble },
+            { id: 'Dining', icon: UtensilsCrossed },
+            { id: 'Attractions', icon: Mountain },
+          ];
 
-  if (loading) {
-    return <LoadingIntro />;
-  }
+          return (
+            <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
+              <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs font-medium transition-all relative ${
+                        activeTab === tab.id 
+                          ? "text-slate-900 scale-105" 
+                          : "text-slate-400 hover:text-slate-600"
+                      }`}
+                    >
+                      <Icon size={20} className={`mb-1 ${activeTab === tab.id ? "text-amber-600" : "text-slate-400"}`} />
+                      {tab.id}
+                      {activeTab === tab.id && (
+                        <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          );
+        };
 
-  return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans antialiased text-slate-800 pb-20 animate-in fade-in duration-700">
-      
-      {/* 1. Header with New Image */}
-      <Header data={travelData.meta} />
+        const TimelineItem = ({ activity, isLast }) => (
+          <div className="relative pl-8 pb-8 group">
+            {!isLast && (
+              <div className="absolute left-[11px] top-2 h-full w-[2px] bg-slate-200 group-hover:bg-amber-200 transition-colors"></div>
+            )}
+            <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 bg-white flex items-center justify-center shadow-sm z-10 transition-colors ${
+              activity.type === 'award' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 group-hover:border-amber-400'
+            }`}>
+              <div className={activity.type === 'award' ? 'text-amber-600' : 'text-slate-500'}>
+                {getIcon(activity.type)}
+              </div>
+            </div>
+            <div className={`p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border ml-2 transition-transform active:scale-[0.99] ${
+              activity.type === 'award' ? 'bg-gradient-to-br from-amber-50 to-white border-amber-100' : 'bg-white border-slate-100/50'
+            }`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-amber-600 font-bold text-sm font-mono">{activity.time}</span>
+                <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  activity.type === 'award' ? 'bg-amber-100 text-amber-700 font-bold' : 'bg-slate-50 text-slate-400'
+                }`}>{activity.type}</span>
+              </div>
+              <h3 className="text-slate-800 font-semibold text-base mb-1">{activity.title}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">{activity.desc}</p>
+            </div>
+          </div>
+        );
 
-      {/* 2. New Tab Navigation (4 Tabs) */}
-      <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {/* 3. Main Content Area */}
-      <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
-        
-        {/* TAB 1: Schedule */}
-        {activeTab === 'Schedule' && (
-          <div className="animate-in fade-in duration-500">
-            {travelData.itinerary.map((day, idx) => (
-              <div key={idx} className="mb-8 last:mb-24">
-                <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
-                  <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
-                    <span className="text-[10px] font-light opacity-80">DAY</span>
-                    <span className="text-lg font-bold leading-none">{day.day}</span>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
-                    <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
-                  </div>
+        const HotelDetailCard = ({ hotel }) => (
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6 overflow-hidden group">
+            <div className="h-48 bg-slate-200 relative overflow-hidden">
+              <img 
+                src={hotel.image} 
+                alt={hotel.name} 
+                onError={handleImageError}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
+              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                {hotel.sub}
+              </div>
+            </div>
+            <div className="p-6">
+              <h3 className="font-serif text-2xl text-slate-900 mb-2">{hotel.name}</h3>
+              <div className="flex items-center text-slate-500 text-sm mb-4">
+                <MapPin size={14} className="mr-1 text-amber-600" />
+                {hotel.location || "New Zealand"}
+              </div>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4 border-l-2 border-amber-200 pl-3">
+                {hotel.desc}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {hotel.features.map((feature, i) => (
+                  <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">
+                    {feature}
+                  </span>
+                ))}
+              </div>
+              <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
+                <div className="text-slate-500">
+                  <span className="block text-xs text-slate-400">Check-in</span>
+                  <span className="font-semibold text-slate-800">{hotel.checkIn}</span>
                 </div>
-                <div className="px-1">
-                  {day.activities.map((act, i) => (
-                    <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />
+                <div className="text-slate-300">|</div>
+                <div className="text-slate-500 text-right">
+                  <span className="block text-xs text-slate-400">Check-out</span>
+                  <span className="font-semibold text-slate-800">{hotel.checkOut}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+        const DiningCard = ({ item }) => (
+          <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-5 overflow-hidden flex flex-col">
+            <div className="h-40 overflow-hidden relative">
+              <img 
+                src={item.image} 
+                alt={item.name} 
+                onError={handleImageError}
+                className="w-full h-full object-cover" 
+              />
+              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1 block">{item.day}</span>
+                <h3 className="text-white text-lg font-bold leading-none">{item.name}</h3>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
+              <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
+                  <Utensils size={12} className="mr-1" /> Menu Highlights
+                </div>
+                <ul className="text-sm text-slate-700 space-y-1">
+                  {item.menu.map((menuItem, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="mr-2 text-amber-500">•</span>
+                      {menuItem}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+
+        const SpotCard = ({ spot }) => (
+          <div className="relative mb-5 rounded-2xl overflow-hidden shadow-lg h-64 group">
+            <img 
+              src={spot.image} 
+              alt={spot.name} 
+              onError={handleImageError}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
+            <div className="absolute top-4 left-4">
+              <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">
+                {spot.tag}
+              </span>
+            </div>
+            <div className="absolute bottom-0 p-6 text-white">
+              <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
+              <p className="text-sm text-slate-200 leading-relaxed opacity-90 mb-2">
+                {spot.desc}
+              </p>
+              {spot.note && (
+                <div className="flex items-center text-xs text-amber-300 font-medium">
+                  <Info size={12} className="mr-1" /> {spot.note}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+        const FAB = ({ contacts }) => {
+          const [isOpen, setIsOpen] = useState(false);
+          return (
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+              {isOpen && (
+                <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-5 fade-in duration-200">
+                  {contacts.map((contact, idx) => (
+                    <a key={idx} href={`tel:${contact.phone}`} className="flex items-center justify-between bg-white px-4 py-3 rounded-xl shadow-lg border border-slate-100 min-w-[220px] active:bg-slate-50">
+                      <div>
+                        <div className="text-xs text-slate-400">{contact.type.toUpperCase()}</div>
+                        <div className="text-sm font-bold text-slate-800">{contact.name}</div>
+                      </div>
+                      <div className="bg-green-100 p-2 rounded-full text-green-600"><Phone size={16} /></div>
+                    </a>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              )}
+              <button onClick={() => setIsOpen(!isOpen)} className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-all transform hover:scale-105 active:scale-95 ${isOpen ? 'bg-slate-700 rotate-45' : 'bg-amber-600'}`}>
+                {isOpen ? <X size={24} /> : <Phone size={24} />}
+              </button>
+            </div>
+          );
+        };
 
-        {/* TAB 2: Hotel (Detailed) */}
-        {activeTab === 'Hotel' && (
-          <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-              <BedDouble className="mr-2 text-amber-600" /> Accommodation
-            </h2>
-            {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
-          </div>
-        )}
+        // Main App
+        function App() {
+          const [loading, setLoading] = useState(true);
+          const [activeTab, setActiveTab] = useState('Schedule');
 
-        {/* TAB 3: Dining (Detailed Menus) */}
-        {activeTab === 'Dining' && (
-          <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-              <UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining
-            </h2>
-            {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
-          </div>
-        )}
+          useEffect(() => {
+            const timer = setTimeout(() => {
+              setLoading(false);
+            }, 3000); 
+            return () => clearTimeout(timer);
+          }, []);
 
-        {/* TAB 4: Attractions (Detailed) */}
-        {activeTab === 'Attractions' && (
-          <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-              <Mountain className="mr-2 text-amber-600" /> Major Spots
-            </h2>
-            {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
-          </div>
-        )}
+          if (loading) {
+            return <LoadingIntro />;
+          }
 
-      </main>
+          return (
+            <div className="min-h-screen bg-[#f8fafc] font-sans antialiased text-slate-800 pb-20 animate-in fade-in duration-700">
+              <Header data={travelData.meta} />
+              <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+              
+              <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
+                
+                {/* Schedule */}
+                {activeTab === 'Schedule' && (
+                  <div className="animate-in fade-in duration-500">
+                    {travelData.itinerary.map((day, idx) => (
+                      <div key={idx} className="mb-8 last:mb-24">
+                        <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
+                          <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
+                            <span className="text-[10px] font-light opacity-80">DAY</span>
+                            <span className="text-lg font-bold leading-none">{day.day}</span>
+                          </div>
+                          <div>
+                            <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
+                            <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
+                          </div>
+                        </div>
+                        <div className="px-1">
+                          {day.activities.map((act, i) => (
+                            <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-      <FAB contacts={travelData.contacts} />
-    </div>
-  );
-}
+                {/* Hotel */}
+                {activeTab === 'Hotel' && (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                      <BedDouble className="mr-2 text-amber-600" /> Accommodation
+                    </h2>
+                    {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
+                  </div>
+                )}
+
+                {/* Dining */}
+                {activeTab === 'Dining' && (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                      <UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining
+                    </h2>
+                    {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
+                  </div>
+                )}
+
+                {/* Attractions */}
+                {activeTab === 'Attractions' && (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                      <Mountain className="mr-2 text-amber-600" /> Major Spots
+                    </h2>
+                    {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
+                  </div>
+                )}
+
+              </main>
+
+              <FAB contacts={travelData.contacts} />
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
