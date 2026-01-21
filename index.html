@@ -6,10 +6,15 @@
     <title>ITA Awards New Zealand</title>
     
     <!-- ▼▼▼ [썸네일 설정] ▼▼▼ -->
-    <meta property="og:title" content="ITA Awards New Zealand">
-    <meta property="og:description" content="Only YOU, New Zealand (2026. 04. 10 - 16)">
-    <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png">
+    <meta property="og:title" content="2026 ITA New Zealand">
+    <meta property="og:description" content="2026. 04. 10(Fri) - 16(Thu))">
+    <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png">
     
+    <!-- 폰트: 고급스러운 명조 계열 (Playfair Display) 추가 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@300;500;700&display=swap" rel="stylesheet">
+
     <!-- CDN 라이브러리 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -21,85 +26,174 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 편지 봉투 애니메이션 스타일 */
-        .envelope-container { perspective: 1000px; }
-        .envelope {
-            position: relative;
-            width: 300px;
-            height: 200px;
-            background: #1e293b; /* slate-800 */
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        body { font-family: 'Noto Serif KR', serif; }
+
+        /* --- [프리미엄 봉투 애니메이션] --- */
+        .envelope-container { 
+            perspective: 1500px; 
+            cursor: pointer;
             display: flex;
             justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+        }
+        
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #1a1a1a; /* 아주 어두운 베이스 */
+            border-radius: 4px;
             z-index: 10;
+            transform-style: preserve-3d;
         }
-        .envelope::before { /* 왼쪽 날개 */
-            content: '';
+
+        /* 편지 본체 (Letter) */
+        .letter-paper {
             position: absolute;
-            top: 0; left: 0;
-            width: 0; height: 0;
-            border-left: 150px solid #334155; /* slate-700 */
-            border-top: 100px solid transparent;
-            border-bottom: 100px solid transparent;
-            z-index: 3;
-        }
-        .envelope::after { /* 오른쪽 날개 */
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 0; height: 0;
-            border-right: 150px solid #334155; /* slate-700 */
-            border-top: 100px solid transparent;
-            border-bottom: 100px solid transparent;
-            z-index: 3;
-        }
-        .envelope-bottom { /* 아래쪽 날개 */
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 0; height: 0;
-            border-left: 150px solid transparent;
-            border-right: 150px solid transparent;
-            border-bottom: 110px solid #1e293b; /* slate-800 */
-            z-index: 4;
-            border-radius: 0 0 10px 10px;
-        }
-        .envelope-lid { /* 뚜껑 */
-            position: absolute;
-            top: 0; left: 0;
-            width: 0; height: 0;
-            border-left: 150px solid transparent;
-            border-right: 150px solid transparent;
-            border-top: 110px solid #475569; /* slate-600 */
-            transform-origin: top;
-            transition: transform 0.6s ease-in-out, z-index 0.6s step-end;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 290px;
+            height: 180px;
+            /* 고급 종이 질감 */
+            background: linear-gradient(to bottom right, #fdfbf7, #f3eedd);
+            padding: 30px 20px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s, height 0.8s ease 0.4s;
             z-index: 5;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            border-radius: 2px;
+            overflow: hidden;
         }
+        
+        /* 편지 금박 테두리 */
+        .letter-paper::after {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            pointer-events: none;
+        }
+
+        /* 편지가 열렸을 때 */
+        .envelope.open .letter-paper {
+            transform: translate(-50%, -120px);
+            height: 450px;
+            z-index: 20;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+            overflow: visible;
+        }
+
+        /* --- [봉투 디자인: 그라데이션으로 입체감 표현] --- */
+        
+        /* 1. 뒷면 (안감) */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #2c2c2c;
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+        /* 2. 날개들 (CSS Clip-path 사용) */
+        .flap {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        /* 왼쪽 날개 */
+        .flap-left {
+            z-index: 10;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            clip-path: polygon(0 0, 50% 50%, 0 100%);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+        /* 오른쪽 날개 */
+        .flap-right {
+            z-index: 10;
+            background: linear-gradient(225deg, #2a2a2a, #1f1f1f);
+            clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+        }
+        /* 아래쪽 날개 (가장 앞) */
+        .flap-bottom {
+            z-index: 11;
+            background: linear-gradient(to top, #232323, #2d2d2d);
+            clip-path: polygon(0 100%, 50% 50%, 100% 100%);
+            /* 아래쪽 날개에 미세한 윗 그림자 효과는 가상요소나 gradient로 처리 */
+        }
+
+        /* 3. 뚜껑 (Lid) */
+        .envelope-lid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 12;
+            background: linear-gradient(to bottom, #333333, #262626);
+            clip-path: polygon(0 0, 100% 0, 50% 55%); /* 삼각형 모양 */
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s step-end;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
         .envelope.open .envelope-lid {
             transform: rotateX(180deg);
             z-index: 1;
+            background: #1a1a1a; /* 뒤집혔을 때 색상 */
         }
-        .letter-paper {
+
+        /* --- [고급 리얼 왁스 실링] --- */
+        .wax-seal {
             position: absolute;
-            bottom: 10px;
-            left: 15px;
-            width: 270px;
-            height: 180px;
-            background: #fffbf0;
-            padding: 20px;
-            transition: transform 0.8s ease-in-out 0.4s;
-            z-index: 2;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            top: 55%; /* 뚜껑 끝부분에 맞춤 */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            
+            /* 리얼한 금속성 왁스 질감 */
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b, #8b4500);
+            box-shadow: 
+                0 4px 6px rgba(0,0,0,0.4),
+                inset 0 2px 5px rgba(255,255,255,0.4),
+                inset 0 -2px 5px rgba(0,0,0,0.4);
+            
+            /* 불규칙한 모양 만들기 */
+            border-radius: 55% 45% 60% 40% / 50% 60% 40% 50%;
+            
             display: flex;
-            flex-col;
             align-items: center;
-            overflow: hidden;
+            justify-content: center;
+            z-index: 15;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 4px solid rgba(139, 69, 19, 0.1); /* 미세한 테두리 */
         }
-        .envelope.open .letter-paper {
-            transform: translateY(-120px);
-            height: 380px; /* 편지가 길어짐 */
-            z-index: 6; /* 봉투 앞으로 나옴 */
-            border-radius: 5px;
+        
+        /* 왁스 안쪽 스탬프 눌린 효과 */
+        .wax-seal-inner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px dashed rgba(184, 134, 11, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.3);
+            background: radial-gradient(circle, #daa520, #b8860b);
+        }
+
+        .envelope-container:hover .wax-seal {
+            transform: translate(-50%, -50%) scale(1.05) rotate(5deg);
+        }
+
+        /* 열릴 때 실링 깨지는/사라지는 효과 */
+        .envelope.open .wax-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.5);
+            pointer-events: none;
         }
     </style>
 </head>
@@ -147,12 +241,12 @@
             title: "ITA Awards New Zealand",
             subtitle: "Only YOU, New Zealand",
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
-            coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png", 
+            coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png", 
             themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
           // [추가] 회장님 편지 내용
           letter: {
-            from: "회장 최병채",
+            from: "최고경영자 OOO",
             content: [
               "사랑하는 인카금융서비스 가족 여러분,",
               "치열했던 지난 한 해, 여러분이 보여주신 열정과 헌신에 깊은 경의를 표합니다.",
@@ -361,8 +455,8 @@
                             </div>
                         </div>
                         <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg">
-                            <span className="block text-4xl md:text-5xl tracking-[0.1em] mb-2">Your Honor</span>
-                            <span className="block text-2xl md:text-3xl tracking-[0.05em] text-[#D4AF37] opacity-90">Incar Top Advisor</span>
+                            <span className="block text-4xl md:text-5xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
+                            <span className="block text-2xl md:text-3xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">Incar Top Advisor</span>
                         </h1>
                         <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-4 opacity-70"></div>
                         <p className="text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase opacity-90 font-light">
@@ -386,44 +480,55 @@
             };
 
             return (
-                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/90 backdrop-blur-md transition-all duration-700">
-                    {/* 봉투 */}
+                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-700">
                     <div 
-                        className={`envelope-container cursor-pointer transition-transform duration-500 ${isOpen ? 'translate-y-20' : 'hover:scale-105'}`}
+                        className={`envelope-container ${isOpen ? 'translate-y-20' : 'hover:scale-105'} transition-transform duration-500`}
                         onClick={handleOpen}
                     >
                         <div className={`envelope ${isOpen ? 'open' : ''}`}>
                             <div className="envelope-lid"></div>
+                            
+                            {/* 편지 내용 */}
                             <div className="letter-paper">
                                 <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                    <div className="text-center pt-4">
-                                        <div className="w-8 h-8 mx-auto mb-2 border border-[#D4AF37] rounded-full flex items-center justify-center">
+                                    <div className="text-center pt-2 flex-1 flex flex-col items-center">
+                                        <div className="w-8 h-8 mb-3 border border-[#D4AF37] rounded-full flex items-center justify-center shrink-0">
                                             <Plane size={14} className="text-[#D4AF37]" />
                                         </div>
-                                        <h3 className="font-serif text-slate-800 text-sm font-bold tracking-widest mb-4 border-b border-slate-200 pb-2">INVITATION</h3>
-                                        <div className="space-y-2 text-xs text-slate-600 leading-relaxed font-light text-justify px-2 overflow-y-auto max-h-[220px] no-scrollbar">
+                                        <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-4 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
+                                        <div className="space-y-4 text-sm text-slate-800 leading-relaxed font-medium text-justify px-2 overflow-y-auto no-scrollbar flex-1 font-[Noto Serif KR]">
                                             {travelData.letter.content.map((line, i) => (
                                                 <p key={i}>{line}</p>
                                             ))}
-                                            <p className="text-right mt-4 font-serif text-slate-800 font-bold">{travelData.letter.from}</p>
+                                            <p className="text-right mt-6 font-bold text-slate-900">{travelData.letter.from}</p>
                                         </div>
                                     </div>
                                     {showContent && (
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); onClose(); }}
-                                            className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-widest uppercase hover:bg-slate-800 transition-colors mt-2"
+                                            className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-4 shrink-0 font-bold border border-[#D4AF37]/50"
                                         >
                                             Enter Invitation
                                         </button>
                                     )}
                                 </div>
                             </div>
-                            <div className="envelope-bottom"></div>
+
+                            <div className="flap flap-left"></div>
+                            <div className="flap flap-right"></div>
+                            <div className="flap flap-bottom"></div>
+                            
+                            {/* 고급 왁스 실링 */}
+                            <div className="wax-seal">
+                                <div className="wax-seal-inner">
+                                    <span className="font-serif font-black text-[#6b3e05] text-sm tracking-widest drop-shadow-sm font-[Playfair Display]">ITA</span>
+                                </div>
+                            </div>
                         </div>
                         
                         {!isOpen && (
-                            <div className="text-center mt-8 animate-bounce text-white/50 text-sm tracking-widest uppercase">
-                                Tap to Open
+                            <div className="absolute -bottom-20 text-center animate-pulse text-[#D4AF37] text-xs tracking-[0.3em] uppercase font-light">
+                                Tap Envelope to Open
                             </div>
                         )}
                     </div>
@@ -500,8 +605,8 @@
                 <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
                 <span className="text-xs font-medium tracking-widest text-white uppercase">Invitation</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2 font-serif">{data.title}</h1>
-              <p className="text-slate-200 font-light text-lg">{data.subtitle}</p>
+              <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2 font-serif font-[Playfair Display]">{data.title}</h1>
+              <p className="text-slate-200 font-light text-lg font-[Playfair Display]">{data.subtitle}</p>
               <div className="flex items-center mt-4 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
                 <Calendar size={14} className="mr-2 text-amber-400" />
                 {data.dateRange}
@@ -588,7 +693,7 @@
               </div>
             </div>
             <div className="p-6">
-              <h3 className="font-serif text-2xl text-slate-900 mb-2">{hotel.name}</h3>
+              <h3 className="font-serif text-2xl text-slate-900 mb-2 font-[Playfair Display]">{hotel.name}</h3>
               <div className="flex items-center text-slate-500 text-sm mb-4">
                 <MapPin size={14} className="mr-1 text-amber-600" />
                 {hotel.location || "New Zealand"}
@@ -760,7 +865,7 @@
                     )}
                     {activeTab === 'Hotel' && (
                       <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
                           <BedDouble className="mr-2 text-amber-600" /> Accommodation
                         </h2>
                         {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
@@ -768,7 +873,7 @@
                     )}
                     {activeTab === 'Dining' && (
                       <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
                           <UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining
                         </h2>
                         {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
@@ -776,7 +881,7 @@
                     )}
                     {activeTab === 'Attractions' && (
                       <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
                           <Mountain className="mr-2 text-amber-600" /> Major Spots
                         </h2>
                         {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
