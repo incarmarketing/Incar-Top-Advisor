@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITA Awards New Zealand</title>
     
+    <!-- ▼▼▼ [썸네일 설정] 링크 공유 시 보이는 이미지와 설명입니다 ▼▼▼ -->
+    <meta property="og:title" content="ITA Awards New Zealand">
+    <meta property="og:description" content="Only YOU, New Zealand (2026. 04. 10 - 16)">
+    <!-- 상단 배너와 동일한 이미지로 설정했습니다 -->
+    <meta property="og:image" content="https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop">
+    
     <!-- 1. 리액트와 테일윈드 CSS를 CDN으로 불러옵니다 (설치 불필요) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -76,6 +82,7 @@
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
             
             // ▼▼▼ [이미지 변경] 여기가 상단 배너 및 로딩 화면 이미지입니다 ▼▼▼
+            // (위의 og:image와 같은 주소입니다)
             coverImage: "https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop", 
             
             themeColor: {
