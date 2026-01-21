@@ -9,7 +9,7 @@
     <meta property="og:title" content="ITA Awards New Zealand">
     <meta property="og:description" content="Only YOU, New Zealand (2026. 04. 10 - 16)">
     <!-- 상단 배너와 동일한 이미지로 설정했습니다 -->
-    <meta property="og:image" content="https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop">
+    <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png">
     
     <!-- 1. 리액트와 테일윈드 CSS를 CDN으로 불러옵니다 (설치 불필요) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -83,7 +83,7 @@
             
             // ▼▼▼ [이미지 변경] 여기가 상단 배너 및 로딩 화면 이미지입니다 ▼▼▼
             // (위의 og:image와 같은 주소입니다)
-            coverImage: "https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=2070&auto=format&fit=crop", 
+            coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png", 
             
             themeColor: {
               primary: "#1e293b",
@@ -291,10 +291,23 @@
             <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5">
               
               {/* Spinner & Logo */}
-              <div className="w-24 h-24 mb-8 rounded-full border-[0.5px] border-amber-500/20 flex items-center justify-center relative backdrop-blur-sm bg-slate-900/30">
-                 {/* Rotating Ring */}
-                 <div className="absolute inset-0 rounded-full border-t-[1px] border-r-[1px] border-amber-500/80 animate-spin duration-[3s]"></div>
-                 <Plane className="text-amber-500 drop-shadow-[0_0_10px_rgba(217,119,6,0.5)]" size={32} strokeWidth={1} />
+              <div className="w-32 h-32 mb-8 flex items-center justify-center relative">
+                 {/* 1. Static Outer Ring (Track) */}
+                 <div className="absolute inset-0 rounded-full border border-white/10"></div>
+                 
+                 {/* 2. Rotating Light Effect */}
+                 {/* animate-spin: spins the container. The dot is positioned at the top edge. */}
+                 <div className="absolute inset-0 rounded-full animate-spin duration-[2s] linear">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-400 rounded-full shadow-[0_0_15px_4px_rgba(250,204,21,0.6)]"></div>
+                 </div>
+
+                 {/* 3. Inner Decorative Ring (Gold, Static or slow pulse) */}
+                 <div className="absolute inset-4 rounded-full border border-[#D4AF37]/30"></div>
+
+                 {/* 4. Center Logo (Gold) */}
+                 <div className="relative z-10 flex flex-col items-center justify-center">
+                    <Plane className="text-[#D4AF37] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" size={40} strokeWidth={1.5} />
+                 </div>
               </div>
               
               {/* Title */}
@@ -302,11 +315,11 @@
                 ITA AWARDS
               </h1>
               
-              {/* Decorative Line */}
-              <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mb-4 opacity-70"></div>
+              {/* Decorative Line (Gold Gradient) */}
+              <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-4 opacity-70"></div>
               
-              {/* Subtitle */}
-              <p className="text-xs md:text-sm text-amber-500 tracking-[0.4em] uppercase opacity-90 font-light">
+              {/* Subtitle (Gold Text) */}
+              <p className="text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase opacity-90 font-light">
                 New Zealand 2026
               </p>
             </div>
