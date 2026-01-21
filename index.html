@@ -5,50 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITA Awards New Zealand</title>
     
-    <!-- ▼▼▼ [썸네일 설정] 링크 공유 시 보이는 이미지와 설명입니다 ▼▼▼ -->
+    <!-- ▼▼▼ [썸네일 설정] ▼▼▼ -->
     <meta property="og:title" content="ITA Awards New Zealand">
     <meta property="og:description" content="Only YOU, New Zealand (2026. 04. 10 - 16)">
-    <!-- 상단 배너와 동일한 이미지로 설정했습니다 -->
     <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png">
     
-    <!-- 1. 리액트와 테일윈드 CSS를 CDN으로 불러옵니다 (설치 불필요) -->
+    <!-- CDN 라이브러리 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- 2. 아이콘 라이브러리 (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        /* 스크롤바 숨김 등 추가 스타일 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* 애니메이션 유틸리티 */
-        .animate-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* 편지 봉투 애니메이션 스타일 */
+        .envelope-container { perspective: 1000px; }
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #1e293b; /* slate-800 */
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+        .envelope::before { /* 왼쪽 날개 */
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 150px solid #334155; /* slate-700 */
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            z-index: 3;
+        }
+        .envelope::after { /* 오른쪽 날개 */
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-right: 150px solid #334155; /* slate-700 */
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            z-index: 3;
+        }
+        .envelope-bottom { /* 아래쪽 날개 */
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 110px solid #1e293b; /* slate-800 */
+            z-index: 4;
+            border-radius: 0 0 10px 10px;
+        }
+        .envelope-lid { /* 뚜껑 */
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #475569; /* slate-600 */
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out, z-index 0.6s step-end;
+            z-index: 5;
+        }
+        .envelope.open .envelope-lid {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .letter-paper {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 270px;
+            height: 180px;
+            background: #fffbf0;
+            padding: 20px;
+            transition: transform 0.8s ease-in-out 0.4s;
+            z-index: 2;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-col;
+            align-items: center;
+            overflow: hidden;
+        }
+        .envelope.open .letter-paper {
+            transform: translateY(-120px);
+            height: 380px; /* 편지가 길어짐 */
+            z-index: 6; /* 봉투 앞으로 나옴 */
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body class="bg-[#f8fafc]">
     <div id="root"></div>
 
-    <!-- 3. 여기서부터 중요! type="text/babel"이 있어야 리액트가 작동합니다 -->
     <script type="text/babel">
-        // [중요] import 대신 전역 객체 React를 사용합니다.
         const { useState, useEffect } = React;
 
         // --- 아이콘 컴포넌트 래퍼 ---
         const LucideIcon = ({ name, size = 16, className = "", ...props }) => {
-            useEffect(() => {
-                // 아이콘 렌더링 후 SVG로 변환
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            }, [name]);
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
             return <i data-lucide={name} style={{ width: size, height: size }} className={`inline-block ${className}`} {...props}></i>;
         };
 
-        // 아이콘 매핑 (소문자로 이름 지정)
+        // 아이콘 매핑
         const Plane = (p) => <LucideIcon name="plane" {...p} />;
         const Hotel = (p) => <LucideIcon name="hotel" {...p} />;
         const MapPin = (p) => <LucideIcon name="map-pin" {...p} />;
@@ -67,12 +134,12 @@
         const BedDouble = (p) => <LucideIcon name="bed-double" {...p} />;
         const Mountain = (p) => <LucideIcon name="mountain" {...p} />;
         const Info = (p) => <LucideIcon name="info" {...p} />;
-
+        const AlertTriangle = (p) => <LucideIcon name="alert-triangle" {...p} />;
+        const CheckCircle = (p) => <LucideIcon name="check-circle" {...p} />;
 
         /**
          * ------------------------------------------------------------------
-         * [데이터 설정 구간]
-         * 여기서 텍스트와 이미지를 수정하면 화면에 반영됩니다.
+         * [데이터 설정]
          * ------------------------------------------------------------------
          */
         const travelData = {
@@ -80,17 +147,28 @@
             title: "ITA Awards New Zealand",
             subtitle: "Only YOU, New Zealand",
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
-            
-            // ▼▼▼ [이미지 변경] 여기가 상단 배너 및 로딩 화면 이미지입니다 ▼▼▼
-            // (위의 og:image와 같은 주소입니다)
             coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/thumbnail.png", 
-            
-            themeColor: {
-              primary: "#1e293b",
-              accent: "#d97706",
-              bg: "#f8fafc"
-            }
+            themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
+          // [추가] 회장님 편지 내용
+          letter: {
+            from: "회장 최병채",
+            content: [
+              "사랑하는 인카금융서비스 가족 여러분,",
+              "치열했던 지난 한 해, 여러분이 보여주신 열정과 헌신에 깊은 경의를 표합니다.",
+              "여러분의 땀방울이 모여 우리는 또 한 번의 기적을 만들어냈습니다. 그 노고에 보답하고자, 대자연의 신비가 살아 숨 쉬는 뉴질랜드로 여러분을 모십니다.",
+              "이번 ITA Awards가 여러분에게 진정한 휴식이자, 더 높은 곳을 향해 비상하는 영감이 되기를 소망합니다.",
+              "뉴질랜드에서 뵙겠습니다."
+            ]
+          },
+          // [추가] 입국 주의사항 데이터
+          entryInfo: [
+            { title: "NZeTA (전자비자)", content: "출국 최소 72시간 전까지 모바일 앱 또는 웹사이트를 통해 발급 필수 (유효기간 2년 확인)" },
+            { title: "검역 및 반입 금지", content: "음식물(생과일, 육류, 꿀 등), 식물, 씨앗 등 반입이 매우 엄격히 금지됩니다. 적발 시 즉시 벌금 NZD 400이 부과되니 주의하세요." },
+            { title: "상비약 휴대", content: "처방약은 영문 처방전을 반드시 지참해야 하며, 일반 의약품은 원래 포장 상태로 보관해야 합니다." },
+            { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
+            { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그(돼지코 아님)가 필요합니다. 멀티 어댑터를 챙겨주세요." }
+          ],
           contacts: [
             { name: "현지 상황실 (비상)", phone: "010-0000-0000", type: "emergency" },
             { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "guide" },
@@ -165,10 +243,7 @@
               features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"],
               checkIn: "04. 11 (Sat)",
               checkOut: "04. 15 (Wed)",
-              
-              // ▼▼▼ [이미지 변경] 퀸즈타운 호텔 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop",
-              
               link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa"
             },
             {
@@ -179,10 +254,7 @@
               features: ["Ocean View", "Outdoor Pool", "City Center"],
               checkIn: "04. 15 (Wed)",
               checkOut: "04. 16 (Thu)",
-              
-              // ▼▼▼ [이미지 변경] 오클랜드 호텔 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop",
-              
               link: "https://maps.google.com/?q=Hilton+Auckland"
             }
           ],
@@ -193,8 +265,6 @@
               desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.",
               menu: ["Rock Lobster (크레이피쉬)", "자연산 전복 (12cm 이상)", "Fresh Salmon", "푸른잎 홍합 요리"],
               day: "Day 4 Dinner",
-              
-              // ▼▼▼ [이미지 변경] 만다린 씨푸드 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2074&auto=format&fit=crop"
             },
             {
@@ -203,8 +273,6 @@
               desc: "와이너리 투어 후 즐기는 품격 있는 페어웰 만찬입니다.",
               menu: ["Venison Steak (사슴 스테이크)", "Pinot Noir Wine Pairing", "Seasonal Dessert"],
               day: "Day 5 Dinner",
-              
-              // ▼▼▼ [이미지 변경] 와이너리 디너 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop"
             },
             {
@@ -213,8 +281,6 @@
               desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.",
               menu: ["Grilled Lamb/Beef", "Fresh Salad Bar", "NZ Cheeses"],
               day: "Day 5 Lunch",
-              
-              // ▼▼▼ [이미지 변경] 바비큐 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1544025162-d76690b6d015?q=80&w=1974&auto=format&fit=crop"
             }
           ],
@@ -224,8 +290,6 @@
               tag: "Main Event",
               desc: "버스 이동의 피로를 덜고, 하늘에서 뉴질랜드의 만년설과 피오르드를 내려다보는 VIP 전용 경비행기 투어입니다.",
               note: "우천 시 버스로 대체될 수 있습니다.",
-              
-              // ▼▼▼ [이미지 변경] 밀포드 사운드 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?q=80&w=2070&auto=format&fit=crop"
             },
             {
@@ -233,16 +297,12 @@
               tag: "Culture",
               desc: "100년 된 증기선을 타고 호수를 건너, 뉴질랜드 전통 농장을 체험합니다. 양털 깎기와 양몰이 쇼를 관람합니다.",
               note: "동시 통역 송수신기 제공",
-              
-              // ▼▼▼ [이미지 변경] 증기선 투어 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop"
             },
             {
               name: "Arrowtown",
               tag: "History",
               desc: "골드러시 시절의 정취가 남아있는 아름다운 마을입니다. 단풍이 든 가로수길 산책이 유명합니다.",
-              
-              // ▼▼▼ [이미지 변경] 애로우타운 사진 ▼▼▼
               image: "https://images.unsplash.com/photo-1579760773022-2976b921356a?q=80&w=2071&auto=format&fit=crop"
             }
           ]
@@ -274,59 +334,149 @@
           e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; 
         };
 
-        // --- Loading Component (New) ---
-        const LoadingIntro = () => (
-          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden">
-            {/* Background Image with heavy overlay */}
-            <div className="absolute inset-0">
-              <img 
-                src={travelData.meta.coverImage} 
-                alt="Background" 
-                className="w-full h-full object-cover opacity-30 scale-110 animate-[pulse_8s_ease-in-out_infinite]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
-            </div>
+        // --- 1. 로딩 화면 (LoadingIntro) ---
+        const LoadingIntro = ({ onComplete }) => {
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    onComplete(); // 3초 후 완료 콜백 실행
+                }, 3000);
+                return () => clearTimeout(timer);
+            }, [onComplete]);
 
-            {/* Content */}
-            <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5">
-              
-              {/* Spinner & Logo */}
-              <div className="w-32 h-32 mb-8 flex items-center justify-center relative">
-                 {/* 1. Static Outer Ring (Track) */}
-                 <div className="absolute inset-0 rounded-full border border-white/10"></div>
-                 
-                 {/* 2. Rotating Light Effect */}
-                 {/* animate-spin: spins the container. The dot is positioned at the top edge. */}
-                 <div className="absolute inset-0 rounded-full animate-spin duration-[2s] linear">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-400 rounded-full shadow-[0_0_15px_4px_rgba(250,204,21,0.6)]"></div>
-                 </div>
+            return (
+                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden">
+                    <div className="absolute inset-0">
+                        <img src={travelData.meta.coverImage} alt="Background" className="w-full h-full object-cover opacity-30 scale-110 animate-[pulse_8s_ease-in-out_infinite]"/>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
+                    </div>
+                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5">
+                        <div className="w-32 h-32 mb-8 flex items-center justify-center relative">
+                            <div className="absolute inset-0 rounded-full border border-white/10"></div>
+                            <div className="absolute inset-0 rounded-full animate-spin duration-[2s] linear">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-400 rounded-full shadow-[0_0_15px_4px_rgba(250,204,21,0.6)]"></div>
+                            </div>
+                            <div className="absolute inset-4 rounded-full border border-[#D4AF37]/30"></div>
+                            <div className="relative z-10 flex flex-col items-center justify-center">
+                                <Plane className="text-[#D4AF37] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" size={40} strokeWidth={1.5} />
+                            </div>
+                        </div>
+                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg">
+                            <span className="block text-4xl md:text-5xl tracking-[0.1em] mb-2">Your Honor</span>
+                            <span className="block text-2xl md:text-3xl tracking-[0.05em] text-[#D4AF37] opacity-90">Incar Top Advisor</span>
+                        </h1>
+                        <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-4 opacity-70"></div>
+                        <p className="text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase opacity-90 font-light">
+                            New Zealand 2026
+                        </p>
+                    </div>
+                </div>
+            );
+        };
 
-                 {/* 3. Inner Decorative Ring (Gold, Static or slow pulse) */}
-                 <div className="absolute inset-4 rounded-full border border-[#D4AF37]/30"></div>
+        // --- 2. 편지 애니메이션 (LetterIntro) ---
+        const LetterIntro = ({ onClose }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [showContent, setShowContent] = useState(false);
 
-                 {/* 4. Center Logo (Gold) */}
-                 <div className="relative z-10 flex flex-col items-center justify-center">
-                    <Plane className="text-[#D4AF37] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" size={40} strokeWidth={1.5} />
-                 </div>
-              </div>
-              
-              {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-serif tracking-[0.15em] text-white font-light mb-4 drop-shadow-lg text-center">
-                ITA AWARDS
-              </h1>
-              
-              {/* Decorative Line (Gold Gradient) */}
-              <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-4 opacity-70"></div>
-              
-              {/* Subtitle (Gold Text) */}
-              <p className="text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase opacity-90 font-light">
-                New Zealand 2026
-              </p>
-            </div>
-          </div>
-        );
+            const handleOpen = () => {
+                if (isOpen) return;
+                setIsOpen(true);
+                // 편지가 올라오는 시간(0.8s) + 약간의 딜레이 후 내용 표시
+                setTimeout(() => setShowContent(true), 1200);
+            };
 
-        const Header = ({ data }) => (
+            return (
+                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/90 backdrop-blur-md transition-all duration-700">
+                    {/* 봉투 */}
+                    <div 
+                        className={`envelope-container cursor-pointer transition-transform duration-500 ${isOpen ? 'translate-y-20' : 'hover:scale-105'}`}
+                        onClick={handleOpen}
+                    >
+                        <div className={`envelope ${isOpen ? 'open' : ''}`}>
+                            <div className="envelope-lid"></div>
+                            <div className="letter-paper">
+                                <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+                                    <div className="text-center pt-4">
+                                        <div className="w-8 h-8 mx-auto mb-2 border border-[#D4AF37] rounded-full flex items-center justify-center">
+                                            <Plane size={14} className="text-[#D4AF37]" />
+                                        </div>
+                                        <h3 className="font-serif text-slate-800 text-sm font-bold tracking-widest mb-4 border-b border-slate-200 pb-2">INVITATION</h3>
+                                        <div className="space-y-2 text-xs text-slate-600 leading-relaxed font-light text-justify px-2 overflow-y-auto max-h-[220px] no-scrollbar">
+                                            {travelData.letter.content.map((line, i) => (
+                                                <p key={i}>{line}</p>
+                                            ))}
+                                            <p className="text-right mt-4 font-serif text-slate-800 font-bold">{travelData.letter.from}</p>
+                                        </div>
+                                    </div>
+                                    {showContent && (
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); onClose(); }}
+                                            className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-widest uppercase hover:bg-slate-800 transition-colors mt-2"
+                                        >
+                                            Enter Invitation
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="envelope-bottom"></div>
+                        </div>
+                        
+                        {!isOpen && (
+                            <div className="text-center mt-8 animate-bounce text-white/50 text-sm tracking-widest uppercase">
+                                Tap to Open
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- 3. 입국 정보 모달 (EntryInfoModal) ---
+        const EntryInfoModal = ({ isOpen, onClose }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
+                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center">
+                                <Info size={18} className="mr-2" /> Travel Checklist
+                            </h3>
+                            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-5 overflow-y-auto">
+                            <div className="space-y-5">
+                                {travelData.entryInfo.map((info, idx) => (
+                                    <div key={idx} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0">
+                                        <h4 className="font-bold text-slate-800 mb-1 flex items-center text-sm">
+                                            <CheckCircle size={14} className="mr-2 text-green-600" />
+                                            {info.title}
+                                        </h4>
+                                        <p className="text-xs text-slate-500 leading-relaxed pl-6 bg-slate-50 p-2 rounded">
+                                            {info.content}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
+                                <AlertTriangle size={16} className="text-amber-600 mr-2 shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-amber-800 leading-snug">
+                                    뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
+                            <button onClick={onClose} className="w-full bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition-colors">
+                                확인했습니다
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Header = ({ data, onInfoClick }) => (
           <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
             <div className="absolute inset-0">
               <img 
@@ -337,6 +487,14 @@
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
             </div>
+            {/* 입국 정보 버튼 추가 */}
+            <button 
+                onClick={onInfoClick}
+                className="absolute top-4 right-4 z-20 bg-black/30 backdrop-blur-md text-white p-2 rounded-full border border-white/20 hover:bg-black/50 transition-all active:scale-95"
+            >
+                <Info size={20} className="text-[#D4AF37]" />
+            </button>
+
             <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
               <div className="inline-flex items-center px-3 py-1 mb-4 border border-white/20 rounded-full bg-black/20 backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
@@ -352,6 +510,7 @@
           </header>
         );
 
+        // ... [기존 컴포넌트: TabNavigation, TimelineItem, HotelDetailCard 등등 그대로 유지] ...
         const TabNavigation = ({ activeTab, setActiveTab }) => {
           const tabs = [
             { id: 'Schedule', icon: Calendar },
@@ -545,87 +704,91 @@
           );
         };
 
-        // Main App
+        // --- 4. Main App (상태 관리 수정) ---
         function App() {
-          const [loading, setLoading] = useState(true);
+          const [step, setStep] = useState('loading'); // loading -> letter -> main
           const [activeTab, setActiveTab] = useState('Schedule');
+          const [showEntryInfo, setShowEntryInfo] = useState(false);
 
-          useEffect(() => {
-            const timer = setTimeout(() => {
-              setLoading(false);
-            }, 3000); 
-            return () => clearTimeout(timer);
-          }, []);
+          // 1. 로딩 완료 시 편지 화면으로 전환
+          const handleLoadingComplete = () => {
+            setStep('letter');
+          };
 
-          if (loading) {
-            return <LoadingIntro />;
-          }
+          // 2. 편지 닫기 시 메인 화면으로 전환
+          const handleLetterClose = () => {
+            setStep('main');
+          };
 
           return (
             <div className="min-h-screen bg-[#f8fafc] font-sans antialiased text-slate-800 pb-20 animate-in fade-in duration-700">
-              <Header data={travelData.meta} />
-              <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
               
-              <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
-                
-                {/* Schedule */}
-                {activeTab === 'Schedule' && (
-                  <div className="animate-in fade-in duration-500">
-                    {travelData.itinerary.map((day, idx) => (
-                      <div key={idx} className="mb-8 last:mb-24">
-                        <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
-                          <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
-                            <span className="text-[10px] font-light opacity-80">DAY</span>
-                            <span className="text-lg font-bold leading-none">{day.day}</span>
+              {/* Step 1: Loading */}
+              {step === 'loading' && <LoadingIntro onComplete={handleLoadingComplete} />}
+
+              {/* Step 2: Letter Animation */}
+              {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
+
+              {/* Step 3: Main Content */}
+              <div className={step === 'main' ? 'block' : 'hidden'}>
+                  <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
+                  <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                  
+                  <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
+                    {activeTab === 'Schedule' && (
+                      <div className="animate-in fade-in duration-500">
+                        {travelData.itinerary.map((day, idx) => (
+                          <div key={idx} className="mb-8 last:mb-24">
+                            <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
+                              <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
+                                <span className="text-[10px] font-light opacity-80">DAY</span>
+                                <span className="text-lg font-bold leading-none">{day.day}</span>
+                              </div>
+                              <div>
+                                <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
+                                <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
+                              </div>
+                            </div>
+                            <div className="px-1">
+                              {day.activities.map((act, i) => (
+                                <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />
+                              ))}
+                            </div>
                           </div>
-                          <div>
-                            <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
-                            <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
-                          </div>
-                        </div>
-                        <div className="px-1">
-                          {day.activities.map((act, i) => (
-                            <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />
-                          ))}
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    )}
+                    {activeTab === 'Hotel' && (
+                      <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                          <BedDouble className="mr-2 text-amber-600" /> Accommodation
+                        </h2>
+                        {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
+                      </div>
+                    )}
+                    {activeTab === 'Dining' && (
+                      <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                          <UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining
+                        </h2>
+                        {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
+                      </div>
+                    )}
+                    {activeTab === 'Attractions' && (
+                      <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+                          <Mountain className="mr-2 text-amber-600" /> Major Spots
+                        </h2>
+                        {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
+                      </div>
+                    )}
+                  </main>
 
-                {/* Hotel */}
-                {activeTab === 'Hotel' && (
-                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-                      <BedDouble className="mr-2 text-amber-600" /> Accommodation
-                    </h2>
-                    {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
-                  </div>
-                )}
-
-                {/* Dining */}
-                {activeTab === 'Dining' && (
-                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-                      <UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining
-                    </h2>
-                    {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
-                  </div>
-                )}
-
-                {/* Attractions */}
-                {activeTab === 'Attractions' && (
-                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-                      <Mountain className="mr-2 text-amber-600" /> Major Spots
-                    </h2>
-                    {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
-                  </div>
-                )}
-
-              </main>
-
-              <FAB contacts={travelData.contacts} />
+                  <FAB contacts={travelData.contacts} />
+                  
+                  {/* Entry Info Modal (Always rendered but visible based on state) */}
+                  <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
+              </div>
             </div>
           );
         }
