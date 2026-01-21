@@ -7,7 +7,8 @@
     
     <!-- ▼▼▼ [썸네일 설정] ▼▼▼ -->
     <meta property="og:title" content="2026 ITA New Zealand">
-    <meta property="og:description" content="2026. 04. 10(Fri) - 16(Thu))">
+    <meta property="og:description" content="2026. 04. 10(Fri) - 16(Thu)">
+    <!-- 썸네일은 stamp 이미지 그대로 유지 -->
     <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png">
     
     <!-- 폰트: 고급스러운 명조 계열 (Playfair Display) 추가 -->
@@ -36,6 +37,12 @@
             justify-content: center;
             align-items: center;
             filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* 편지가 열리면 봉투는 화면 아래로 쑥 내려가서 편지가 중앙에 오게 함 */
+        .envelope-container.opened {
+            transform: translateY(200px); 
         }
         
         .envelope {
@@ -77,16 +84,19 @@
             pointer-events: none;
         }
 
-        /* 편지가 열렸을 때 */
+        /* 편지가 열렸을 때 - 위치 조정 (화면 정중앙) */
         .envelope.open .letter-paper {
-            transform: translate(-50%, -120px);
-            height: 450px;
+            /* translateY(-380px): 봉투 밖으로 완전히 꺼냄
+               봉투가 아래로 200px 내려갔으므로, 편지는 상대적으로 위로 많이 올려야 화면 중앙에 옴 
+            */
+            transform: translate(-50%, -380px); 
+            height: 480px; /* 편지 길이 */
             z-index: 20;
             box-shadow: 0 15px 50px rgba(0,0,0,0.4);
             overflow: visible;
         }
 
-        /* --- [봉투 디자인: 그라데이션으로 입체감 표현] --- */
+        /* --- [봉투 디자인] --- */
         
         /* 1. 뒷면 (안감) */
         .envelope::before {
@@ -98,7 +108,7 @@
             z-index: 1;
         }
 
-        /* 2. 날개들 (CSS Clip-path 사용) */
+        /* 2. 날개들 */
         .flap {
             position: absolute;
             inset: 0;
@@ -123,7 +133,6 @@
             z-index: 11;
             background: linear-gradient(to top, #232323, #2d2d2d);
             clip-path: polygon(0 100%, 50% 50%, 100% 100%);
-            /* 아래쪽 날개에 미세한 윗 그림자 효과는 가상요소나 gradient로 처리 */
         }
 
         /* 3. 뚜껑 (Lid) */
@@ -141,56 +150,45 @@
         .envelope.open .envelope-lid {
             transform: rotateX(180deg);
             z-index: 1;
-            background: #1a1a1a; /* 뒤집혔을 때 색상 */
+            background: #1a1a1a;
         }
 
         /* --- [고급 리얼 왁스 실링] --- */
-        .wax-seal {
+        /* 이미지가 없을 때를 대비한 배경 원 */
+        .wax-seal-fallback {
             position: absolute;
-            top: 55%; /* 뚜껑 끝부분에 맞춤 */
+            top: 55%; 
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 70px;
+            width: 70px; 
             height: 70px;
-            
-            /* 리얼한 금속성 왁스 질감 */
-            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b, #8b4500);
-            box-shadow: 
-                0 4px 6px rgba(0,0,0,0.4),
-                inset 0 2px 5px rgba(255,255,255,0.4),
-                inset 0 -2px 5px rgba(0,0,0,0.4);
-            
-            /* 불규칙한 모양 만들기 */
-            border-radius: 55% 45% 60% 40% / 50% 60% 40% 50%;
-            
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #b8860b; /* 이미지가 안 뜨면 금색 원이라도 보이게 */
+            border-radius: 50%;
+            z-index: 14;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+
+        .wax-seal-img {
+            position: absolute;
+            top: 55%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; 
+            height: 80px;
             z-index: 15;
             cursor: pointer;
             transition: all 0.4s ease;
-            border: 4px solid rgba(139, 69, 19, 0.1); /* 미세한 테두리 */
-        }
-        
-        /* 왁스 안쪽 스탬프 눌린 효과 */
-        .wax-seal-inner {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px dashed rgba(184, 134, 11, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.3);
-            background: radial-gradient(circle, #daa520, #b8860b);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            object-fit: contain; /* 이미지 비율 유지 */
         }
 
-        .envelope-container:hover .wax-seal {
+        .envelope-container:hover .wax-seal-img {
             transform: translate(-50%, -50%) scale(1.05) rotate(5deg);
         }
 
-        /* 열릴 때 실링 깨지는/사라지는 효과 */
-        .envelope.open .wax-seal {
+        /* 열릴 때 실링 사라짐 */
+        .envelope.open .wax-seal-img,
+        .envelope.open .wax-seal-fallback {
             opacity: 0;
             transform: translate(-50%, -50%) scale(1.5);
             pointer-events: none;
@@ -241,7 +239,10 @@
             title: "ITA Awards New Zealand",
             subtitle: "Only YOU, New Zealand",
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
-            coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png", 
+            
+            // ▼▼▼ [이미지 변경] 상단 배너 이미지 (onlyyou.png 반영) ▼▼▼
+            coverImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png", 
+            
             themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
           // [추가] 회장님 편지 내용
@@ -482,7 +483,7 @@
             return (
                 <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-700">
                     <div 
-                        className={`envelope-container ${isOpen ? 'translate-y-20' : 'hover:scale-105'} transition-transform duration-500`}
+                        className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`}
                         onClick={handleOpen}
                     >
                         <div className={`envelope ${isOpen ? 'open' : ''}`}>
@@ -518,12 +519,14 @@
                             <div className="flap flap-right"></div>
                             <div className="flap flap-bottom"></div>
                             
-                            {/* 고급 왁스 실링 */}
-                            <div className="wax-seal">
-                                <div className="wax-seal-inner">
-                                    <span className="font-serif font-black text-[#6b3e05] text-sm tracking-widest drop-shadow-sm font-[Playfair Display]">ITA</span>
-                                </div>
-                            </div>
+                            {/* 고급 왁스 실링 (이미지 사용) + 폴백 원형 */}
+                            <div className="wax-seal-fallback"></div>
+                            <img 
+                                src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" 
+                                alt="Wax Seal" 
+                                className="wax-seal-img"
+                                onError={(e) => e.target.style.display = 'none'} 
+                            />
                         </div>
                         
                         {!isOpen && (
