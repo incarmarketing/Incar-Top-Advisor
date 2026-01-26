@@ -13,7 +13,8 @@
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Cinzel(럭셔리/유럽풍) 추가 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 
     <!-- CDN 라이브러리 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -54,7 +55,7 @@
             width: 100%; height: 100%;
             transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        /* 편지가 열렸을 때 화면 아래쪽으로 이동 (기존 10vh -> 18vh로 수정) */
+        /* 편지가 열렸을 때 화면 아래쪽으로 이동 */
         .envelope-container.opened { transform: translateY(18vh); }
         
         .envelope {
@@ -72,7 +73,8 @@
             width: 320px; 
             height: 180px; /* 닫혔을 때 높이 */
             background: #ffffff; 
-            padding: 20px;
+            /* 편지 내부 상단 여백 축소 */
+            padding: 5px 24px 20px 24px;
             /* 딜레이: 뚜껑 열린 후 편지가 올라옴 */
             transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
             z-index: 5; /* 닫혔을 땐 덮개 뒤 */
@@ -82,23 +84,44 @@
             overflow: hidden;
         }
         
+        /* 고급스러운 편지지 테두리 무늬 (유지) */
         .letter-paper::after {
-            content: ''; position: absolute; inset: 6px;
-            border: 1px solid rgba(212, 175, 55, 0.5); pointer-events: none;
+            content: ''; position: absolute; inset: 12px;
+            /* 금색 이중 테두리 */
+            border: 1px solid #D4AF37;
+            outline: 1px solid #D4AF37;
+            outline-offset: -4px;
+            pointer-events: none;
+            /* 모서리 장식 효과 */
+            background-image: 
+                radial-gradient(circle at top left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+                radial-gradient(circle at top right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+                radial-gradient(circle at bottom left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+                radial-gradient(circle at bottom right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px);
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+            background-position: top left, top right, bottom left, bottom right;
         }
         
         /* [중요] 편지가 열렸을 때 스타일 */
         .envelope.open .letter-paper {
-            height: 520px; 
-            bottom: 0px; 
+            /* 편지 높이 유지 */
+            height: 600px; 
+            /* 봉투 아래로 60px 만큼 내려오게 배치 */
+            bottom: -60px; 
             z-index: 50; /* 봉투 날개보다 무조건 위로 */
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
             overflow: visible; /* 내부 클릭 가능하도록 */
             pointer-events: auto; /* 클릭 이벤트 활성화 */
         }
 
-        /* 봉투 부속품 */
-        .envelope::before { content: ''; position: absolute; inset: 0; background: #1e293b; border-radius: 4px; z-index: 1; }
+        /* 봉투 부속품 (안감) */
+        .envelope::before { 
+            content: ''; position: absolute; inset: 0; 
+            background-color: #1e293b; 
+            border-radius: 4px; z-index: 1; 
+            border: 1px solid rgba(212, 175, 55, 0.3); /* 안쪽 테두리만 은은하게 유지 */
+        }
         
         /* 날개들 */
         .flap { 
@@ -173,12 +196,13 @@
         const Info = (p) => <LucideIcon name="info" {...p} />;
         const AlertTriangle = (p) => <LucideIcon name="alert-triangle" {...p} />;
         const CheckCircle = (p) => <LucideIcon name="check-circle" {...p} />;
-        const Bus = (p) => <LucideIcon name="bus" {...p} />; // 추가된 아이콘
+        const Bus = (p) => <LucideIcon name="bus" {...p} />; 
+        const ClipboardList = (p) => <LucideIcon name="clipboard-list" {...p} />;
 
         // --- 데이터 ---
         const travelData = {
           meta: {
-            title: "ITA Awards New Zealand",
+            title: "2026 Incar Top Advisor",
             subtitle: "Only YOU, New Zealand",
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
             introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
@@ -186,13 +210,15 @@
             themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
           letter: {
-            from: "인카금융서비스 대표이사 최병채",
+            from: "인카금융서비스 회장 최병채",
             content: [
               "위대한 성취를 이룬 당신께,", " ",
-              "세상에서 가장 경이로운 풍경을 바칩니다.",
+              "가장 경이로운 풍경을 바칩니다.",
               "당신의 열정이 닿은 곳,",
-              "이제 뉴질랜드에서 그 빛나는 휴식을 즐기십시오.", " ",
-              "최고의 영예를 담아, 당신을 초대합니다."
+              "대자연의 뉴질랜드에서",
+              "그 빛나는 휴식을 즐기십시오.", " ",
+              "최고의 영예를 담아,",
+              "당신을 초대합니다."
             ]
           },
           entryInfo: [
@@ -204,6 +230,8 @@
           ],
           contacts: [
             { name: "현지 상황실 (비상)", phone: "010-0000-0000", type: "emergency" },
+            { name: "인카블루투어 김준형", phone: "010-9589-5768", type: "emergency" },
+            { name: "인카금융서비스 남욱현", phone: "010-4751-3254", type: "emergency" },
             { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "guide" },
             { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "guide" }
           ],
@@ -296,7 +324,8 @@
             return (
                 <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="absolute inset-0">
-                        <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-30 scale-110 animate-[pulse_8s_ease-in-out_infinite]"/>
+                        {/* 투명도를 90으로 높여서 배경 이미지가 선명하게 보이도록 조정 */}
+                        <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-900 scale-110 animate-[pulse_16s_ease-in-out_infinite]"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
                     <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4">
@@ -333,19 +362,25 @@
                             <div className="envelope-lid"></div>
                             <div className="letter-paper">
                                 <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                    <div className="text-center pt-1 flex-1 flex flex-col items-center">
-                                        <div className="w-24 h-24 mb-4 flex items-center justify-center shrink-0">
+                                    <div className="text-center pt-1 flex-1 flex flex-col items-center justify-center">
+                                        {/* 로고 */}
+                                        <div className="w-24 h-24 mb-0 flex items-center justify-center shrink-0">
                                             <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="w-full h-full object-contain opacity-90" />
                                         </div>
-                                        <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-4 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
-                                        <div className="space-y-5 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar flex-1 font-[Nanum Myeongjo]">
+                                        {/* 제목 */}
+                                        <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-2 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
+                                        {/* 본문 (flex-1 제거하여 공백 문제 해결) */}
+                                        <div className="space-y-4 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
                                             {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
-                                            <p className="text-right mt-8 font-bold text-slate-900">{travelData.letter.from}</p>
+                                        </div>
+                                        {/* 발신인 (본문 바로 아래 위치하도록 상단 여백 조정) */}
+                                        <div className="w-full mt-8 shrink-0">
+                                            <p className="text-right font-bold text-slate-900 font-[Nanum Myeongjo]">{travelData.letter.from}</p>
                                         </div>
                                     </div>
                                     {showContent && (
                                         /* z-index 50과 pointer-events-auto로 클릭 보장 */
-                                        <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-4 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
+                                        <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-0 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
                                     )}
                                 </div>
                             </div>
@@ -369,17 +404,17 @@
               <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
             </div>
-            <button onClick={onInfoClick} className="absolute top-4 right-4 z-20 bg-black/30 backdrop-blur-md text-white p-2 rounded-full border border-white/20 hover:bg-black/50 transition-all active:scale-95">
-                <Info size={20} className="text-[#D4AF37]" />
-            </button>
+            {/* 우측 상단 정보 버튼 제거됨 */}
             <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
               <div className="inline-flex items-center px-3 py-1 mb-4 border border-white/20 rounded-full bg-black/20 backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
                 <span className="text-xs font-medium tracking-widest text-white uppercase">Invitation</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2 font-serif font-[Playfair Display]">{data.title}</h1>
-              <p className="text-slate-200 font-light text-lg font-[Playfair Display]">{data.subtitle}</p>
-              <div className="flex items-center mt-4 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
+              {/* 메인 타이틀: Only YOU... (크게) */}
+              <p className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-2 leading-tight drop-shadow-md">{data.subtitle}</p>
+              {/* 서브 타이틀: 2026... (작게, 아래로) */}
+              <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100">{data.title}</h1>
+              <div className="flex items-center mt-6 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
                 <Calendar size={14} className="mr-2 text-amber-400" />
                 {data.dateRange}
               </div>
@@ -387,9 +422,10 @@
           </header>
         );
 
-        // (4) TabNavigation
+        // (4) TabNavigation - Checklist 탭 유지
         const TabNavigation = ({ activeTab, setActiveTab }) => {
           const tabs = [
+            { id: 'Checklist', icon: ClipboardList }, // 추가됨: 여행 주의사항 탭
             { id: 'Schedule', icon: Calendar },
             { id: 'Hotel', icon: BedDouble },
             { id: 'Dining', icon: UtensilsCrossed },
@@ -542,7 +578,7 @@
           );
         };
 
-        // (10) EntryInfoModal
+        // (10) EntryInfoModal - 유지하되, 필요없으면 제거 가능 (현재 헤더 버튼용)
         const EntryInfoModal = ({ isOpen, onClose }) => {
             if (!isOpen) return null;
             return (
@@ -576,7 +612,34 @@
             );
         };
 
-        // --- 11. Main App (최하단에 위치) ---
+        // (11) ChecklistView (탭에 표시될 체크리스트 컴포넌트 추가)
+        const ChecklistView = () => (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
+                    <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
+                </h2>
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                    <div className="p-5">
+                        <div className="space-y-6">
+                            {travelData.entryInfo.map((info, idx) => (
+                                <div key={idx} className="border-b border-slate-100 last:border-0 pb-5 last:pb-0">
+                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base">
+                                        <CheckCircle size={18} className="mr-2 text-green-600" />{info.title}
+                                    </h4>
+                                    <p className="text-sm text-slate-600 leading-relaxed pl-7 bg-slate-50 p-3 rounded-lg border border-slate-100/50">{info.content}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start shadow-sm">
+                            <AlertTriangle size={20} className="text-amber-600 mr-3 shrink-0 mt-0.5" />
+                            <p className="text-sm text-amber-800 leading-snug font-medium">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- 12. Main App (최하단에 위치) ---
         function App() {
             const [step, setStep] = useState('intro'); // intro -> letter -> main
             const [activeTab, setActiveTab] = useState('Schedule');
@@ -599,6 +662,7 @@
                             <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
                             <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
                             <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
+                                {activeTab === 'Checklist' && <ChecklistView />}
                                 {activeTab === 'Schedule' && (
                                     <div className="animate-in fade-in duration-500">
                                         {travelData.itinerary.map((day, idx) => (
