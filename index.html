@@ -45,7 +45,7 @@
             -webkit-mask-size: contain; mask-size: contain;
             -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
             -webkit-mask-position: center; mask-position: center;
-            animation: shimmerLoop 10s linear infinite;
+            animation: shimmerLoop 6s linear infinite;
         }
         @keyframes shimmerLoop { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
@@ -222,18 +222,17 @@
             ]
           },
           entryInfo: [
-            { title: "NZeTA (전자비자)", content: "출국 최소 72시간 전까지 모바일 앱 또는 웹사이트를 통해 발급 필수 (유효기간 2년 확인)" },
+            { title: "NZeTA (전자비자)", content: "전자비자 발급과 관련하여 추후 별도 안내 드릴 예정입니다." },
             { title: "검역 및 반입 금지", content: "음식물(생과일, 육류, 꿀 등), 식물, 씨앗 등 반입이 매우 엄격히 금지됩니다. 적발 시 즉시 벌금 NZD 400이 부과되니 주의하세요." },
             { title: "상비약 휴대", content: "처방약은 영문 처방전을 반드시 지참해야 하며, 일반 의약품은 원래 포장 상태로 보관해야 합니다." },
             { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
-            { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그(돼지코 아님)가 필요합니다. 멀티 어댑터를 챙겨주세요." }
+            { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그가 필요합니다. (여행용 멀티 어댑터 회사 제공)" }
           ],
           contacts: [
-            { name: "현지 상황실 (비상)", phone: "010-0000-0000", type: "emergency" },
-            { name: "인카블루투어 김준형", phone: "010-9589-5768", type: "emergency" },
-            { name: "인카금융서비스 남욱현", phone: "010-4751-3254", type: "emergency" },
-            { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "guide" },
-            { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "guide" }
+            { name: "김준형", phone: "010-9589-5768", type: "인카블루투어" },
+            { name: "남욱현", phone: "010-4751-3254", type: "인카금융서비스" },
+            { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "가이드" },
+            { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "가이드" }
           ],
           itinerary: [
             {
@@ -279,8 +278,8 @@
               title: "증기선 투어 & 페어웰 파티",
               activities: [
                 { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
-                { time: "13:00", title: "TSS 언슬로우 증기선", type: "ship", desc: "월터 피크 농장 이동" },
-                { time: "13:40", title: "BBQ 런치 & 팜쇼", type: "food", desc: "호수 전망 야외 바비큐 & 양털깎기 쇼" },
+                { time: "13:00", title: "증기선 탑승 & 런치", type: "ship", desc: "TSS 언슬로우 탑승 및 바비큐 식사" },
+                { time: "14:30", title: "팜쇼 관람", type: "activity", desc: "월터 피크 농장 양털깎기 쇼" },
                 { time: "19:00", title: "페어웰 디너", type: "wine", desc: "Gibbston Valley Winery (3코스 만찬, 사슴 스테이크)" }
               ]
             },
@@ -293,13 +292,14 @@
                 { time: "13:30", title: "점심 (Lao Guangzhou)", type: "food", desc: "중국식 훠궈" },
                 { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "비아덕트 하버 인근" },
                 { time: "17:00", title: "자유 관광", type: "sightseeing", desc: "스카이타워 조망 및 하버 산책" },
+                { time: "18:00", title: "스카이 타워 디너", type: "food", desc: "오클랜드 야경과 함께하는 저녁 식사" },
                 { time: "08:00", title: "공항 이동 (+1)", type: "transport", desc: "귀국행 항공편 탑승" }
               ]
             }
           ],
           hotels: [
-            { id: 1, name: "Hilton Queenstown Resort & Spa", sub: "5-Star Luxury Resort", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"], checkIn: "04. 11 (Sat)", checkOut: "04. 15 (Wed)", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
-            { id: 2, name: "Hilton Auckland", sub: "Harbor View Hotel", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["Ocean View", "Outdoor Pool", "City Center"], checkIn: "04. 15 (Wed)", checkOut: "04. 16 (Thu)", image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop", link: "https://maps.google.com/?q=Hilton+Auckland" }
+            { id: 1, name: "Hilton Queenstown Resort & Spa", sub: "5-Star Luxury Resort", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"], checkIn: "04. 11 (Sat)", checkOut: "04. 15 (Wed)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonQueenstown.png", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
+            { id: 2, name: "Hilton Auckland", sub: "Harbor View Hotel", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["Ocean View", "Outdoor Pool", "City Center"], checkIn: "04. 15 (Wed)", checkOut: "04. 16 (Thu)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonAuckland.png", link: "https://maps.google.com/?q=Hilton+Auckland" }
           ],
           dining: [
             { name: "Mandarin Seafood", type: "Premium Seafood Dinner", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["Rock Lobster (크레이피쉬)", "자연산 전복 (12cm 이상)", "Fresh Salmon", "푸른잎 홍합 요리"], day: "Day 4 Dinner", image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2074&auto=format&fit=crop" },
@@ -307,9 +307,12 @@
             { name: "Walter Peak BBQ", type: "Gourmet BBQ Buffet", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["Grilled Lamb/Beef", "Fresh Salad Bar", "NZ Cheeses"], day: "Day 5 Lunch", image: "https://images.unsplash.com/photo-1544025162-d76690b6d015?q=80&w=1974&auto=format&fit=crop" }
           ],
           spots: [
-            { name: "Milford Sound Flight", tag: "Main Event", desc: "버스 이동의 피로를 덜고, 하늘에서 뉴질랜드의 만년설과 피오르드를 내려다보는 VIP 전용 경비행기 투어입니다.", note: "우천 시 버스로 대체될 수 있습니다.", image: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?q=80&w=2070&auto=format&fit=crop" },
-            { name: "TSS Earnslaw & Farm", tag: "Culture", desc: "100년 된 증기선을 타고 호수를 건너, 뉴질랜드 전통 농장을 체험합니다. 양털 깎기와 양몰이 쇼를 관람합니다.", note: "동시 통역 송수신기 제공", image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop" },
-            { name: "Arrowtown", tag: "History", desc: "골드러시 시절의 정취가 남아있는 아름다운 마을입니다. 단풍이 든 가로수길 산책이 유명합니다.", image: "https://images.unsplash.com/photo-1579760773022-2976b921356a?q=80&w=2071&auto=format&fit=crop" }
+            { name: "Fiordland National Park", tag: "Nature", desc: "유네스코 세계자연유산으로 지정된 거대한 빙하 지형의 보고, 태고의 신비를 간직한 국립공원입니다.", image: "https://images.unsplash.com/photo-1575351881847-b3bf188d9d0a?q=80&w=2070&auto=format&fit=crop" },
+            { name: "Milford Sound Cruise", tag: "Highlight", desc: "수직으로 솟은 절벽과 웅장한 폭포 사이를 항해하며, 대자연의 경이로움을 가장 가까이에서 경험합니다.", image: "https://images.unsplash.com/photo-1545058728-66258d477926?q=80&w=2070&auto=format&fit=crop" },
+            { name: "Queenstown Water Taxi", tag: "Experience", desc: "와카티푸 호수의 물살을 가르며 퀸즈타운의 아름다운 풍광을 색다르게 감상하는 이동 수단입니다.", image: "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=2070&auto=format&fit=crop" },
+            { name: "TSS Earnslaw", tag: "History", desc: "1912년부터 운항 중인 남반구 유일의 석탄 증기선으로, '호수 위의 귀부인'이라 불리는 클래식 선박입니다.", image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop" },
+            { name: "Walter Peak Farm Show", tag: "Culture", desc: "전통 방식의 양털 깎기 시연과 똑똑한 양몰이 개의 활약을 눈앞에서 볼 수 있는 즐거운 팜쇼입니다.", image: "https://images.unsplash.com/photo-1484557985045-6f5837d4175d?q=80&w=2070&auto=format&fit=crop" },
+            { name: "Auckland Sky Tower", tag: "Landmark", desc: "높이 328m의 남반구 최고층 타워로, 오클랜드 도심과 항만의 환상적인 파노라마 뷰를 선사합니다.", image: "https://images.unsplash.com/photo-1580971239702-0a4a49c95973?q=80&w=2070&auto=format&fit=crop" }
           ]
         };
 
@@ -577,7 +580,7 @@
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
+                            <div className="mt-6 bg-amber-가이드$050 border border-amber-200 rounded-lg p-3 flex items-start">
                                 <AlertTriangle size={16} className="text-amber-600 mr-2 shrink-0 mt-0.5" />
                                 <p className="text-[11px] text-amber-800 leading-snug">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
                             </div>
@@ -618,12 +621,12 @@
                                 {travelData.contacts.map((contact, idx) => (
                                     <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
                                         <div className="flex justify-between items-center mb-1">
-                                            <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type === 'emergency' ? '비상 상황실' : '가이드'}</span>
+                                            <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span>
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
                                             {/* 전화번호 링크 수정: tel:010... 형식으로 하이픈 제거 */}
-                                            <a href={`tel:${contact.phone.replace(/-/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
+                                            <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
                                         </div>
                                     </div>
                                 ))}
