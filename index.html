@@ -45,7 +45,7 @@
             -webkit-mask-size: contain; mask-size: contain;
             -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
             -webkit-mask-position: center; mask-position: center;
-            animation: shimmerLoop 6s linear infinite;
+            animation: shimmerLoop 10s linear infinite;
         }
         @keyframes shimmerLoop { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
@@ -325,7 +325,7 @@
                 <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="absolute inset-0">
                         {/* 투명도를 90으로 높여서 배경 이미지가 선명하게 보이도록 조정 */}
-                        <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-900 scale-110 animate-[pulse_16s_ease-in-out_infinite]"/>
+                        <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
                     <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4">
@@ -553,30 +553,8 @@
           </div>
         );
 
-        // (9) FAB
-        const FAB = ({ contacts }) => {
-          const [isOpen, setIsOpen] = useState(false);
-          return (
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-              {isOpen && (
-                <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-5 fade-in duration-200">
-                  {contacts.map((contact, idx) => (
-                    <a key={idx} href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center justify-between bg-white px-4 py-3 rounded-xl shadow-lg border border-slate-100 min-w-[220px] active:bg-slate-50">
-                      <div>
-                        <div className="text-xs text-slate-400">{contact.type.toUpperCase()}</div>
-                        <div className="text-sm font-bold text-slate-800">{contact.name}</div>
-                      </div>
-                      <div className="bg-green-100 p-2 rounded-full text-green-600"><Phone size={16} /></div>
-                    </a>
-                  ))}
-                </div>
-              )}
-              <button onClick={() => setIsOpen(!isOpen)} className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-all transform hover:scale-105 active:scale-95 ${isOpen ? 'bg-slate-700 rotate-45' : 'bg-amber-600'}`}>
-                {isOpen ? <X size={24} /> : <Phone size={24} />}
-              </button>
-            </div>
-          );
-        };
+        // (9) FAB - 제거됨 (요청에 따라 비상연락망을 체크리스트에 통합하고 FAB 삭제)
+        // const FAB = ... (삭제)
 
         // (10) EntryInfoModal - 유지하되, 필요없으면 제거 가능 (현재 헤더 버튼용)
         const EntryInfoModal = ({ isOpen, onClose }) => {
@@ -630,6 +608,28 @@
                                 </div>
                             ))}
                         </div>
+
+                        {/* 비상 연락망 추가 */}
+                        <div className="mt-8 pt-6 border-t border-slate-100">
+                             <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
+                                <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
+                            </h4>
+                            <div className="grid gap-3">
+                                {travelData.contacts.map((contact, idx) => (
+                                    <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type === 'emergency' ? '비상 상황실' : '가이드'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
+                                            {/* 전화번호 링크 수정: tel:010... 형식으로 하이픈 제거 */}
+                                            <a href={`tel:${contact.phone.replace(/-/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                         <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start shadow-sm">
                             <AlertTriangle size={20} className="text-amber-600 mr-3 shrink-0 mt-0.5" />
                             <p className="text-sm text-amber-800 leading-snug font-medium">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
@@ -703,7 +703,7 @@
                                     </div>
                                 )}
                             </main>
-                            <FAB contacts={travelData.contacts} />
+                            {/* FAB 제거됨 */}
                             <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
                         </div>
                     )}
