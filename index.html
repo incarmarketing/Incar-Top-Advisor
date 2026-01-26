@@ -334,11 +334,11 @@
                             <div className="letter-paper">
                                 <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
                                     <div className="text-center pt-1 flex-1 flex flex-col items-center">
-                                        <div className="w-16 h-16 mb-2 flex items-center justify-center shrink-0">
+                                        <div className="w-24 h-24 mb-4 flex items-center justify-center shrink-0">
                                             <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="w-full h-full object-contain opacity-90" />
                                         </div>
                                         <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-4 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
-                                        <div className="space-y-5 text-base text-slate-800 leading-relaxed font-normal text-justify px-2 overflow-y-auto no-scrollbar flex-1 font-[Nanum Myeongjo]">
+                                        <div className="space-y-5 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar flex-1 font-[Nanum Myeongjo]">
                                             {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
                                             <p className="text-right mt-8 font-bold text-slate-900">{travelData.letter.from}</p>
                                         </div>
