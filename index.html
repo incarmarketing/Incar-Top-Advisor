@@ -203,7 +203,7 @@
         const travelData = {
           meta: {
             title: "2026 Incar Top Advisor",
-            subtitle: "Only YOU, New Zealand",
+            subtitle: ["Only YOU,", "New Zealand"], // 줄바꿈을 위해 배열로 변경
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
             introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
             headerImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/queenstown.png",
@@ -369,13 +369,13 @@
                                         </div>
                                         {/* 제목 */}
                                         <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-2 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
-                                        {/* 본문 (flex-1 제거하여 공백 문제 해결) */}
+                                        {/* 본문 */}
                                         <div className="space-y-4 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
                                             {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
                                         </div>
-                                        {/* 발신인 (본문 바로 아래 위치하도록 상단 여백 조정) */}
+                                        {/* 발신인 (오른쪽 여백 추가됨: mr-6) */}
                                         <div className="w-full mt-8 shrink-0">
-                                            <p className="text-right font-bold text-slate-900 font-[Nanum Myeongjo]">{travelData.letter.from}</p>
+                                            <p className="text-right font-bold text-slate-900 font-[Nanum Myeongjo] mr-6">{travelData.letter.from}</p>
                                         </div>
                                     </div>
                                     {showContent && (
@@ -404,15 +404,15 @@
               <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
             </div>
-            {/* 우측 상단 정보 버튼 제거됨 */}
+            {/* 상단 뱃지 제거됨 */}
             <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
-              <div className="inline-flex items-center px-3 py-1 mb-4 border border-white/20 rounded-full bg-black/20 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                <span className="text-xs font-medium tracking-widest text-white uppercase">Invitation</span>
+              {/* 메인 타이틀: Only YOU... (강제 줄바꿈 적용) */}
+              <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-2 leading-tight drop-shadow-md">
+                  {data.subtitle.map((line, i) => (
+                      <span key={i} className="block">{line}</span>
+                  ))}
               </div>
-              {/* 메인 타이틀: Only YOU... (크게) */}
-              <p className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-2 leading-tight drop-shadow-md">{data.subtitle}</p>
-              {/* 서브 타이틀: 2026... (작게, 아래로) */}
+              {/* 서브 타이틀: 2026... */}
               <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100">{data.title}</h1>
               <div className="flex items-center mt-6 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
                 <Calendar size={14} className="mr-2 text-amber-400" />
@@ -561,7 +561,7 @@
               {isOpen && (
                 <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-5 fade-in duration-200">
                   {contacts.map((contact, idx) => (
-                    <a key={idx} href={`tel:${contact.phone}`} className="flex items-center justify-between bg-white px-4 py-3 rounded-xl shadow-lg border border-slate-100 min-w-[220px] active:bg-slate-50">
+                    <a key={idx} href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center justify-between bg-white px-4 py-3 rounded-xl shadow-lg border border-slate-100 min-w-[220px] active:bg-slate-50">
                       <div>
                         <div className="text-xs text-slate-400">{contact.type.toUpperCase()}</div>
                         <div className="text-sm font-bold text-slate-800">{contact.name}</div>
