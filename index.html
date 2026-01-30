@@ -84,13 +84,15 @@
             overflow: hidden;
         }
         
-        /* 고급스러운 편지지 테두리 무늬 */
+        /* 고급스러운 편지지 테두리 무늬 (유지) */
         .letter-paper::after {
             content: ''; position: absolute; inset: 12px;
+            /* 금색 이중 테두리 */
             border: 1px solid #D4AF37;
             outline: 1px solid #D4AF37;
             outline-offset: -4px;
             pointer-events: none;
+            /* 모서리 장식 효과 */
             background-image: 
                 radial-gradient(circle at top left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
                 radial-gradient(circle at top right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
@@ -103,12 +105,14 @@
         
         /* [중요] 편지가 열렸을 때 스타일 */
         .envelope.open .letter-paper {
+            /* 편지 높이 유지 */
             height: 600px; 
+            /* 봉투 아래로 60px 만큼 내려오게 배치 */
             bottom: -60px; 
-            z-index: 50; 
+            z-index: 50; /* 봉투 날개보다 무조건 위로 */
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
-            overflow: visible; 
-            pointer-events: auto; 
+            overflow: visible; /* 내부 클릭 가능하도록 */
+            pointer-events: auto; /* 클릭 이벤트 활성화 */
         }
 
         /* 봉투 부속품 (안감) */
@@ -116,7 +120,7 @@
             content: ''; position: absolute; inset: 0; 
             background-color: #1e293b; 
             border-radius: 4px; z-index: 1; 
-            border: 1px solid rgba(212, 175, 55, 0.3); 
+            border: 1px solid rgba(212, 175, 55, 0.3); /* 안쪽 테두리만 은은하게 유지 */
         }
         
         /* 날개들 */
@@ -225,7 +229,7 @@
             themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
           letter: {
-            from: "인카금융서비스 회장 최병채",
+            from: "인카금융서비스 대표이사 최병채·천대권", // 이름 수정
             content: [
               "위대한 성취를 이룬 당신께,", " ",
               "가장 경이로운 풍경을 바칩니다.",
@@ -400,9 +404,9 @@
                                         <div className="space-y-4 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
                                             {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
                                         </div>
-                                        {/* 발신인 (오른쪽 여백 추가됨: mr-6) */}
-                                        <div className="w-full mt-8 shrink-0">
-                                            <p className="text-right font-bold text-slate-900 font-[Nanum Myeongjo] mr-6">{travelData.letter.from}</p>
+                                        {/* 발신인 (오른쪽 여백 추가됨: mr-6) - 글자 크기 조정 및 자간 조정, 가운데 정렬 */}
+                                        <div className="w-full mt-8 shrink-0 text-center">
+                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-sm tracking-tighter whitespace-nowrap">{travelData.letter.from}</p>
                                         </div>
                                     </div>
                                     {showContent && (
@@ -446,6 +450,7 @@
 
           const handleCheckId = async () => {
             if (!empId) return;
+            // 스프레드시트 URL 입력 방지
             if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
                 setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
                 return;
@@ -454,7 +459,9 @@
             setIsLoading(true);
             setErrorMsg("");
 
+            // 실제로는 배포된 Google Apps Script URL을 사용해야 합니다.
             if (GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+                 // 데모용 가짜 데이터 (스크립트 URL이 설정되지 않았을 때)
                 setTimeout(() => {
                     const mockDB = { "1234": "김인카", "1111": "박금융" };
                     if (mockDB[empId]) {
@@ -639,6 +646,15 @@
           );
         };
 
+        // (4-1) 안내 문구 컴포넌트 추가
+        const NoticeFooter = () => (
+          <div className="mb-6 py-2 text-center">
+            <p className="text-sm font-bold text-slate-600 leading-relaxed">
+              ※ 아래 일정 및 내용은 현지 사정에 따라<br/>사전 고지 없이 변경될 수 있습니다.
+            </p>
+          </div>
+        );
+
         // (4) TabNavigation - Checklist 탭 유지
         const TabNavigation = ({ activeTab, setActiveTab }) => {
           const tabs = [
@@ -810,9 +826,22 @@
         // (11) ChecklistView (탭에 표시될 체크리스트 컴포넌트 추가)
         const ChecklistView = () => (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
+                {/* NoticeFooter 제거됨 */}
+                
+                <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
                     <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
                 </h2>
+
+                {/* 음식물 반입 경고 문구 상단 배치 (강조) */}
+                <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
+                    <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-800 leading-snug font-bold">
+                        <p className="mb-1">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다.</p>
+                        <p className="mb-1">가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
+                        <p className="text-red-600 underline decoration-red-400 underline-offset-2">탑승 전 음식물은 절대 소지하지 말고 탑승하시기 바랍니다.</p>
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                     <div className="p-5">
                         <div className="space-y-6">
@@ -826,7 +855,7 @@
                             ))}
                         </div>
 
-                        {/* 비상 연락망 추가 */}
+                        {/* 비상 연락망 */}
                         <div className="mt-8 pt-6 border-t border-slate-100">
                              <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
                                 <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
@@ -839,17 +868,12 @@
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
-                                            {/* 전화번호 링크 수정: tel:010... 형식으로 하이픈 제거 */}
+                                            {/* 전화번호 링크: tel:010... 형식으로 하이픈 제거 */}
                                             <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </div>
-
-                        <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start shadow-sm">
-                            <AlertTriangle size={20} className="text-amber-600 mr-3 shrink-0 mt-0.5" />
-                            <p className="text-sm text-amber-800 leading-snug font-medium">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
                         </div>
                     </div>
                 </div>
@@ -882,6 +906,7 @@
                                 {activeTab === 'Checklist' && <ChecklistView />}
                                 {activeTab === 'Schedule' && (
                                     <div className="animate-in fade-in duration-500">
+                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
                                         {travelData.itinerary.map((day, idx) => (
                                             <div key={idx} className="mb-8 last:mb-24">
                                                 <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
@@ -903,18 +928,21 @@
                                 )}
                                 {activeTab === 'Hotel' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> Accommodation</h2>
                                         {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Dining' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining</h2>
                                         {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Attractions' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> Major Spots</h2>
                                         {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
                                     </div>
