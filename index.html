@@ -967,21 +967,21 @@
                                 {activeTab === 'Hotel' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> Accommodation</h2>
+                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
                                         {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Dining' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> Special Dining</h2>
+                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
                                         {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Attractions' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> Major Spots</h2>
+                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
                                         {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
                                     </div>
                                 )}
