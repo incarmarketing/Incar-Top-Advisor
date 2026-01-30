@@ -6,7 +6,7 @@
     <title>ITA Awards New Zealand</title>
     
     <!-- ▼▼▼ [썸네일 설정] ▼▼▼ -->
-    <meta property="og:title" content="2026 ITA New Zealand">
+    <meta property="og:title" content="2026 ITA Conference">
     <meta property="og:description" content="2026. 04. 10(Fri) - 16(Thu)">
     <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png">
     
@@ -74,7 +74,7 @@
             height: 180px; /* 닫혔을 때 높이 */
             background: #ffffff; 
             /* 편지 내부 상단 여백 축소 */
-            padding: 5px 24px 20px 24px;
+            padding: 2px 24px 20px 24px;
             /* 딜레이: 뚜껑 열린 후 편지가 올라옴 */
             transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
             z-index: 5; /* 닫혔을 땐 덮개 뒤 */
@@ -221,7 +221,7 @@
         // --- 데이터 ---
         const travelData = {
           meta: {
-            title: "2026 Incar Top Advisor",
+            title: "2026 ITA CONFERENCE", 
             subtitle: ["Only YOU,", "New Zealand"], 
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
             introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
@@ -229,15 +229,16 @@
             themeColor: { primary: "#1e293b", accent: "#d97706" }
           },
           letter: {
-            from: "인카금융서비스 대표이사 최병채·천대권", // 이름 수정
+            from: "대표이사 최병채 천대권",
             content: [
-              "위대한 성취를 이룬 당신께,", " ",
-              "가장 경이로운 풍경을 바칩니다.",
-              "당신의 열정이 닿은 곳,",
-              "대자연의 뉴질랜드에서",
-              "그 빛나는 휴식을 즐기십시오.", " ",
-              "최고의 영예를 담아,",
-              "당신을 초대합니다."
+              "일년의 긴 여정에서",
+              "위대한 성과를 이루신 당신!",
+              "큰 박수와 함성으로 축하드립니다.",
+              " ",
+              "경이로운 대자연 속에서",
+              "눈부신 명예를 함께 나눌 이 곳,",
+              " ",
+              "뉴질랜드로 당신을 초대합니다."
             ]
           },
           entryInfo: [
@@ -250,9 +251,9 @@
           ],
           contacts: [
             { name: "김준형", phone: "010-9589-5768", type: "인카블루투어" },
-            { name: "남욱현", phone: "010-4751-3254", type: "인카금융서비스" },
-            { name: "퀸즈타운 가이드", phone: "+64-21-000-0000", type: "가이드" },
-            { name: "오클랜드 가이드", phone: "+64-21-111-1111", type: "가이드" }
+            { name: "임호근", phone: "010-2271-2871", type: "인카블루투어" },
+            { name: "퀸즈타운 가이드", phone: "추후 기재", type: "가이드" },
+            { name: "오클랜드 가이드", phone: "추후 기재", type: "가이드" }
           ],
           itinerary: [
             {
@@ -262,7 +263,7 @@
               activities: [
                 { time: "18:00", title: "인천공항 출발", type: "flight", desc: "KE413 (약 11시간 20분 소요)" },
                 { time: "08:30", title: "오클랜드 도착 (+1)", type: "flight", desc: "입국 심사 및 수하물 수령" },
-                { time: "11:30", title: "점심 (Harbourside)", type: "food", desc: "피시 앤 칩스 & 해산물 차우더" },
+                { time: "11:30", title: "점심 (플라잉 피쉬)", type: "food", desc: "씨푸드 차우더 & 피시 앤 칩스" },
                 { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "transport", desc: "약 2시간 소요" },
                 { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "호수 전망 객실 배정" },
                 { time: "19:00", title: "웰컴 디너", type: "food", desc: "힐튼 호텔 뷔페" }
@@ -274,7 +275,7 @@
               title: "ITA 시상식 & 갈라 디너",
               activities: [
                 { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 산책 & 번지점프대 관람" },
-                { time: "12:00", title: "점심 (Ayrburn Winery)", type: "food", desc: "리조또, 파스타, 샐러드, 양갈비 스테이크" },
+                { time: "12:00", title: "점심 (에어번 와이너리)", type: "food", desc: "리조또, 파스타, 샐러드, 양갈비 스테이크" },
                 { time: "15:00", title: "ITA 시상식", type: "award", desc: "2층 야외 가든 (우천 시 투명 천막)" },
                 { time: "18:00", title: "시상식 만찬", type: "wine", desc: "1층 식당 스테이크 세트 메뉴" },
                 { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임 & 휴식" }
@@ -288,7 +289,7 @@
                 { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "전용 버스 (피오르드랜드 국립공원, 미러레이크 경유)" },
                 { time: "13:00", title: "크루즈 & 선상 뷔페", type: "ship", desc: "대자연 속 점심 식사" },
                 { time: "17:00", title: "수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
-                { time: "18:30", title: "저녁 (Mandarin)", type: "food", desc: "특선 해산물 (랍스터, 전복, 연어, 초록홍합)" }
+                { time: "18:30", title: "저녁 (만다린 씨푸드)", type: "food", desc: "특선 해산물 (랍스터, 전복, 연어, 초록홍합)" }
               ]
             },
             {
@@ -299,7 +300,7 @@
                 { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
                 { time: "13:00", title: "증기선 탑승 & 런치", type: "ship", desc: "TSS 언슬로우 & 월터 피크 BBQ" },
                 { time: "14:30", title: "팜쇼 관람", type: "activity", desc: "월터 피크 농장 양털깎기 쇼" },
-                { time: "19:00", title: "페어웰 디너", type: "wine", desc: "Gibbston Valley Winery (3코스 요리)" }
+                { time: "19:00", title: "페어웰 디너", type: "wine", desc: "깁스톤 밸리 와이너리 (3코스 요리)" }
               ]
             },
             {
@@ -308,7 +309,7 @@
               title: "오클랜드 이동 및 귀국",
               activities: [
                 { time: "08:00", title: "공항 이동", type: "transport", desc: "오클랜드행 국내선 탑승" },
-                { time: "13:30", title: "점심 (Lao Guangzhou)", type: "food", desc: "중국식 훠궈 (핫팟)" },
+                { time: "13:30", title: "점심 (라오 광저우)", type: "food", desc: "중국식 훠궈 (핫팟)" },
                 { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "비아덕트 하버 인근" },
                 { time: "17:00", title: "자유 관광", type: "sightseeing", desc: "하버 산책" },
                 { time: "18:00", title: "스카이 타워 디너", type: "food", desc: "오클랜드 야경 감상 & 3코스 식사" },
@@ -319,28 +320,28 @@
             }
           ],
           hotels: [
-            { id: 1, name: "Hilton Queenstown Resort & Spa", sub: "5-Star Luxury Resort", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["Lake Wakatipu View", "Indoor Fireplace", "Spa & Sauna"], checkIn: "04. 11 (Sat)", checkOut: "04. 15 (Wed)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonQueenstown.png", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
-            { id: 2, name: "Hilton Auckland", sub: "Harbor View Hotel", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["Ocean View", "Outdoor Pool", "City Center"], checkIn: "04. 15 (Wed)", checkOut: "04. 16 (Thu)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonAuckland.png", link: "https://maps.google.com/?q=Hilton+Auckland" }
+            { id: 1, name: "힐튼 퀸즈타운 리조트 & 스파", sub: "5성급 럭셔리 리조트", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["와카티푸 호수 전망", "실내 벽난로", "스파 & 사우나"], checkIn: "04. 11 (토)", checkOut: "04. 15 (수)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonQueenstown.png", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
+            { id: 2, name: "힐튼 오클랜드", sub: "하버 뷰 호텔", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["오션 뷰", "야외 수영장", "시내 중심"], checkIn: "04. 15 (수)", checkOut: "04. 16 (목)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonAuckland.png", link: "https://maps.google.com/?q=Hilton+Auckland" }
           ],
           dining: [
-            { name: "Harbourside Ocean Bar", type: "Day 1 Lunch", desc: "오클랜드 항구의 아름다운 뷰를 즐기며 맛보는 신선한 해산물 요리입니다.", menu: ["피시 앤 칩스", "해산물 차우더", "신선한 굴"], day: "Day 1 Lunch", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Lunch.png" },
-            { name: "Wakatipu Grill (Hilton)", type: "Day 1 Dinner", desc: "와카티푸 호수를 바라보며 즐기는 힐튼 호텔의 품격 있는 웰컴 디너 뷔페입니다.", menu: ["해산물 코너", "뉴질랜드 양갈비 구이", "계절 디저트"], day: "Day 1 Dinner", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Dinner.png" },
-            { name: "Ayrburn Winery", type: "Day 3 Lunch", desc: "고풍스러운 와이너리에서 즐기는 품격 있는 런치 코스입니다.", menu: ["양 어깨살 요리 & 스테이크", "트러플 리조또", "수제 파스타"], day: "Day 3 Lunch", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Lunch.png" },
-            { name: "Awards Gala Dinner", type: "Day 3 Dinner", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 케이크"], day: "Day 3 Dinner", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
-            { name: "Milford Sound Cruise", type: "Day 4 Lunch", desc: "피오르드의 절경을 감상하며 선상에서 여유롭게 즐기는 인터내셔널 뷔페입니다.", menu: ["로스트 미트", "신선한 샐러드", "따뜻한 요리"], day: "Day 4 Lunch", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Lunch.png" },
-            { name: "Mandarin Seafood", type: "Day 4 Dinner", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["락 랍스터 (크레이피쉬)", "자연산 전복 (12cm 이상)", "신선한 연어", "초록홍합 요리"], day: "Day 4 Dinner", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Dinner.png" },
-            { name: "Walter Peak BBQ", type: "Day 5 Lunch", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["양고기/소고기 구이", "샐러드 바", "뉴질랜드 치즈"], day: "Day 5 Lunch", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Lunch.png" },
-            { name: "Gibbston Valley Winery", type: "Day 5 Dinner", desc: "와이너리 투어 후 즐기는 3코스 페어웰 만찬입니다.", menu: ["사슴 스테이크", "와인 페어링", "계절 디저트"], day: "Day 5 Dinner", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Dinner.png" },
-            { name: "Lao Guangzhou", type: "Day 6 Lunch", desc: "여행의 피로를 풀어줄 따뜻하고 깊은 맛의 중국식 훠궈(Hot Pot) 요리입니다.", menu: ["모듬 고기", "신선한 야채", "깊은 육수"], day: "Day 6 Lunch", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Lunch.png" },
-            { name: "Orbit 360° Dining", type: "Day 6 Dinner", desc: "스카이 타워 52층에서 360도 회전하며 즐기는 로맨틱 디너입니다.", menu: ["프리미엄 뉴질랜드 소고기", "스카이 타워 전망", "파인 다이닝 코스"], day: "Day 6 Dinner", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Dinner.png" }
+            { name: "플라잉 피쉬 레스토랑", type: "1일차 점심", desc: "오클랜드 공항 인근 젯팍 호텔에서 즐기는 여유로운 런치입니다.", menu: ["씨푸드 차우더 (앙트레)", "피시 앤 칩스", "신선한 샐러드"], day: "1일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Lunch.png" },
+            { name: "와카티푸 그릴 (힐튼)", type: "1일차 저녁", desc: "와카티푸 호수를 바라보며 즐기는 힐튼 호텔의 품격 있는 웰컴 디너 뷔페입니다.", menu: ["해산물 코너", "뉴질랜드 양갈비 구이", "계절 디저트"], day: "1일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Dinner.png" },
+            { name: "에어번 와이너리", type: "3일차 점심", desc: "고풍스러운 와이너리에서 즐기는 품격 있는 런치 코스입니다.", menu: ["양 어깨살 요리 & 스테이크", "트러플 리조또", "수제 파스타"], day: "3일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Lunch.png" },
+            { name: "시상식 갈라 디너", type: "3일차 저녁", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 케이크"], day: "3일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
+            { name: "밀포드 사운드 크루즈", type: "4일차 점심", desc: "피오르드의 절경을 감상하며 선상에서 여유롭게 즐기는 인터내셔널 뷔페입니다.", menu: ["로스트 미트", "신선한 샐러드", "따뜻한 요리"], day: "4일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Lunch.png" },
+            { name: "만다린 씨푸드", type: "4일차 저녁", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["락 랍스터 (크레이피쉬)", "자연산 전복 (12cm 이상)", "신선한 연어", "초록홍합 요리"], day: "4일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Dinner.png" },
+            { name: "월터 피크 BBQ", type: "5일차 점심", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["양고기/소고기 구이", "샐러드 바", "뉴질랜드 치즈"], day: "5일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Lunch.png" },
+            { name: "깁스톤 밸리 와이너리", type: "5일차 저녁", desc: "와이너리 투어 후 즐기는 3코스 페어웰 만찬입니다.", menu: ["사슴 스테이크", "와인 페어링", "계절 디저트"], day: "5일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Dinner.png" },
+            { name: "라오 광저우", type: "6일차 점심", desc: "여행의 피로를 풀어줄 따뜻하고 깊은 맛의 중국식 훠궈(Hot Pot) 요리입니다.", menu: ["모듬 고기", "신선한 야채", "깊은 육수"], day: "6일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Lunch.png" },
+            { name: "세일즈 레스토랑", type: "6일차 저녁", desc: "오클랜드 항구의 요트 뷰와 함께 즐기는 고급스러운 파인 다이닝입니다.", menu: ["비프 텐더로인 코스", "신선한 해산물", "디저트"], day: "6일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Dinner.png" }
           ],
           spots: [
-            { name: "Fiordland National Park", tag: "Nature", desc: "유네스코 세계자연유산으로 지정된 거대한 빙하 지형의 보고, 태고의 신비를 간직한 국립공원입니다.", image: "https://images.unsplash.com/photo-1575351881847-b3bf188d9d0a?q=80&w=2070&auto=format&fit=crop" },
-            { name: "Milford Sound Cruise", tag: "Highlight", desc: "수직으로 솟은 절벽과 웅장한 폭포 사이를 항해하며, 대자연의 경이로움을 가장 가까이에서 경험합니다.", image: "https://images.unsplash.com/photo-1545058728-66258d477926?q=80&w=2070&auto=format&fit=crop" },
-            { name: "Queenstown Water Taxi", tag: "Experience", desc: "와카티푸 호수의 물살을 가르며 퀸즈타운의 아름다운 풍광을 색다르게 감상하는 이동 수단입니다.", image: "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=2070&auto=format&fit=crop" },
-            { name: "TSS Earnslaw", tag: "History", desc: "1912년부터 운항 중인 남반구 유일의 석탄 증기선으로, '호수 위의 귀부인'이라 불리는 클래식 선박입니다.", image: "https://images.unsplash.com/photo-1589873098677-7e6f21223963?q=80&w=2070&auto=format&fit=crop" },
-            { name: "Walter Peak Farm Show", tag: "Culture", desc: "전통 방식의 양털 깎기 시연과 똑똑한 양몰이 개의 활약을 눈앞에서 볼 수 있는 즐거운 팜쇼입니다.", image: "https://images.unsplash.com/photo-1484557985045-6f5837d4175d?q=80&w=2070&auto=format&fit=crop" },
-            { name: "Auckland Sky Tower", tag: "Landmark", desc: "높이 328m의 남반구 최고층 타워로, 오클랜드 도심과 항만의 환상적인 파노라마 뷰를 선사합니다.", image: "https://images.unsplash.com/photo-1580971239702-0a4a49c95973?q=80&w=2070&auto=format&fit=crop" }
+            { name: "피오르드랜드 국립공원", tag: "대자연", desc: "유네스코 세계자연유산으로 지정된 거대한 빙하 지형의 보고, 태고의 신비를 간직한 국립공원입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/FiordlandNationalPark.png" },
+            { name: "밀포드 사운드 크루즈", tag: "핵심 일정", desc: "수직으로 솟은 절벽과 웅장한 폭포 사이를 항해하며, 대자연의 경이로움을 가장 가까이에서 경험합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/MilfordSoundCruise.png" },
+            { name: "퀸즈타운 수상택시", tag: "이색 체험", desc: "와카티푸 호수의 물살을 가르며 퀸즈타운의 아름다운 풍광을 색다르게 감상하는 이동 수단입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/QueenstownWaterTaxi.png" },
+            { name: "TSS 언슬로우 증기선", tag: "역사 탐방", desc: "1912년부터 운항 중인 남반구 유일의 석탄 증기선으로, '호수 위의 귀부인'이라 불리는 클래식 선박입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/TSSEarnslaw.png" },
+            { name: "월터 피크 팜쇼", tag: "문화 체험", desc: "전통 방식의 양털 깎기 시연과 똑똑한 양몰이 개의 활약을 눈앞에서 볼 수 있는 즐거운 팜쇼입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/WalterPeakFarmShow.png" },
+            { name: "오클랜드 스카이 타워", tag: "랜드마크", desc: "높이 328m의 남반구 최고층 타워로, 오클랜드 도심과 항만의 환상적인 파노라마 뷰를 선사합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/AucklandSkyTower.png" }
           ]
         };
 
@@ -349,9 +350,14 @@
         // --- 1. 컴포넌트 정의 (App보다 위에 있어야 함) ---
 
         // (1) 대기 화면
-        const IntroScreen = ({ onEnter }) => {
+        const IntroScreen = ({ onEnter, onSkip }) => {
             const [isExiting, setIsExiting] = useState(false);
             const handleClick = () => { setIsExiting(true); setTimeout(() => { onEnter(); }, 2500); };
+            const handleSkipClick = (e) => { 
+                e.stopPropagation(); 
+                onSkip(); 
+            };
+
             return (
                 <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="absolute inset-0">
@@ -359,13 +365,22 @@
                         <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
+                    
+                    {/* SKIP 버튼 수정: 더 잘 보이게 */}
+                    <button 
+                        onClick={handleSkipClick}
+                        className="absolute top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
+                    >
+                        SKIP
+                    </button>
+
                     <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4">
                         <div className="w-60 h-60 mb-10 flex items-center justify-center relative">
                             <div className="w-full h-full gold-logo-mask"></div>
                         </div>
                         <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg">
                             <span className="block text-4xl md:text-6xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
-                            <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">Incar Top Advisor</span>
+                            <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">ITA Conference</span>
                         </h1>
                         <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70"></div>
                         <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display]">New Zealand 2026</p>
@@ -393,26 +408,27 @@
                             <div className="envelope-lid"></div>
                             <div className="letter-paper">
                                 <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                    <div className="text-center pt-1 flex-1 flex flex-col items-center justify-center">
-                                        {/* 로고 */}
-                                        <div className="w-24 h-24 mb-0 flex items-center justify-center shrink-0">
+                                    {/* 수정: justify-start -> justify-center (중앙 정렬로 균형 맞춤) */}
+                                    <div className="text-center flex-1 flex flex-col items-center justify-center pt-2">
+                                        {/* 로고: 20% 확대 (w-32 -> w-40, 약 160px) */}
+                                        <div className="w-40 h-40 mb-0 flex items-center justify-center shrink-0">
                                             <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="w-full h-full object-contain opacity-90" />
                                         </div>
-                                        {/* 제목 */}
-                                        <h3 className="font-serif text-slate-900 text-sm font-bold tracking-widest mb-2 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
+                                        {/* 제목: 글자 크기 확대 (text-sm -> text-lg) */}
+                                        <h3 className="font-serif text-slate-900 text-lg font-bold tracking-widest mb-4 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
                                         {/* 본문 */}
-                                        <div className="space-y-4 text-base text-slate-800 leading-relaxed font-bold text-justify px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
+                                        <div className="space-y-3 text-base text-slate-800 leading-relaxed text-center px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
                                             {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
                                         </div>
-                                        {/* 발신인 (오른쪽 여백 추가됨: mr-6) - 글자 크기 조정 및 자간 조정, 가운데 정렬 */}
-                                        <div className="w-full mt-8 shrink-0 text-center">
-                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-sm tracking-tighter whitespace-nowrap">{travelData.letter.from}</p>
+                                        {/* 발신인 */}
+                                        <div className="w-full mt-12 shrink-0 text-center">
+                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter whitespace-nowrap">{travelData.letter.from}</p>
                                         </div>
+                                        {/* 버튼: 위치를 조금 더 아래로 내림 (mt-3 -> mt-4) */}
+                                        {showContent && (
+                                            <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-4 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
+                                        )}
                                     </div>
-                                    {showContent && (
-                                        /* z-index 50과 pointer-events-auto로 클릭 보장 */
-                                        <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-0 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
-                                    )}
                                 </div>
                             </div>
                             <div className="flap flap-left"></div>
@@ -658,22 +674,26 @@
         // (4) TabNavigation - Checklist 탭 유지
         const TabNavigation = ({ activeTab, setActiveTab }) => {
           const tabs = [
-            { id: 'Checklist', icon: ClipboardList }, 
-            { id: 'Schedule', icon: Calendar },
-            { id: 'Hotel', icon: BedDouble },
-            { id: 'Dining', icon: UtensilsCrossed },
-            { id: 'Attractions', icon: Mountain },
+            { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
+            { id: 'Schedule', label: '일정', icon: Calendar },
+            { id: 'Hotel', label: '숙소', icon: BedDouble },
+            { id: 'Dining', label: '식사', icon: UtensilsCrossed },
+            { id: 'Attractions', label: '관광', icon: Mountain },
           ];
           return (
             <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
               <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
                   return (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs font-medium transition-all relative ${activeTab === tab.id ? "text-slate-900 scale-105" : "text-slate-400 hover:text-slate-600"}`}>
-                      <Icon size={20} className={`mb-1 ${activeTab === tab.id ? "text-amber-600" : "text-slate-400"}`} />
-                      {tab.id}
-                      {activeTab === tab.id && <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>}
+                    <button key={tab.id} onClick={() => {
+                        setActiveTab(tab.id);
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // 클릭 시 최상단으로 스크롤 이동
+                    }} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
+                      <Icon size={20} className="mb-1" />
+                      {tab.label}
+                      {isActive && <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>}
                     </button>
                   )
                 })}
@@ -737,9 +757,9 @@
                 {hotel.features.map((feature, i) => <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">{feature}</span>)}
               </div>
               <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
-                <div className="text-slate-500"><span className="block text-xs text-slate-400">Check-in</span><span className="font-semibold text-slate-800">{hotel.checkIn}</span></div>
+                <div className="text-slate-500"><span className="block text-xs text-slate-400">체크인</span><span className="font-semibold text-slate-800">{hotel.checkIn}</span></div>
                 <div className="text-slate-300">|</div>
-                <div className="text-slate-500 text-right"><span className="block text-xs text-slate-400">Check-out</span><span className="font-semibold text-slate-800">{hotel.checkOut}</span></div>
+                <div className="text-slate-500 text-right"><span className="block text-xs text-slate-400">체크아웃</span><span className="font-semibold text-slate-800">{hotel.checkOut}</span></div>
               </div>
             </div>
           </div>
@@ -751,8 +771,8 @@
             <div className="h-40 overflow-hidden relative">
               <img src={item.image} alt={item.name} onError={handleImageError} className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1 block">{item.day}</span>
-                <h3 className="text-white text-lg font-bold leading-none">{item.name}</h3>
+                <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 px-2 py-1 rounded-md text-xs font-bold w-fit mb-2 block shadow-sm">{item.day}</span>
+                <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
               </div>
             </div>
             <div className="p-5">
@@ -760,7 +780,7 @@
               <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
                 <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
-                  <Utensils size={12} className="mr-1" /> Menu Highlights
+                  <Utensils size={12} className="mr-1" /> 대표 메뉴
                 </div>
                 <ul className="text-sm text-slate-700 space-y-1">
                   {item.menu.map((menuItem, i) => <li key={i} className="flex items-start"><span className="mr-2 text-amber-500">•</span>{menuItem}</li>)}
@@ -776,7 +796,7 @@
             <img src={spot.image} alt={spot.name} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
             <div className="absolute top-4 left-4">
-              <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">{spot.tag}</span>
+              <span className="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
             </div>
             <div className="absolute bottom-0 p-6 text-white">
               <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
@@ -868,8 +888,12 @@
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
-                                            {/* 전화번호 링크: tel:010... 형식으로 하이픈 제거 */}
-                                            <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
+                                            {/* 전화번호 링크: tel:010... 형식으로 하이픈 제거, 추후 기재일 경우 링크 제거 */}
+                                            {contact.phone === "추후 기재" ? (
+                                                <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
+                                            ) : (
+                                                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -882,7 +906,13 @@
 
         // --- 12. Main App (최하단에 위치) ---
         function App() {
-            const [step, setStep] = useState('intro'); // intro -> letter -> main
+            // 초기 상태 설정 시 로컬 스토리지 확인
+            const [step, setStep] = useState(() => {
+                // 이전에 방문한 기록('hasVisited')이 있으면 바로 'main'으로 시작
+                const hasVisited = localStorage.getItem('hasVisited');
+                return hasVisited ? 'main' : 'intro';
+            }); 
+            
             const [activeTab, setActiveTab] = useState('Schedule');
             const [showEntryInfo, setShowEntryInfo] = useState(false);
 
@@ -891,12 +921,20 @@
             };
 
             const handleLetterClose = () => {
+                // 편지를 닫고 메인으로 갈 때 방문 기록 저장
+                localStorage.setItem('hasVisited', 'true');
+                setStep('main');
+            };
+
+            // 스킵 버튼 핸들러
+            const handleSkip = () => {
+                localStorage.setItem('hasVisited', 'true');
                 setStep('main');
             };
 
             return (
                 <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
-                    {step === 'intro' && <IntroScreen onEnter={handleEnterClick} />}
+                    {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} />}
                     {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
                     {step === 'main' && (
                         <div className="fade-enter block bg-[#f8fafc] min-h-screen">
