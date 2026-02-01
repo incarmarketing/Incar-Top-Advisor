@@ -263,7 +263,7 @@
               activities: [
                 { time: "18:00", title: "인천공항 출발", type: "flight", desc: "KE413 (약 11시간 20분 소요)" },
                 { time: "08:30", title: "오클랜드 도착 (+1)", type: "flight", desc: "입국 심사 및 수하물 수령" },
-                { time: "11:30", title: "점심 (플라잉 피쉬)", type: "food", desc: "씨푸드 차우더 & 피시 앤 칩스" },
+                { time: "11:30", title: "점심 (Flying Fish)", type: "food", desc: "씨푸드 차우더 & 피시 앤 칩스" },
                 { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "transport", desc: "약 2시간 소요" },
                 { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "호수 전망 객실 배정" },
                 { time: "19:00", title: "웰컴 디너", type: "food", desc: "힐튼 호텔 뷔페" }
@@ -275,7 +275,7 @@
               title: "ITA 시상식 & 갈라 디너",
               activities: [
                 { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 산책 & 번지점프대 관람" },
-                { time: "12:00", title: "점심 (에어번 와이너리)", type: "food", desc: "리조또, 파스타, 샐러드, 양갈비 스테이크" },
+                { time: "12:00", title: "점심 (Ayrburn Winery)", type: "food", desc: "리조또, 파스타, 샐러드, 양갈비 스테이크" },
                 { time: "15:00", title: "ITA 시상식", type: "award", desc: "2층 야외 가든 (우천 시 투명 천막)" },
                 { time: "18:00", title: "시상식 만찬", type: "wine", desc: "1층 식당 스테이크 세트 메뉴" },
                 { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임 & 휴식" }
@@ -289,7 +289,7 @@
                 { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "전용 버스 (피오르드랜드 국립공원, 미러레이크 경유)" },
                 { time: "13:00", title: "크루즈 & 선상 뷔페", type: "ship", desc: "대자연 속 점심 식사" },
                 { time: "17:00", title: "수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
-                { time: "18:30", title: "저녁 (만다린 씨푸드)", type: "food", desc: "특선 해산물 (랍스터, 전복, 연어, 초록홍합)" }
+                { time: "18:30", title: "저녁 (Mandarin)", type: "food", desc: "특선 해산물 (랍스터, 전복, 연어, 초록홍합)" }
               ]
             },
             {
@@ -300,7 +300,7 @@
                 { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
                 { time: "13:00", title: "증기선 탑승 & 런치", type: "ship", desc: "TSS 언슬로우 & 월터 피크 BBQ" },
                 { time: "14:30", title: "팜쇼 관람", type: "activity", desc: "월터 피크 농장 양털깎기 쇼" },
-                { time: "19:00", title: "페어웰 디너", type: "wine", desc: "깁스톤 밸리 와이너리 (3코스 요리)" }
+                { time: "19:00", title: "페어웰 디너", type: "wine", desc: "Gibbston Valley Winery (3코스 요리)" }
               ]
             },
             {
@@ -309,7 +309,7 @@
               title: "오클랜드 이동 및 귀국",
               activities: [
                 { time: "08:00", title: "공항 이동", type: "transport", desc: "오클랜드행 국내선 탑승" },
-                { time: "13:30", title: "점심 (라오 광저우)", type: "food", desc: "중국식 훠궈 (핫팟)" },
+                { time: "13:30", title: "점심 (Lao Guangzhou)", type: "food", desc: "중국식 훠궈 (핫팟)" },
                 { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "비아덕트 하버 인근" },
                 { time: "17:00", title: "자유 관광", type: "sightseeing", desc: "하버 산책" },
                 { time: "18:00", title: "스카이 타워 디너", type: "food", desc: "오클랜드 야경 감상 & 3코스 식사" },
@@ -424,9 +424,9 @@
                                         <div className="w-full mt-12 shrink-0 text-center">
                                             <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter whitespace-nowrap">{travelData.letter.from}</p>
                                         </div>
-                                        {/* 버튼: 위치를 조금 더 아래로 내림 (mt-3 -> mt-4) */}
+                                        {/* 버튼: 위치를 조금 더 위로 올림 (mt-4 -> mt-2) */}
                                         {showContent && (
-                                            <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-4 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
+                                            <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-2 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
                                         )}
                                     </div>
                                 </div>
@@ -771,6 +771,7 @@
             <div className="h-40 overflow-hidden relative">
               <img src={item.image} alt={item.name} onError={handleImageError} className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                {/* 카드 배지: 반투명 검정 배경, 흰색 글씨, 가독성 향상 */}
                 <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 px-2 py-1 rounded-md text-xs font-bold w-fit mb-2 block shadow-sm">{item.day}</span>
                 <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
               </div>
@@ -796,7 +797,8 @@
             <img src={spot.image} alt={spot.name} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
             <div className="absolute top-4 left-4">
-              <span className="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
+              {/* 테마 태그: 가독성 향상 (반투명 검정 배경) */}
+              <span className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
             </div>
             <div className="absolute bottom-0 p-6 text-white">
               <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
