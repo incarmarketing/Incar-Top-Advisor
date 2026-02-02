@@ -149,19 +149,42 @@
         .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* ENTER 버튼 스타일 */
+        /* [수정] ENTER 버튼 가시성 강화 스타일 */
         .btn-enter {
-            position: relative; background: transparent; border: none;
-            color: #D4AF37; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.3em;
-            padding-bottom: 5px; cursor: pointer; transition: color 0.5s;
+            position: relative; 
+            background: rgba(0, 0, 0, 0.3); /* 반투명 배경 */
+            backdrop-filter: blur(4px); /* 블러 효과 */
+            border: 1px solid rgba(212, 175, 55, 0.6); /* 금색 테두리 */
+            border-radius: 4px; /* 살짝 둥근 모서리 */
+            color: #D4AF37; 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.5rem; /* 폰트 사이즈 키움 */
+            font-weight: 700; 
+            letter-spacing: 0.3em;
+            padding: 12px 40px; /* 패딩 넉넉하게 */
+            cursor: pointer; 
+            transition: all 0.5s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            margin-top: 10px;
         }
-        .btn-enter::after {
-            content: ''; position: absolute; left: 50%; bottom: 0; width: 30px; height: 1px; background: #D4AF37;
-            transform: translateX(-50%); transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s;
-            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+        .btn-enter:hover { 
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #D4AF37;
+            color: #fff; 
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
         }
-        .btn-enter:hover { color: #fce6a8; text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
-        .btn-enter:hover::after { width: 100%; box-shadow: 0 0 15px rgba(212, 175, 55, 0.8); }
+        /* 은은한 펄스 효과 */
+        .btn-enter::before {
+            content: ''; position: absolute; inset: -3px; 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 6px;
+            animation: pulseBorder 2s infinite;
+        }
+        @keyframes pulseBorder {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.05); opacity: 0; }
+        }
         
         /* 로딩 스피너 */
         .loader {
@@ -214,9 +237,10 @@
         const CheckCircle = (p) => <LucideIcon name="check-circle" {...p} />;
         const Bus = (p) => <LucideIcon name="bus" {...p} />; 
         const ClipboardList = (p) => <LucideIcon name="clipboard-list" {...p} />;
-        const Users = (p) => <LucideIcon name="users" {...p} />; // RSVP 아이콘
+        const Users = (p) => <LucideIcon name="users" {...p} />; 
         const UserCheck = (p) => <LucideIcon name="user-check" {...p} />;
         const UserX = (p) => <LucideIcon name="user-x" {...p} />;
+        const Mail = (p) => <LucideIcon name="mail" {...p} />; // [추가] 메일 아이콘
 
         // --- 데이터 ---
         const travelData = {
@@ -404,6 +428,8 @@
                         </h1>
                         <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70"></div>
                         <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display]">New Zealand 2026</p>
+                        
+                        {/* [수정] ENTER 버튼 가시성 강화: 스타일 클래스(btn-enter) css 변경됨 */}
                         <button onClick={handleClick} className="btn-enter">ENTER</button>
                     </div>
                 </div>
@@ -593,13 +619,27 @@
                   {data.dateRange}
                 </div>
 
-                {/* RSVP 섹션 */}
-                <div className="mt-4">
+                {/* RSVP 섹션 [수정됨: 디자인 개선] */}
+                <div className="mt-6">
                     {!showRSVP ? (
-                        // 버튼 글씨 크기 수정: text-xs -> text-sm
-                        <button onClick={() => setShowRSVP(true)} className="flex items-center text-sm font-bold text-amber-400 border border-amber-400/50 px-4 py-2 rounded hover:bg-amber-400/10 transition-colors">
-                            <Users size={16} className="mr-2" />
-                            참석 여부 확인하기
+                        // [수정] "ITA 초청장" 컨셉의 고급스러운 버튼으로 변경
+                        <button 
+                            onClick={() => setShowRSVP(true)} 
+                            className="group relative overflow-hidden bg-white/10 backdrop-blur-md border border-amber-500/50 rounded-xl p-3 w-full max-w-sm flex items-center justify-between transition-all hover:bg-black/60 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                        >
+                            <div className="flex items-center">
+                                {/* 아이콘 박스 */}
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#aa771c] flex items-center justify-center text-slate-900 shadow-lg mr-3 group-hover:scale-110 transition-transform">
+                                    <Mail size={20} strokeWidth={2.5} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[#D4AF37] font-bold text-sm tracking-widest font-serif mb-0.5 group-hover:text-amber-300 transition-colors">ITA 초청장</p>
+                                    <p className="text-slate-300 text-xs font-light">참석 여부를 확인해주세요</p>
+                                </div>
+                            </div>
+                            <div className="text-amber-500/70 group-hover:translate-x-1 transition-transform group-hover:text-amber-400">
+                                <ChevronRight size={20} />
+                            </div>
                         </button>
                     ) : (
                         <div className="bg-black/85 backdrop-blur-md p-4 rounded-xl border border-slate-600 w-full max-w-sm animate-in slide-in-from-bottom-2 fade-in shadow-2xl relative">
