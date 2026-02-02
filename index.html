@@ -368,7 +368,7 @@
         // --- 1. 컴포넌트 정의 (App보다 위에 있어야 함) ---
 
         // (1) 대기 화면
-        const IntroScreen = ({ onEnter, onSkip }) => {
+        const IntroScreen = ({ onEnter, onSkip, showSkip }) => {
             const [isExiting, setIsExiting] = useState(false);
             const handleClick = () => { setIsExiting(true); setTimeout(() => { onEnter(); }, 2500); };
             const handleSkipClick = (e) => { 
@@ -384,13 +384,15 @@
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
                     
-                    {/* SKIP 버튼 수정: 더 잘 보이게 */}
-                    <button 
-                        onClick={handleSkipClick}
-                        className="absolute top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
-                    >
-                        SKIP
-                    </button>
+                    {/* SKIP 버튼: 이전에 방문한 적이 있을 때만 표시 (showSkip) */}
+                    {showSkip && (
+                        <button 
+                            onClick={handleSkipClick}
+                            className="absolute top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
+                        >
+                            SKIP
+                        </button>
+                    )}
 
                     <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4">
                         <div className="w-60 h-60 mb-10 flex items-center justify-center relative">
@@ -926,15 +928,21 @@
 
         // --- 12. Main App (최하단에 위치) ---
         function App() {
-            // 초기 상태 설정 시 로컬 스토리지 확인
-            const [step, setStep] = useState(() => {
-                // 이전에 방문한 기록('hasVisited')이 있으면 바로 'main'으로 시작
-                const hasVisited = localStorage.getItem('hasVisited');
-                return hasVisited ? 'main' : 'intro';
-            }); 
-            
+            // [수정됨] 초기 상태를 항상 'intro'로 설정합니다.
+            // localStorage 체크는 별도로 수행하여 버튼 표시 여부만 결정합니다.
+            const [step, setStep] = useState('intro');
             const [activeTab, setActiveTab] = useState('Schedule');
             const [showEntryInfo, setShowEntryInfo] = useState(false);
+            
+            // 이전에 방문했는지 여부 체크
+            const [hasVisited, setHasVisited] = useState(false);
+            
+            useEffect(() => {
+                const visited = localStorage.getItem('hasVisited');
+                if (visited) {
+                    setHasVisited(true);
+                }
+            }, []);
 
             const handleEnterClick = () => {
                 setStep('letter');
@@ -954,7 +962,8 @@
 
             return (
                 <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
-                    {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} />}
+                    {/* [수정됨] showSkip prop을 전달하여 조건부로 버튼을 표시합니다. */}
+                    {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} showSkip={hasVisited} />}
                     {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
                     {step === 'main' && (
                         <div className="fade-enter block bg-[#f8fafc] min-h-screen">
