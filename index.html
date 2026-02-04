@@ -1,1134 +1,1072 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ITA Awards New Zealand</title>
+import React, { useState, useEffect } from 'react';
+import { 
+  Plane, Hotel, MapPin, Phone, Calendar, ChevronRight, X, Coffee, 
+  Utensils, Camera, Wine, Ship, Award, Sun, UtensilsCrossed, 
+  BedDouble, Mountain, Info, AlertTriangle, CheckCircle, Bus, 
+  ClipboardList, Users, UserCheck, UserX, Mail 
+} from 'lucide-react';
+
+// --- 스타일 정의 (User Custom CSS) ---
+const GlobalStyles = () => (
+  <style>{`
+    /* [폰트 불러오기] */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    <!-- ▼▼▼ [썸네일 설정] ▼▼▼ -->
-    <meta property="og:title" content="2026 ITA Conference">
-    <meta property="og:description" content="2026. 04. 10(Fri) - 16(Thu)">
-    <meta property="og:image" content="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/stamp.png">
+    /* [안전 영역 패딩 유틸리티] */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+    /* [애니메이션] */
+    .fade-enter { animation: fadeIn 2.0s ease-in-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
-    <!-- 폰트 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    .animate-in { animation: slideUpFade 0.8s ease-out forwards; }
+    @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    <!-- CDN 라이브러리 -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    /* [로고 마스킹] */
+    .gold-logo-mask {
+        width: 100%; height: 100%;
+        background: linear-gradient(110deg, #aa771c 10%, #bf953f 30%, #fcf6ba 45%, #fcf6ba 55%, #bf953f 70%, #aa771c 90%);
+        background-size: 200% 100%;
+        -webkit-mask-image: url('https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png');
+        mask-image: url('https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png');
+        -webkit-mask-size: contain; mask-size: contain;
+        -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+        -webkit-mask-position: center; mask-position: center;
+        animation: shimmerLoop 6s linear infinite;
+    }
+    @keyframes shimmerLoop { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* [봉투 컨테이너] */
+    .envelope-container { 
+        perspective: 1500px; 
+        cursor: pointer; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        width: 350px; 
+        height: 220px; 
+        transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        z-index: 20; 
+        pointer-events: auto !important;
+    }
     
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        body { font-family: 'Nanum Myeongjo', serif; -webkit-tap-highlight-color: transparent; background-color: #020617; overflow-x: hidden; }
+    .envelope-container.opened { transform: translateY(50px); cursor: default; }
+    
+    .envelope {
+        position: relative; width: 100%; height: 100%;
+        background-color: #fcfbf9; 
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        border-radius: 4px; z-index: 10; transform-style: preserve-3d;
+        box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
+    }
 
-        /* [애니메이션] */
-        .fade-enter { animation: fadeIn 2.0s ease-in-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .animate-in { animation: slideUpFade 0.8s ease-out forwards; }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* [편지 본체] */
+    .letter-paper {
+        position: absolute; 
+        bottom: 0; left: 50%; transform: translateX(-50%); 
+        width: 320px; 
+        height: 180px; 
+        background: #ffffff; 
+        padding: 30px 24px 24px 24px; 
+        transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
+        z-index: 5; 
+        box-shadow: none; 
+        display: flex; flex-direction: column;
+        border-radius: 2px 2px 0 0; 
+        overflow: hidden;
+        pointer-events: none; 
+    }
+    
+    .letter-paper::after {
+        content: ''; position: absolute; inset: 12px;
+        border: 1px solid #D4AF37;
+        outline: 1px solid #D4AF37;
+        outline-offset: -4px;
+        pointer-events: none;
+        background-image: 
+            radial-gradient(circle at top left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+            radial-gradient(circle at top right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+            radial-gradient(circle at bottom left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
+            radial-gradient(circle at bottom right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px);
+        background-size: 20px 20px;
+        background-repeat: no-repeat;
+        background-position: top left, top right, bottom left, bottom right;
+        z-index: 60; 
+    }
+    
+    .envelope.open .letter-paper {
+        height: 580px; 
+        bottom: -60px; 
+        z-index: 50; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
+        overflow: visible; 
+        pointer-events: auto; 
+    }
 
-        /* [로고 마스킹] */
-        .gold-logo-mask {
-            width: 100%; height: 100%;
-            background: linear-gradient(110deg, #aa771c 10%, #bf953f 30%, #fcf6ba 45%, #fcf6ba 55%, #bf953f 70%, #aa771c 90%);
-            background-size: 200% 100%;
-            -webkit-mask-image: url('https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png');
-            mask-image: url('https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png');
-            -webkit-mask-size: contain; mask-size: contain;
-            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-            -webkit-mask-position: center; mask-position: center;
-            animation: shimmerLoop 6s linear infinite;
-        }
-        @keyframes shimmerLoop { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .letter-content-flex {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        z-index: 70;
+    }
 
-        /* [봉투 컨테이너] */
-        .envelope-container { 
-            perspective: 1500px; 
-            cursor: pointer; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            width: 350px; /* 고정 너비 */
-            height: 220px; /* 고정 높이 */
-            transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            z-index: 20; 
-            pointer-events: auto !important;
-        }
-        
-        /* 편지가 열렸을 때 위치 이동 (스크롤 방식이므로 많이 이동 안 해도 됨) */
-        .envelope-container.opened { transform: translateY(50px); cursor: default; }
-        
-        .envelope {
-            position: relative; width: 100%; height: 100%;
-            background-color: #fcfbf9; 
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-            border-radius: 4px; z-index: 10; transform-style: preserve-3d;
-            box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
-        }
+    .envelope::before { 
+        content: ''; position: absolute; inset: 0; 
+        background-color: #1e293b; 
+        border-radius: 4px; z-index: 1; 
+        border: 1px solid rgba(212, 175, 55, 0.3); 
+    }
+    
+    .flap { 
+        position: absolute; inset: 0; pointer-events: none; 
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    }
+    .flap-left { z-index: 10; background-color: #fcfbf9; background-blend-mode: multiply; clip-path: polygon(0 0, 55% 50%, 0 100%); filter: drop-shadow(1px 0 2px rgba(0,0,0,0.15)); }
+    .flap-right { z-index: 10; background-color: #f8f6f2; background-blend-mode: multiply; clip-path: polygon(100% 0, 45% 50%, 100% 100%); filter: drop-shadow(-1px 0 2px rgba(0,0,0,0.15)); }
+    .flap-bottom { z-index: 11; clip-path: polygon(0 100%, 50% 50%, 100% 100%); background-color: #fcfbf9; background-blend-mode: multiply; background: linear-gradient(to top, #e2e2e2 0%, #fcfbf9 100%); filter: drop-shadow(0 -3px 5px rgba(0,0,0,0.1)); }
+    
+    .envelope-lid {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 12;
+        background-color: #fcfbf9; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        background-blend-mode: multiply; clip-path: polygon(0 0, 100% 0, 50% 55%);
+        transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s step-end; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.15));
+    }
+    .envelope.open .envelope-lid { transform: rotateX(180deg); z-index: 1; background: #1e293b; background-image: none; }
+    
+    .wax-seal-wrapper { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 180px; height: 180px; z-index: 15; cursor: pointer; transition: all 0.4s ease; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4)); }
+    .wax-seal-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .envelope-container:hover .wax-seal-wrapper { transform: translate(-50%, -50%) scale(1.05) rotate(5deg); }
+    .envelope.open .wax-seal-wrapper { opacity: 0; transform: translate(-50%, -50%) scale(1.5); pointer-events: none; }
+    
+    .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* [편지 본체] - 가독성을 위해 크기 원복 */
-        .letter-paper {
-            position: absolute; 
-            bottom: 0; left: 50%; transform: translateX(-50%); 
-            width: 320px; 
-            height: 180px; 
-            background: #ffffff; 
-            padding: 30px 24px 24px 24px; 
-            transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
-            z-index: 5; 
-            box-shadow: none; 
-            display: flex; flex-direction: column;
-            border-radius: 2px 2px 0 0; 
-            overflow: hidden;
-            pointer-events: none; 
-        }
-        
-        .letter-paper::after {
-            content: ''; position: absolute; inset: 12px;
-            border: 1px solid #D4AF37;
-            outline: 1px solid #D4AF37;
-            outline-offset: -4px;
-            pointer-events: none;
-            background-image: 
-                radial-gradient(circle at top left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
-                radial-gradient(circle at top right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
-                radial-gradient(circle at bottom left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
-                radial-gradient(circle at bottom right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px);
-            background-size: 20px 20px;
-            background-repeat: no-repeat;
-            background-position: top left, top right, bottom left, bottom right;
-            z-index: 60; 
-        }
-        
-        /* [중요] 편지가 열렸을 때: 높이 580px로 고정하여 가독성 확보 */
-        .envelope.open .letter-paper {
-            height: 580px; /* 충분한 높이 확보 */
-            bottom: -60px; 
-            z-index: 50; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
-            overflow: visible; 
-            pointer-events: auto; 
-        }
+    .btn-enter {
+        position: relative; 
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(212, 175, 55, 0.6);
+        border-radius: 4px;
+        color: #D4AF37; 
+        font-family: 'Playfair Display', serif; 
+        font-size: 1.5rem; 
+        font-weight: 700; 
+        letter-spacing: 0.3em;
+        padding: 12px 40px; 
+        cursor: pointer; 
+        transition: all 0.5s;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        margin-top: 30px;
+        z-index: 50;
+    }
+    .btn-enter:hover { 
+        background: rgba(212, 175, 55, 0.1);
+        border-color: #D4AF37;
+        color: #fff; 
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+    }
+    .btn-enter::before {
+        content: ''; position: absolute; inset: -3px; 
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 6px;
+        animation: pulseBorder 2s infinite;
+    }
+    @keyframes pulseBorder {
+        0% { transform: scale(1); opacity: 0.5; }
+        100% { transform: scale(1.05); opacity: 0; }
+    }
+    
+    .loader {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 3px solid #D4AF37;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  `}</style>
+);
 
-        .letter-content-flex {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            position: relative;
-            z-index: 70;
-        }
+// --- 데이터 ---
+const travelData = {
+  // ... existing data ...
+  meta: {
+    title: "2026 ITA CONFERENCE",
+    subtitle: ["Only YOU,", "New Zealand"],
+    dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
+    introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
+    headerImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/queenstown.png",
+    themeColor: { primary: "#1e293b", accent: "#d97706" }
+  },
+  letter: {
+    from: "대표이사 최병채 천대권",
+    content: [
+      "일년의 긴 여정에서",
+      "위대한 성과를 이루신 당신!",
+      "큰 박수와 함성으로 축하드립니다.",
+      " ",
+      "경이로운 대자연 속에서",
+      "눈부신 명예를 함께 나눌 이 곳,",
+      " ",
+      "뉴질랜드로 당신을 초대합니다."
+    ]
+  },
+  entryInfo: [
+    { title: "NZeTA (전자비자)", content: "전자비자 발급과 관련하여 추후 별도 안내 드릴 예정입니다." },
+    { title: "검역 및 반입 금지", content: "음식물(생과일, 육류, 꿀 등), 식물, 씨앗 등 반입이 매우 엄격히 금지됩니다. 적발 시 즉시 벌금 NZD 400이 부과되니 주의하세요." },
+    { title: "담배 반입 (흡연자 필독)", content: "뉴질랜드는 담배 반입 규정이 매우 엄격합니다. 1인당 50개비(약 2.5갑)까지만 면세 반입이 가능하며, 초과 시 반드시 세관에 신고하고 관세를 납부해야 합니다." },
+    { title: "상비약 휴대", content: "처방약은 영문 처방전을 반드시 지참해야 하며, 일반 의약품은 원래 포장 상태로 보관해야 합니다." },
+    { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
+    { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그가 필요합니다. (여행용 멀티 어댑터 회사 제공)" }
+  ],
+  contacts: [
+    { name: "김준형", phone: "010-9589-5768", type: "인카블루투어" },
+    { name: "임호근", phone: "010-2271-2871", type: "인카블루투어" },
+    { name: "퀸즈타운 가이드", phone: "추후 기재", type: "가이드" },
+    { name: "오클랜드 가이드", phone: "추후 기재", type: "가이드" }
+  ],
+  itinerary: [
+    {
+      day: "1",
+      date: "04. 10 (Fri)",
+      title: "출국",
+      activities: [
+        { time: "18:00", title: "인천공항 출발", type: "flight", desc: "대한항공 KE413 (약 11시간 20분 소요)" },
+      ]
+    },
+    {
+      day: "2",
+      date: "04. 11 (Sat)",
+      title: "뉴질랜드 도착 및 퀸즈타운 이동",
+      activities: [
+        { time: "08:30", title: "오클랜드 도착", type: "flight", desc: "입국 심사 및 수하물 수령" },
+        { time: "10:30", title: "마이클 조셉 새비지 공원", type: "sightseeing", desc: "오클랜드 전경 조망" },
+        { time: "11:30", title: "점심 (Flying Fish)", type: "food", desc: "씨푸드 차우더 & 피시 앤 칩스" },
+        { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "flight", desc: "에어 뉴질랜드 약 2시간 소요" },
+        { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "2인 1실" },
+        { time: "19:00", title: "저녁 (와카티푸 그릴) ", type: "food", desc: "호텔 뷔페" }
+      ]
+    },
+    {
+      day: 3,
+      date: "04. 12 (Sun)",
+      title: "ITA 시상식 & 갈라 디너",
+      activities: [
+        { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 단풍 산책" },
+        { time: "12:00", title: "점심 (더 스토커 룸)", type: "food", desc: "시그니처 테이스팅 플레터 (모둠 요리)" },
+        { time: "15:00", title: "2026 ITA 시상식", type: "award", desc: "힐튼 퀸즈타운 2층 레이크가든" },
+        { time: "18:00", title: "저녁 (시상식 만찬)", type: "wine", desc: "호텔 정찬" },
+        { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임과 휴식" }
+      ]
+    },
+    {
+      day: 4,
+      date: "04. 13 (Mon)",
+      title: "밀포드사운드 대자연 투어",
+      activities: [
+        { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "미러레이크 경유" },
+        { time: "13:00", title: "점심 (크루즈 선상 뷔페)", type: "food", desc: "식사 후 크루즈 출항" },
+        { time: "13:40", title: "밀포드 사운드 크루즈", type: "ship", desc: "15:00 하선" },
+        { time: "17:00", title: "호텔 복귀 후 수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
+        { time: "18:30", title: "저녁 (만다린)", type: "food", desc: "4대 해산물 (랍스터, 초록홍합, 연어, 전복)" }
+      ]
+    },
+    {
+      day: 5,
+      date: "04. 14 (Tue)",
+      title: "증기선 투어 & 페어웰 파티",
+      activities: [
+        { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
+        { time: "13:00", title: "증기선 탑승", type: "ship", desc: "TSS 언슬로우" },
+        { time: "13:40", title: "점심 (월터 피크)", type: "food", desc: "BBQ 뷔페" },
+        { time: "14:30", title: "팜쇼 관람", type: "activity", desc: "양털깍기와 양몰이" },
+        { time: "19:00", title: "저녁 (깁스톤 와이너리)", type: "food", desc: "연어, 도미, 사슴스테이크" }
+      ]
+    },
+    {
+      day: 6,
+      date: "04. 15 (Wed)",
+      title: "오클랜드 이동",
+      activities: [
+        { time: "08:00", title: "공항 이동", type: "transport", desc: "오클랜드행 국내선 탑승" },
+        { time: "13:30", title: "점심 (라오 광저우)", type: "food", desc: "중국식 훠궈 (핫팟)" },
+        { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "2인 1실" },
+        { time: "17:30", title: "스카이 타워 관광", type: "sightseeing", desc: "오클랜드 석양 감상" },
+        { time: "19:00", title: "저녁 (세일즈)", type: "food", desc: "비프텐더로인 코스" },
+        { time: "21:00", title: "비아덕트 하버 관광", type: "sightseeing", desc: "야경 산책과 마무리" },
+      ]
+    },
+    {
+      day: 7,
+      date: "04. 16 (Thu)",
+      title: "귀국",
+      activities: [
+        { time: "08:00", title: "호텔 체크아웃 ", type: "transport", desc: "오클랜드 공항으로 이동" },
+        { time: "10:45", title: "오클랜드 출발", type: "flight", desc: "대한항공 KE414 (약 12시간 소요)" },
+        { time: "18:40", title: "인천 도착", type: "flight", desc: "수고하셨습니다." }
+      ]
+    }
+  ],
+  hotels: [
+    { id: 1, name: "힐튼 퀸즈타운 리조트 & 스파", sub: "5성급 럭셔리 리조트", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["와카티푸 호수 전망", "실내 벽난로", "스파 & 사우나"], checkIn: "04. 11 (토)", checkOut: "04. 15 (수)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonQueenstown.png", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
+    { id: 2, name: "힐튼 오클랜드", sub: "하버 뷰 호텔", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["오션 뷰", "야외 수영장", "시내 중심"], checkIn: "04. 15 (수)", checkOut: "04. 16 (목)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonAuckland.png", link: "https://maps.google.com/?q=Hilton+Auckland" }
+  ],
+  dining: [
+    { name: "플라잉 피쉬 레스토랑", type: "2일차 점심", desc: "오클랜드 공항 인근 젯팍 호텔에서 즐기는 여유로운 런치입니다.", menu: ["씨푸드 차우더", "피시 앤 칩스", "신선한 샐러드"], day: "2일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Lunch.png" },
+    { name: "와카티푸 그릴 (힐튼)", type: "2일차 저녁", desc: "와카티푸 호수를 바라보며 즐기는 힐튼 호텔의 품격 있는 웰컴 디너 뷔페입니다.", menu: ["오픈 키친 그릴", "신선한 샐러드", "계절 디저트"], day: "2일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Dinner.png" },
+    { name: "더 스토커 룸", type: "3일차 점심", desc: "오크통 직화 요리의 풍미가 가득한 뉴질랜드 필수 미식 코스입니다.", menu: ["오크통 요리", "스팀 & 훈연", "모둠 요리"], day: "3일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Lunch.png" },
+    { name: "시상식 갈라 디너", type: "3일차 저녁", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 케이크"], day: "3일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
+    { name: "밀포드 사운드 크루즈", type: "4일차 점심", desc: "피오르드의 절경을 감상하며 선상에서 여유롭게 즐기는 인터내셔널 뷔페입니다.", menu: ["로스트 미트", "신선한 샐러드", "따뜻한 요리"], day: "4일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Lunch.png" },
+    { name: "만다린 씨푸드", type: "4일차 저녁", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["락 랍스터 (크레이피쉬)", "자연산 전복 (12cm 이상)", "신선한 연어", "초록홍합 요리"], day: "4일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Dinner.png" },
+    { name: "월터 피크 BBQ", type: "5일차 점심", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["양고기/소고기 구이", "샐러드 바", "뉴질랜드 치즈"], day: "5일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Lunch.png" },
+    { name: "깁스톤 밸리 와이너리", type: "5일차 저녁", desc: "와이너리 투어 후 즐기는 3코스 페어웰 만찬입니다.", menu: ["사슴 스테이크", "와인 페어링", "계절 디저트"], day: "5일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Dinner.png" },
+    { name: "라오 광저우", type: "6일차 점심", desc: "여행의 피로를 풀어줄 따뜻하고 깊은 맛의 중국식 훠궈(Hot Pot) 요리입니다.", menu: ["모듬 고기", "신선한 야채", "깊은 육수"], day: "6일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Lunch.png" },
+    { name: "세일즈 레스토랑", type: "6일차 저녁", desc: "오클랜드 항구의 요트 뷰와 함께 즐기는 고급스러운 파인 다이닝입니다.", menu: ["최상급 소고기", "시그니처 소스", "고급 가니쉬"], day: "6일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Dinner.png" }
+  ],
+  spots: [
+    { name: "피오르드랜드 국립공원", tag: "대자연", desc: "유네스코 세계자연유산으로 지정된 거대한 빙하 지형의 보고, 태고의 신비를 간직한 국립공원입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/FiordlandNationalPark.png" },
+    { name: "밀포드 사운드 크루즈", tag: "핵심 일정", desc: "수직으로 솟은 절벽과 웅장한 폭포 사이를 항해하며, 대자연의 경이로움을 가장 가까이에서 경험합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/MilfordSoundCruise.png" },
+    { name: "퀸즈타운 수상택시", tag: "이색 체험", desc: "와카티푸 호수의 물살을 가르며 퀸즈타운의 아름다운 풍광을 색다르게 감상하는 이동 수단입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/QueenstownWaterTaxi.png" },
+    { name: "TSS 언슬로우 증기선", tag: "역사 탐방", desc: "1912년부터 운항 중인 남반구 유일의 석탄 증기선으로, '호수 위의 귀부인'이라 불리는 클래식 선박입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/TSSEarnslaw.png" },
+    { name: "월터 피크 팜쇼", tag: "문화 체험", desc: "전통 방식의 양털 깎기 시연과 똑똑한 양몰이 개의 활약을 눈앞에서 볼 수 있는 즐거운 팜쇼입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/WalterPeakFarmShow.png" },
+    { name: "오클랜드 스카이 타워", tag: "랜드마크", desc: "높이 328m의 남반구 최고층 타워로, 오클랜드 도심과 항만의 환상적인 파노라마 뷰를 선사합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/AucklandSkyTower.png" }
+  ]
+};
 
-        /* 봉투 부속품 (안감) */
-        .envelope::before { 
-            content: ''; position: absolute; inset: 0; 
-            background-color: #1e293b; 
-            border-radius: 4px; z-index: 1; 
-            border: 1px solid rgba(212, 175, 55, 0.3); 
-        }
-        
-        /* 날개들 */
-        .flap { 
-            position: absolute; inset: 0; pointer-events: none; 
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-        }
-        .flap-left { z-index: 10; background-color: #fcfbf9; background-blend-mode: multiply; clip-path: polygon(0 0, 55% 50%, 0 100%); filter: drop-shadow(1px 0 2px rgba(0,0,0,0.15)); }
-        .flap-right { z-index: 10; background-color: #f8f6f2; background-blend-mode: multiply; clip-path: polygon(100% 0, 45% 50%, 100% 100%); filter: drop-shadow(-1px 0 2px rgba(0,0,0,0.15)); }
-        .flap-bottom { z-index: 11; clip-path: polygon(0 100%, 50% 50%, 100% 100%); background-color: #fcfbf9; background-blend-mode: multiply; background: linear-gradient(to top, #e2e2e2 0%, #fcfbf9 100%); filter: drop-shadow(0 -3px 5px rgba(0,0,0,0.1)); }
-        
-        /* 뚜껑 */
-        .envelope-lid {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 12;
-            background-color: #fcfbf9; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-            background-blend-mode: multiply; clip-path: polygon(0 0, 100% 0, 50% 55%);
-            transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s step-end; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.15));
-        }
-        .envelope.open .envelope-lid { transform: rotateX(180deg); z-index: 1; background: #1e293b; background-image: none; }
-        
-        .wax-seal-wrapper { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 180px; height: 180px; z-index: 15; cursor: pointer; transition: all 0.4s ease; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4)); }
-        .wax-seal-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-        .envelope-container:hover .wax-seal-wrapper { transform: translate(-50%, -50%) scale(1.05) rotate(5deg); }
-        .envelope.open .wax-seal-wrapper { opacity: 0; transform: translate(-50%, -50%) scale(1.5); pointer-events: none; }
-        
-        .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+const handleImageError = (e) => { e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; };
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
 
-        /* [수정] ENTER 버튼 (박스 스타일 원복) */
-        .btn-enter {
-            position: relative; 
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(212, 175, 55, 0.6);
-            border-radius: 4px;
-            color: #D4AF37; 
-            font-family: 'Playfair Display', serif; 
-            font-size: 1.5rem; 
-            font-weight: 700; 
-            letter-spacing: 0.3em;
-            padding: 12px 40px; 
-            cursor: pointer; 
-            transition: all 0.5s;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            margin-top: 30px;
-            z-index: 50;
-        }
-        .btn-enter:hover { 
-            background: rgba(212, 175, 55, 0.1);
-            border-color: #D4AF37;
-            color: #fff; 
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-        }
-        .btn-enter::before {
-            content: ''; position: absolute; inset: -3px; 
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 6px;
-            animation: pulseBorder 2s infinite;
-        }
-        @keyframes pulseBorder {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.05); opacity: 0; }
-        }
-        
-        /* 로딩 스피너 */
-        .loader {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #D4AF37;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body class="bg-[#020617]">
-    <div id="root"></div>
+// --- 1. 컴포넌트 정의 ---
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+// (1) 대기 화면
+const IntroScreen = ({ onEnter, onSkip, showSkip }) => {
+    const [isExiting, setIsExiting] = useState(false);
+    const handleClick = () => { setIsExiting(true); setTimeout(() => { onEnter(); }, 2500); };
+    const handleSkipClick = (e) => { 
+        e.stopPropagation(); 
+        onSkip(); 
+    };
 
-        // [중요] 최신 Apps Script URL 사용
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
+    return (
+        // [수정] scale-100을 제거하여 fixed 자식이 viewport 기준으로 고정되도록 함 (transform이 있으면 fixed는 absolute처럼 동작함)
+        <div className={`fixed inset-0 z-[100] bg-[#020617] text-white overflow-y-auto overflow-x-hidden no-scrollbar transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100'}`}>
+            
+            {/* [수정] 배경을 fixed로 설정하여 스크롤 시에도 화면에 고정되게 함 */}
+            <div className="fixed inset-0 w-full h-full pointer-events-none -z-10">
+                <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
+            </div>
+            
+            {showSkip && (
+                <button 
+                    onClick={handleSkipClick}
+                    className="fixed top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
+                >
+                    SKIP
+                </button>
+            )}
 
-        // --- 아이콘 컴포넌트 ---
-        const LucideIcon = ({ name, size = 16, className = "", ...props }) => {
-            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size }} className={`inline-block ${className}`} {...props}></i>;
-        };
-
-        const Plane = (p) => <LucideIcon name="plane" {...p} />;
-        const Hotel = (p) => <LucideIcon name="hotel" {...p} />;
-        const MapPin = (p) => <LucideIcon name="map-pin" {...p} />;
-        const Phone = (p) => <LucideIcon name="phone" {...p} />;
-        const Calendar = (p) => <LucideIcon name="calendar" {...p} />;
-        const ChevronRight = (p) => <LucideIcon name="chevron-right" {...p} />;
-        const X = (p) => <LucideIcon name="x" {...p} />;
-        const Coffee = (p) => <LucideIcon name="coffee" {...p} />;
-        const Utensils = (p) => <LucideIcon name="utensils" {...p} />;
-        const Camera = (p) => <LucideIcon name="camera" {...p} />;
-        const Wine = (p) => <LucideIcon name="wine" {...p} />;
-        const Ship = (p) => <LucideIcon name="ship" {...p} />;
-        const Award = (p) => <LucideIcon name="award" {...p} />;
-        const Sun = (p) => <LucideIcon name="sun" {...p} />;
-        const UtensilsCrossed = (p) => <LucideIcon name="utensils-crossed" {...p} />;
-        const BedDouble = (p) => <LucideIcon name="bed-double" {...p} />;
-        const Mountain = (p) => <LucideIcon name="mountain" {...p} />;
-        const Info = (p) => <LucideIcon name="info" {...p} />;
-        const AlertTriangle = (p) => <LucideIcon name="alert-triangle" {...p} />;
-        const CheckCircle = (p) => <LucideIcon name="check-circle" {...p} />;
-        const Bus = (p) => <LucideIcon name="bus" {...p} />; 
-        const ClipboardList = (p) => <LucideIcon name="clipboard-list" {...p} />;
-        const Users = (p) => <LucideIcon name="users" {...p} />; 
-        const UserCheck = (p) => <LucideIcon name="user-check" {...p} />;
-        const UserX = (p) => <LucideIcon name="user-x" {...p} />;
-        const Mail = (p) => <LucideIcon name="mail" {...p} />; 
-
-        // --- 데이터 ---
-        const travelData = {
-          meta: {
-            title: "2026 ITA CONFERENCE", 
-            subtitle: ["Only YOU,", "New Zealand"], 
-            dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
-            introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
-            headerImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/queenstown.png",
-            themeColor: { primary: "#1e293b", accent: "#d97706" }
-          },
-          letter: {
-            from: "대표이사 최병채 천대권",
-            content: [
-              "일년의 긴 여정에서",
-              "위대한 성과를 이루신 당신!",
-              "큰 박수와 함성으로 축하드립니다.",
-              " ",
-              "경이로운 대자연 속에서",
-              "눈부신 명예를 함께 나눌 이 곳,",
-              " ",
-              "뉴질랜드로 당신을 초대합니다."
-            ]
-          },
-          entryInfo: [
-            { title: "NZeTA (전자비자)", content: "전자비자 발급과 관련하여 추후 별도 안내 드릴 예정입니다." },
-            { title: "검역 및 반입 금지", content: "음식물(생과일, 육류, 꿀 등), 식물, 씨앗 등 반입이 매우 엄격히 금지됩니다. 적발 시 즉시 벌금 NZD 400이 부과되니 주의하세요." },
-            { title: "담배 반입 (흡연자 필독)", content: "뉴질랜드는 담배 반입 규정이 매우 엄격합니다. 1인당 50개비(약 2.5갑)까지만 면세 반입이 가능하며, 초과 시 반드시 세관에 신고하고 관세를 납부해야 합니다." }, 
-            { title: "상비약 휴대", content: "처방약은 영문 처방전을 반드시 지참해야 하며, 일반 의약품은 원래 포장 상태로 보관해야 합니다." },
-            { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
-            { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그가 필요합니다. (여행용 멀티 어댑터 회사 제공)" }
-          ],
-          contacts: [
-            { name: "김준형", phone: "010-9589-5768", type: "인카블루투어" },
-            { name: "임호근", phone: "010-2271-2871", type: "인카블루투어" },
-            { name: "퀸즈타운 가이드", phone: "추후 기재", type: "가이드" },
-            { name: "오클랜드 가이드", phone: "추후 기재", type: "가이드" }
-          ],
-          itinerary: [
-            {
-              day: "1",
-              date: "04. 10 (Fri)",
-              title: "출국",
-              activities: [
-                { time: "18:00", title: "인천공항 출발", type: "flight", desc: "대한항공 KE413 (약 11시간 20분 소요)" },
-              ]
-            },
-            {
-              day: "2",
-              date: "04. 11 (Sat)",
-              title: "뉴질랜드 도착 및 퀸즈타운 이동",
-              activities: [
-                { time: "08:30", title: "오클랜드 도착", type: "flight", desc: "입국 심사 및 수하물 수령" },
-                { time: "10:30", title: "마이클 조셉 새비지 공원", type: "sightseeing", desc: "오클랜드 전경 조망" },
-                { time: "11:30", title: "점심 (Flying Fish)", type: "food", desc: "씨푸드 차우더 & 피시 앤 칩스" },
-                { time: "14:40", title: "국내선 이동 (AKL→ZQN)", type: "flight", desc: "에어 뉴질랜드 약 2시간 소요" },
-                { time: "17:30", title: "힐튼 퀸즈타운 체크인", type: "hotel", desc: "2인 1실" },
-                { time: "19:00", title: "저녁 (와카티푸 그릴) ", type: "food", desc: "호텔 뷔페" }
-              ]
-            },
-            {
-              day: 3,
-              date: "04. 12 (Sun)",
-              title: "ITA 시상식 & 갈라 디너",
-              activities: [
-                { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 단풍 산책" },
-                { time: "12:00", title: "점심 (더 스토커 룸)", type: "food", desc: "시그니처 테이스팅 플레터 (모둠 요리)" },
-                { time: "15:00", title: "2026 ITA 시상식", type: "award", desc: "힐튼 퀸즈타운 2층 레이크가든" },
-                { time: "18:00", title: "저녁 (시상식 만찬)", type: "wine", desc: "호텔 정찬" },
-                { time: "19:00", title: "세미 캠프파이어", type: "activity", desc: "비어 타임과 휴식" }
-              ]
-            },
-            {
-              day: 4,
-              date: "04. 13 (Mon)",
-              title: "밀포드사운드 대자연 투어",
-              activities: [
-                { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "미러레이크 경유" },
-                { time: "13:00", title: "점심 (크루즈 선상 뷔페)", type: "food", desc: "식사 후 크루즈 출항" },
-                { time: "13:40", title: "밀포드 사운드 크루즈", type: "ship", desc: "15:00 하선" },
-                { time: "17:00", title: "호텔 복귀 후 수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
-                { time: "18:30", title: "저녁 (만다린)", type: "food", desc: "4대 해산물 (랍스터, 초록홍합, 연어, 전복)" }
-              ]
-            },
-            {
-              day: 5,
-              date: "04. 14 (Tue)",
-              title: "증기선 투어 & 페어웰 파티",
-              activities: [
-                { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
-                { time: "13:00", title: "증기선 탑승", type: "ship", desc: "TSS 언슬로우" },
-                { time: "13:40", title: "점심 (월터 피크)", type: "food", desc: "BBQ 뷔페" },
-                { time: "14:30", title: "팜쇼 관람", type: "activity", desc: "양털깍기와 양몰이" },
-                { time: "19:00", title: "저녁 (깁스톤 와이너리)", type: "food", desc: "연어, 도미, 사슴스테이크" }
-              ]
-            },
-            {
-              day: 6,
-              date: "04. 15 (Wed)",
-              title: "오클랜드 이동",
-              activities: [
-                { time: "08:00", title: "공항 이동", type: "transport", desc: "오클랜드행 국내선 탑승" },
-                { time: "13:30", title: "점심 (라오 광저우)", type: "food", desc: "중국식 훠궈 (핫팟)" },
-                { time: "16:00", title: "힐튼 오클랜드 체크인", type: "hotel", desc: "2인 1실" },
-                { time: "17:30", title: "스카이 타워 관광", type: "sightseeing", desc: "오클랜드 석양 감상" },
-                { time: "19:00", title: "저녁 (세일즈)", type: "food", desc: "비프텐더로인 코스" },
-                { time: "21:00", title: "비아덕트 하버 관광", type: "sightseeing", desc: "야경 산책과 마무리" },
-              ]
-            },
-            {
-              day: 7,
-              date: "04. 16 (Thu)",
-              title: "귀국",
-              activities: [
-                { time: "08:00", title: "호텔 체크아웃 ", type: "transport", desc: "오클랜드 공항으로 이동" },
-                { time: "10:45", title: "오클랜드 출발", type: "flight", desc: "대한항공 KE414 (약 12시간 소요)" },
-                { time: "18:40", title: "인천 도착", type: "flight", desc: "수고하셨습니다." }
-              ]
-            }
-          ],
-          hotels: [
-            { id: 1, name: "힐튼 퀸즈타운 리조트 & 스파", sub: "5성급 럭셔리 리조트", desc: "와카티푸 호수 바로 앞에 위치하여 객실 내 벽난로와 함께 환상적인 호수 전망을 즐길 수 있는 최고급 리조트입니다.", features: ["와카티푸 호수 전망", "실내 벽난로", "스파 & 사우나"], checkIn: "04. 11 (토)", checkOut: "04. 15 (수)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonQueenstown.png", link: "https://maps.google.com/?q=Hilton+Queenstown+Resort+%26+Spa" },
-            { id: 2, name: "힐튼 오클랜드", sub: "하버 뷰 호텔", desc: "오클랜드 비아덕트 하버 끝자락에 위치하여 마치 크루즈 위에 떠 있는 듯한 오션뷰를 자랑하는 호텔입니다.", features: ["오션 뷰", "야외 수영장", "시내 중심"], checkIn: "04. 15 (수)", checkOut: "04. 16 (목)", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/HiltonAuckland.png", link: "https://maps.google.com/?q=Hilton+Auckland" }
-          ],
-          dining: [
-            { name: "플라잉 피쉬 레스토랑", type: "2일차 점심", desc: "오클랜드 공항 인근 젯팍 호텔에서 즐기는 여유로운 런치입니다.", menu: ["씨푸드 차우더", "피시 앤 칩스", "신선한 샐러드"], day: "2일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Lunch.png" },
-            { name: "와카티푸 그릴 (힐튼)", type: "2일차 저녁", desc: "와카티푸 호수를 바라보며 즐기는 힐튼 호텔의 품격 있는 웰컴 디너 뷔페입니다.", menu: ["오픈 키친 그릴", "신선한 샐러드", "계절 디저트"], day: "2일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Dinner.png" },
-            { name: "더 스토커 룸", type: "3일차 점심", desc: "오크통 직화 요리의 풍미가 가득한 뉴질랜드 필수 미식 코스입니다.", menu: ["오크통 요리", "스팀 & 훈연", "모둠 요리"], day: "3일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Lunch.png" },
-            { name: "시상식 갈라 디너", type: "3일차 저녁", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 케이크"], day: "3일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
-            { name: "밀포드 사운드 크루즈", type: "4일차 점심", desc: "피오르드의 절경을 감상하며 선상에서 여유롭게 즐기는 인터내셔널 뷔페입니다.", menu: ["로스트 미트", "신선한 샐러드", "따뜻한 요리"], day: "4일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Lunch.png" },
-            { name: "만다린 씨푸드", type: "4일차 저녁", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["락 랍스터 (크레이피쉬)", "자연산 전복 (12cm 이상)", "신선한 연어", "초록홍합 요리"], day: "4일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Dinner.png" },
-            { name: "월터 피크 BBQ", type: "5일차 점심", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["양고기/소고기 구이", "샐러드 바", "뉴질랜드 치즈"], day: "5일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Lunch.png" },
-            { name: "깁스톤 밸리 와이너리", type: "5일차 저녁", desc: "와이너리 투어 후 즐기는 3코스 페어웰 만찬입니다.", menu: ["사슴 스테이크", "와인 페어링", "계절 디저트"], day: "5일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Dinner.png" },
-            { name: "라오 광저우", type: "6일차 점심", desc: "여행의 피로를 풀어줄 따뜻하고 깊은 맛의 중국식 훠궈(Hot Pot) 요리입니다.", menu: ["모듬 고기", "신선한 야채", "깊은 육수"], day: "6일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Lunch.png" },
-            { name: "세일즈 레스토랑", type: "6일차 저녁", desc: "오클랜드 항구의 요트 뷰와 함께 즐기는 고급스러운 파인 다이닝입니다.", menu: ["최상급 소고기", "시그니처 소스", "고급 가니쉬"], day: "6일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day6Dinner.png" }
-          ],
-          spots: [
-            { name: "피오르드랜드 국립공원", tag: "대자연", desc: "유네스코 세계자연유산으로 지정된 거대한 빙하 지형의 보고, 태고의 신비를 간직한 국립공원입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/FiordlandNationalPark.png" },
-            { name: "밀포드 사운드 크루즈", tag: "핵심 일정", desc: "수직으로 솟은 절벽과 웅장한 폭포 사이를 항해하며, 대자연의 경이로움을 가장 가까이에서 경험합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/MilfordSoundCruise.png" },
-            { name: "퀸즈타운 수상택시", tag: "이색 체험", desc: "와카티푸 호수의 물살을 가르며 퀸즈타운의 아름다운 풍광을 색다르게 감상하는 이동 수단입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/QueenstownWaterTaxi.png" },
-            { name: "TSS 언슬로우 증기선", tag: "역사 탐방", desc: "1912년부터 운항 중인 남반구 유일의 석탄 증기선으로, '호수 위의 귀부인'이라 불리는 클래식 선박입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/TSSEarnslaw.png" },
-            { name: "월터 피크 팜쇼", tag: "문화 체험", desc: "전통 방식의 양털 깎기 시연과 똑똑한 양몰이 개의 활약을 눈앞에서 볼 수 있는 즐거운 팜쇼입니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/WalterPeakFarmShow.png" },
-            { name: "오클랜드 스카이 타워", tag: "랜드마크", desc: "높이 328m의 남반구 최고층 타워로, 오클랜드 도심과 항만의 환상적인 파노라마 뷰를 선사합니다.", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/AucklandSkyTower.png" }
-          ]
-        };
-
-        const handleImageError = (e) => { e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; };
-        
-        // --- 1. 컴포넌트 정의 ---
-
-        // (1) 대기 화면
-        const IntroScreen = ({ onEnter, onSkip, showSkip }) => {
-            const [isExiting, setIsExiting] = useState(false);
-            const handleClick = () => { setIsExiting(true); setTimeout(() => { onEnter(); }, 2500); };
-            const handleSkipClick = (e) => { 
-                e.stopPropagation(); 
-                onSkip(); 
-            };
-
-            return (
-                <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
-                    <div className="absolute inset-0">
-                        <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
-                    </div>
-                    
-                    {showSkip && (
-                        <button 
-                            onClick={handleSkipClick}
-                            className="absolute top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
-                        >
-                            SKIP
-                        </button>
-                    )}
-
-                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper">
-                        <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300">
-                            <div className="w-full h-full gold-logo-mask"></div>
-                        </div>
-                        
-                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg transition-all duration-300">
-                            <span className="block text-4xl md:text-6xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
-                            <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">ITA Conference</span>
-                        </h1>
-                        
-                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70 divider transition-all duration-300"></div>
-                        
-                        <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
-                        
-                        <button onClick={handleClick} className="btn-enter">ENTER</button>
-                    </div>
+            <div className="relative z-10 flex flex-col items-center justify-center min-h-[100dvh] py-20 animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper">
+                <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300">
+                    <div className="w-full h-full gold-logo-mask"></div>
                 </div>
-            );
-        };
+                
+                <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg transition-all duration-300">
+                    <span className="block text-4xl md:text-6xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
+                    <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">ITA Conference</span>
+                </h1>
+                
+                <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70 divider transition-all duration-300"></div>
+                
+                <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
+                
+                <button onClick={handleClick} className="btn-enter mb-12">ENTER</button>
+            </div>
+        </div>
+    );
+};
 
-        // (2) 편지 화면 [수정: 가독성 확보 & 스크롤 지원]
-        const LetterIntro = ({ onClose }) => {
-            const [isOpen, setIsOpen] = useState(false);
-            const [showContent, setShowContent] = useState(false);
-            const [isExiting, setIsExiting] = useState(false); 
-            const [isMounting, setIsMounting] = useState(true);
+// (2) 편지 화면
+const LetterIntro = ({ onClose }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [showContent, setShowContent] = useState(false);
+    const [isExiting, setIsExiting] = useState(false); 
+    const [isMounting, setIsMounting] = useState(true);
 
-            useEffect(() => { const timer = setTimeout(() => setIsMounting(false), 50); return () => clearTimeout(timer); }, []);
+    useEffect(() => { const timer = setTimeout(() => setIsMounting(false), 50); return () => clearTimeout(timer); }, []);
+    
+    const handleOpen = () => { 
+        if (isOpen) return; 
+        setIsOpen(true); 
+        setTimeout(() => setShowContent(true), 1300); 
+    };
+    
+    const handleClose = (e) => { 
+        e.stopPropagation(); 
+        setIsExiting(true); 
+        setTimeout(() => { onClose(); }, 1000); 
+    };
+
+    return (
+        <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
             
-            const handleOpen = () => { 
-                if (isOpen) return; 
-                setIsOpen(true); 
-                setTimeout(() => setShowContent(true), 1300); 
-            };
-            
-            const handleClose = (e) => { 
-                e.stopPropagation(); 
-                setIsExiting(true); 
-                setTimeout(() => { onClose(); }, 1000); 
-            };
-
-            return (
-                /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
-                <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
-                    
-                    {/* [수정] 내부 컨테이너: 화면 높이가 작아도 잘리지 않도록 min-h 지정 및 padding 추가 */}
-                    <div className="min-h-full w-full flex flex-col items-center justify-center py-10">
-                        <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
-                            <div className={`envelope ${isOpen ? 'open' : ''}`}>
-                                <div className="envelope-lid"></div>
-                                <div className="letter-paper">
-                                    <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                        <div className="letter-content-flex">
-                                            
-                                            {/* 로고 & 제목 (크기 원복) */}
-                                            <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
-                                                <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
-                                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
-                                                </div>
-                                                <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
-                                            </div>
-                                            
-                                            {/* 본문 (크기 원복) */}
-                                            <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
-                                                <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
-                                                    {travelData.letter.content.map((line, i) => (
-                                                        <p key={i} className="whitespace-nowrap">{line}</p>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* 하단 서명 & 버튼 (크기 원복) */}
-                                            <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
-                                                <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
-                                                
-                                                {showContent && (
-                                                    <button 
-                                                        onClick={handleClose} 
-                                                        className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
-                                                    >
-                                                        Enter Invitation
-                                                    </button>
-                                                )}
-                                            </div>
+            <div className="min-h-full w-full flex flex-col items-center justify-center py-10">
+                <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
+                    <div className={`envelope ${isOpen ? 'open' : ''}`}>
+                        <div className="envelope-lid"></div>
+                        <div className="letter-paper">
+                            <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+                                <div className="letter-content-flex">
+                                    
+                                    <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
+                                        <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
+                                            <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
+                                        </div>
+                                        <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
+                                    </div>
+                                    
+                                    <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
+                                        <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
+                                            {travelData.letter.content.map((line, i) => (
+                                                <p key={i} className="whitespace-nowrap">{line}</p>
+                                            ))}
                                         </div>
                                     </div>
-                                </div>
-                                <div className="flap flap-left"></div>
-                                <div className="flap flap-right"></div>
-                                <div className="flap flap-bottom"></div>
-                                <div className="wax-seal-wrapper">
-                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
+
+                                    <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
+                                        <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
+                                        
+                                        {showContent && (
+                                            <button 
+                                                onClick={handleClose} 
+                                                className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
+                                            >
+                                                Enter Invitation
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
+                        </div>
+                        <div className="flap flap-left"></div>
+                        <div className="flap flap-right"></div>
+                        <div className="flap flap-bottom"></div>
+                        <div className="wax-seal-wrapper">
+                            <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
                         </div>
                     </div>
+                    {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
                 </div>
-            );
-        };
+            </div>
+        </div>
+    );
+};
 
-        // (3) Header with Multi-step RSVP
-        const Header = ({ data, onInfoClick }) => {
-          const [showRSVP, setShowRSVP] = useState(false);
-          const [rsvpStep, setRsvpStep] = useState('input'); 
-          const [empId, setEmpId] = useState("");
-          const [userName, setUserName] = useState("");
-          const [attendance, setAttendance] = useState(null); 
-          const [prevAttendance, setPrevAttendance] = useState(null); 
-          const [isLoading, setIsLoading] = useState(false);
-          const [errorMsg, setErrorMsg] = useState("");
+// (3) Header with Multi-step RSVP
+const Header = ({ data, onInfoClick }) => {
+  const [showRSVP, setShowRSVP] = useState(false);
+  const [rsvpStep, setRsvpStep] = useState('input'); 
+  const [empId, setEmpId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [attendance, setAttendance] = useState(null); 
+  const [prevAttendance, setPrevAttendance] = useState(null); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-          const resetRSVP = () => {
-              setShowRSVP(false);
-              setRsvpStep('input');
-              setEmpId("");
-              setUserName("");
-              setAttendance(null);
-              setPrevAttendance(null); 
+  const resetRSVP = () => {
+      setShowRSVP(false);
+      setRsvpStep('input');
+      setEmpId("");
+      setUserName("");
+      setAttendance(null);
+      setPrevAttendance(null); 
+      setIsLoading(false);
+      setErrorMsg("");
+  };
+
+  const handleCheckId = async () => {
+    if (!empId) return;
+
+    // [테스트용 가짜 데이터]
+    const testModeUsers = {
+        "1111": { status: 'success', name: "박금융(테스트)", submitted: true, attendance: true }, 
+        "2222": { status: 'success', name: "이보험(테스트)", submitted: true, attendance: false },
+        "1234": { status: 'success', name: "김인카(테스트)", submitted: false }
+    };
+
+    if (testModeUsers[empId]) {
+        setIsLoading(true);
+        setTimeout(() => {
+            const result = testModeUsers[empId];
+            setUserName(result.name);
+            if (result.submitted) {
+                setPrevAttendance(result.attendance);
+                setRsvpStep('check_change');
+            } else {
+                setRsvpStep('selection');
+            }
+            setIsLoading(false);
+        }, 500);
+        return;
+    }
+
+    if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
+        setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
+        return;
+    }
+
+    setIsLoading(true);
+    setErrorMsg("");
+
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            cache: 'no-store', 
+            body: JSON.stringify({ action: 'check', empId: empId })
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            setUserName(result.name);
+            
+            const isSubmitted = result.submitted === true || result.submitted === "true";
+            
+            if (isSubmitted) {
+                const prevStatus = result.attendance === true || result.attendance === "true";
+                setPrevAttendance(prevStatus);
+                setRsvpStep('check_change'); 
+            } else {
+                setRsvpStep('selection');
+            }
+        } else {
+            setErrorMsg("일치하는 사번 정보가 없습니다.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setErrorMsg("통신 중 오류가 발생했습니다.");
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleSelect = (isAttending) => {
+      setAttendance(isAttending);
+      setRsvpStep('confirm'); 
+  };
+
+  const handleFinalConfirm = async (isConfirmed) => {
+      if (!isConfirmed) {
+          setRsvpStep('selection'); 
+          return;
+      }
+
+      setIsLoading(true);
+      
+      if (GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+          setTimeout(() => {
+              setRsvpStep('done');
               setIsLoading(false);
-              setErrorMsg("");
-          };
+          }, 500);
+          return;
+      }
 
-          const handleCheckId = async () => {
-            if (!empId) return;
+      try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+              method: 'POST',
+              body: JSON.stringify({ 
+                  action: 'rsvp', 
+                  empId: empId, 
+                  name: userName,
+                  attendance: attendance 
+              })
+          });
+          setRsvpStep('done');
+      } catch (error) {
+          setErrorMsg("저장 중 오류가 발생했습니다.");
+      } finally {
+          setIsLoading(false);
+      }
+  };
 
-            // [테스트용 가짜 데이터]
-            const testModeUsers = {
-                "1111": { status: 'success', name: "박금융(테스트)", submitted: true, attendance: true }, 
-                "2222": { status: 'success', name: "이보험(테스트)", submitted: true, attendance: false },
-                "1234": { status: 'success', name: "김인카(테스트)", submitted: false }
-            };
+  return (
+    <header className="relative w-full min-h-[50vh] md:min-h-[400px] min-h-[360px] flex flex-col justify-end overflow-hidden shadow-2xl bg-slate-900">
+      <div className="absolute inset-0 w-full h-full">
+        <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+      </div>
+      
+      <div className="relative z-10 px-8 pb-10 pt-32 text-white w-full">
+        <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl break-words">
+            {data.subtitle.map((line, i) => (
+                <span key={i} className="block">{line}</span>
+            ))}
+        </div>
+        <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100 drop-shadow-lg break-words">{data.title}</h1>
+        <div className="flex items-center mt-2 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
+          <Calendar size={14} className="mr-2 text-amber-400" />
+          {data.dateRange}
+        </div>
 
-            if (testModeUsers[empId]) {
-                setIsLoading(true);
-                setTimeout(() => {
-                    const result = testModeUsers[empId];
-                    setUserName(result.name);
-                    if (result.submitted) {
-                        setPrevAttendance(result.attendance);
-                        setRsvpStep('check_change');
-                    } else {
-                        setRsvpStep('selection');
-                    }
-                    setIsLoading(false);
-                }, 500);
-                return;
-            }
+        <div className="mt-6">
+            {!showRSVP ? (
+                <button 
+                    onClick={() => setShowRSVP(true)} 
+                    className="group relative overflow-hidden bg-white/10 backdrop-blur-md border border-amber-500/50 rounded-xl p-4 w-full max-w-sm flex items-center justify-between transition-all hover:bg-black/60 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                >
+                    <div className="flex items-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#aa771c] flex items-center justify-center text-slate-900 shadow-lg mr-4 group-hover:scale-110 transition-transform">
+                            <Mail size={24} strokeWidth={2.5} />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-[#D4AF37] font-bold text-xl tracking-widest font-serif mb-1 group-hover:text-amber-300 transition-colors">ITA 초청장</p>
+                            <p className="text-slate-200 text-xl font-bold">참석 여부를 확인해주세요</p>
+                        </div>
+                    </div>
+                    <div className="text-amber-500/70 group-hover:translate-x-1 transition-transform group-hover:text-amber-400">
+                        <ChevronRight size={24} />
+                    </div>
+                </button>
+            ) : (
+                <div className="bg-black/85 backdrop-blur-md p-4 rounded-xl border border-slate-600 w-full max-w-sm animate-in slide-in-from-bottom-2 fade-in shadow-2xl relative">
+                    {isLoading && (
+                        <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center rounded-xl">
+                            <div className="loader"></div>
+                        </div>
+                    )}
 
-            if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
-                setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
-                return;
-            }
+                    <div className="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
+                        <span className="text-sm text-amber-500 font-bold uppercase tracking-widest">참석 여부 확인</span>
+                        <button onClick={resetRSVP}><X size={18} className="text-slate-400 hover:text-white" /></button>
+                    </div>
 
-            setIsLoading(true);
-            setErrorMsg("");
+                    {rsvpStep === 'input' && (
+                        <div className="space-y-3">
+                            <p className="text-sm text-slate-300">사번을 입력하여 본인 확인을 진행해주세요.</p>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={empId} 
+                                    onChange={(e) => setEmpId(e.target.value)}
+                                    placeholder="사번 입력 (예: 1611499)"
+                                    className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 placeholder-slate-500"
+                                    onKeyPress={(e) => e.key === 'Enter' && handleCheckId()}
+                                />
+                                <button onClick={handleCheckId} className="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-2 rounded font-bold whitespace-nowrap transition-colors">확인</button>
+                            </div>
+                            {errorMsg && <p className="text-xs text-red-400 mt-1">{errorMsg}</p>}
+                        </div>
+                    )}
 
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    cache: 'no-store', 
-                    body: JSON.stringify({ action: 'check', empId: empId })
-                });
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    setUserName(result.name);
-                    
-                    const isSubmitted = result.submitted === true || result.submitted === "true";
-                    
-                    if (isSubmitted) {
-                        const prevStatus = result.attendance === true || result.attendance === "true";
-                        setPrevAttendance(prevStatus);
-                        setRsvpStep('check_change'); 
-                    } else {
-                        setRsvpStep('selection');
-                    }
-                } else {
-                    setErrorMsg("일치하는 사번 정보가 없습니다.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                setErrorMsg("통신 중 오류가 발생했습니다.");
-            } finally {
-                setIsLoading(false);
-            }
-          };
+                    {rsvpStep === 'check_change' && (
+                        <div className="space-y-3">
+                            <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님은 이미 제출하셨습니다.</p>
+                            <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2 text-center">
+                                현재 상태: {prevAttendance ? <span className="text-green-400 font-bold">"참석"</span> : <span className="text-red-400 font-bold">"불참"</span>}
+                                <br/><span className="text-xs text-slate-400 block mt-1">참석 여부를 변경하시겠습니까?</span>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <button onClick={() => setRsvpStep('selection')} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">
+                                    네, 변경하겠습니다
+                                </button>
+                                <button onClick={() => {
+                                    setAttendance(prevAttendance); 
+                                    setRsvpStep('done'); 
+                                }} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium transition-colors">
+                                    아니오 (여권 제출로 이동)
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-          const handleSelect = (isAttending) => {
-              setAttendance(isAttending);
-              setRsvpStep('confirm'); 
-          };
+                    {rsvpStep === 'selection' && (
+                        <div className="space-y-3">
+                            <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님, 환영합니다.</p>
+                            <p className="text-xs text-slate-400 mb-2">이번 행사에 참석하시겠습니까?</p>
+                            <div className="flex flex-col gap-2">
+                                <button onClick={() => handleSelect(true)} className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded text-sm font-bold flex items-center justify-center transition-colors">
+                                    <UserCheck size={16} className="mr-2" /> 예, 참석하겠습니다.
+                                </button>
+                                <button onClick={() => handleSelect(false)} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium flex items-center justify-center transition-colors">
+                                    <UserX size={16} className="mr-2" /> 아니오, 참석하지 않겠습니다.
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-          const handleFinalConfirm = async (isConfirmed) => {
-              if (!isConfirmed) {
-                  setRsvpStep('selection'); 
-                  return;
-              }
+                    {rsvpStep === 'confirm' && (
+                        <div className="space-y-3 text-center">
+                            <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2">
+                                {attendance ? (
+                                    <span className="text-green-400 font-bold">"참석"</span>
+                                ) : (
+                                    <span className="text-red-400 font-bold">"불참"</span>
+                                )}
+                                으로 선택하셨습니다.<br/>제출하시겠습니까?
+                            </div>
+                            <div className="flex gap-2">
+                                <button onClick={() => handleFinalConfirm(true)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">네, 제출합니다</button>
+                                <button onClick={() => handleFinalConfirm(false)} className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 rounded text-sm font-medium transition-colors">아니오</button>
+                            </div>
+                        </div>
+                    )}
 
-              setIsLoading(true);
-              
-              if (GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
-                  setTimeout(() => {
-                      setRsvpStep('done');
-                      setIsLoading(false);
-                  }, 500);
-                  return;
-              }
+                    {rsvpStep === 'done' && (
+                        <div className="text-center py-4">
+                            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
+                                <CheckCircle size={24} />
+                            </div>
+                            <p className="text-white font-bold mb-1">
+                                {prevAttendance !== null && attendance === prevAttendance ? "확인이 완료되었습니다." : "제출이 완료되었습니다."}
+                            </p>
+                            <p className="text-xs text-slate-400 mb-4">{userName}님의 소중한 의견 감사합니다.</p>
+                            
+                            {attendance && (
+                                <div className="mb-5 p-3 bg-slate-800/50 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
+                                    <p className="text-xs text-amber-400 mb-2 font-bold flex items-center justify-center">
+                                        <AlertTriangle size={12} className="mr-1" /> 원활한 출국 수속을 위해 필수
+                                    </p>
+                                    <a 
+                                        href="https://script.google.com/macros/s/AKfycbzgqzph_1Cqcvb08Li_qN1odolUX0qoaTx8uqPRXEZLaGWsPjDuRXlFa_qP_ONXYuN7/exec" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center shadow-lg transition-all transform hover:scale-[1.02]"
+                                    >
+                                        <Plane size={18} className="mr-2" /> 여권 정보 제출하러 가기
+                                    </a>
+                                </div>
+                            )}
 
-              try {
-                  await fetch(GOOGLE_SCRIPT_URL, {
-                      method: 'POST',
-                      body: JSON.stringify({ 
-                          action: 'rsvp', 
-                          empId: empId, 
-                          name: userName,
-                          attendance: attendance 
-                      })
-                  });
-                  setRsvpStep('done');
-              } catch (error) {
-                  setErrorMsg("저장 중 오류가 발생했습니다.");
-              } finally {
-                  setIsLoading(false);
-              }
-          };
+                            <button onClick={resetRSVP} className="text-xs text-slate-500 hover:text-slate-300 underline">닫기</button>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+      </div>
+    </header>
+  );
+};
 
+const NoticeFooter = () => (
+  <div className="mb-6 py-2 text-center">
+    <p className="text-sm font-bold text-slate-600 leading-relaxed">
+      ※ 아래 일정 및 내용은 현지 사정에 따라<br/>사전 고지 없이 변경될 수 있습니다.
+    </p>
+  </div>
+);
+
+const TabNavigation = ({ activeTab, setActiveTab }) => {
+  const tabs = [
+    { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
+    { id: 'Schedule', label: '일정', icon: Calendar },
+    { id: 'Hotel', label: '숙소', icon: BedDouble },
+    { id: 'Dining', label: '식사', icon: UtensilsCrossed },
+    { id: 'Attractions', label: '관광', icon: Mountain },
+  ];
+  return (
+    <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
+      <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
           return (
-            <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
-              <div className="absolute inset-0">
-                <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
-                {/* [수정] 배경 그라데이션을 별도 레이어로 분리하여 텍스트 영역과 독립시킴 (잘림 방지) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-              </div>
-              
-              {/* [수정] 텍스트 컨테이너: 절대 위치 + 패딩 방식에서 -> Flexbox 하단 정렬 방식으로 변경 */}
-              <div className="absolute inset-0 z-10 flex flex-col justify-end px-8 pb-10 text-white">
-                <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl">
-                    {data.subtitle.map((line, i) => (
-                        <span key={i} className="block">{line}</span>
+            <button key={tab.id} onClick={() => {
+                setActiveTab(tab.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            }} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
+              <Icon size={20} className="mb-1" />
+              {tab.label}
+              {isActive && <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  );
+};
+
+const TimelineItem = ({ activity, isLast }) => (
+  <div className="relative pl-8 pb-8 group">
+    {!isLast && <div className="absolute left-[11px] top-2 h-full w-[2px] bg-slate-200 group-hover:bg-amber-200 transition-colors"></div>}
+    <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 bg-white flex items-center justify-center shadow-sm z-10 transition-colors ${activity.type === 'award' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 group-hover:border-amber-400'}`}>
+      <div className={activity.type === 'award' ? 'text-amber-600' : 'text-slate-500'}>
+          {(() => {
+              switch (activity.type) {
+                  case 'flight': return <Plane size={16} />;
+                  case 'food': return <Utensils size={16} />;
+                  case 'transport': return <Bus size={16} />;
+                  case 'hotel': return <Hotel size={16} />;
+                  case 'sightseeing': return <Camera size={16} />;
+                  case 'award': return <Award size={16} />;
+                  case 'wine': return <Wine size={16} />;
+                  case 'activity': return <Sun size={16} />;
+                  case 'ship': return <Ship size={16} />;
+                  case 'coffee': return <Coffee size={16} />;
+                  default: return <CheckCircle size={16} />;
+              }
+          })()}
+      </div>
+    </div>
+    <div className={`p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border ml-2 transition-transform active:scale-[0.99] ${activity.type === 'award' ? 'bg-gradient-to-br from-amber-50 to-white border-amber-100' : 'bg-white border-slate-100/50'}`}>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-amber-600 font-bold text-sm font-mono">{activity.time}</span>
+        <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${activity.type === 'award' ? 'bg-amber-100 text-amber-700 font-bold' : 'bg-slate-50 text-slate-400'}`}>{activity.type}</span>
+      </div>
+      <h3 className="text-slate-800 font-semibold text-base mb-1">{activity.title}</h3>
+      <p className="text-slate-500 text-sm leading-relaxed">{activity.desc}</p>
+    </div>
+  </div>
+);
+
+const HotelDetailCard = ({ hotel }) => (
+  <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6 overflow-hidden group">
+    <div className="h-48 bg-slate-200 relative overflow-hidden">
+      <img src={hotel.image} alt={hotel.name} onError={handleImageError} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">{hotel.sub}</div>
+    </div>
+    <div className="p-6">
+      <h3 className="font-serif text-2xl text-slate-900 mb-2 font-[Playfair Display]">{hotel.name}</h3>
+      <div className="flex items-center text-slate-500 text-sm mb-4">
+        <MapPin size={14} className="mr-1 text-amber-600" />
+        {hotel.location || "New Zealand"}
+      </div>
+      <p className="text-slate-600 text-sm leading-relaxed mb-4 border-l-2 border-amber-200 pl-3">{hotel.desc}</p>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {hotel.features.map((feature, i) => <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">{feature}</span>)}
+      </div>
+      <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
+        <div className="text-slate-500"><span className="block text-xs text-slate-400">체크인</span><span className="font-semibold text-slate-800">{hotel.checkIn}</span></div>
+        <div className="text-slate-300">|</div>
+        <div className="text-slate-500 text-right"><span className="block text-xs text-slate-400">체크아웃</span><span className="font-semibold text-slate-800">{hotel.checkOut}</span></div>
+      </div>
+    </div>
+  </div>
+);
+
+const DiningCard = ({ item }) => (
+  <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-5 overflow-hidden flex flex-col">
+    <div className="h-40 overflow-hidden relative">
+      <img src={item.image} alt={item.name} onError={handleImageError} className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+        <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 px-2 py-1 rounded-md text-xs font-bold w-fit mb-2 block shadow-sm">{item.day}</span>
+        <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
+      </div>
+    </div>
+    <div className="p-5">
+      <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
+      <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
+      <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+        <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
+          <Utensils size={12} className="mr-1" /> 대표 메뉴
+        </div>
+        <ul className="text-sm text-slate-700 space-y-1">
+          {item.menu.map((menuItem, i) => <li key={i} className="flex items-start"><span className="mr-2 text-amber-500">•</span>{menuItem}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+);
+
+const SpotCard = ({ spot }) => (
+  <div className="relative mb-5 rounded-2xl overflow-hidden shadow-lg h-64 group">
+    <img src={spot.image} alt={spot.name} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
+    <div className="absolute top-4 left-4">
+      <span className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
+    </div>
+    <div className="absolute bottom-0 p-6 text-white">
+      <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
+      <p className="text-sm text-slate-200 leading-relaxed opacity-90 mb-2">{spot.desc}</p>
+      {spot.note && <div className="flex items-center text-xs text-amber-300 font-medium"><Info size={12} className="mr-1" /> {spot.note}</div>}
+    </div>
+  </div>
+);
+
+const EntryInfoModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
+                    <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center">
+                        <Info size={18} className="mr-2" /> Travel Checklist
+                    </h3>
+                    <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
+                </div>
+                <div className="p-5 overflow-y-auto">
+                    <div className="space-y-5">
+                        {travelData.entryInfo.map((info, idx) => (
+                            <div key={idx} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0">
+                                <h4 className="font-bold text-slate-800 mb-1 flex items-center text-sm"><CheckCircle size={14} className="mr-2 text-green-600" />{info.title}</h4>
+                                <p className="text-xs text-slate-500 leading-relaxed pl-6 bg-slate-50 p-2 rounded">{info.content}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
+                        <AlertTriangle size={16} className="text-amber-600 mr-2 shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-amber-800 leading-snug">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
+                    </div>
+                </div>
+                <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
+                    <button onClick={onClose} className="w-full bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition-colors">확인했습니다</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ChecklistView = () => (
+    <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+        <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
+            <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
+        </h2>
+
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
+            <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
+            <div className="text-sm text-red-800 leading-snug font-bold">
+                <p className="mb-1">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다.</p>
+                <p className="mb-1">가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
+                <p className="text-red-600 underline decoration-red-400 underline-offset-2">탑승 전 음식물은 절대 소지하지 말고 탑승하시기 바랍니다.</p>
+            </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+            <div className="p-5">
+                <div className="space-y-6">
+                    {travelData.entryInfo.map((info, idx) => (
+                        <div key={idx} className="border-b border-slate-100 last:border-0 pb-5 last:pb-0">
+                            <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base">
+                                <CheckCircle size={18} className="mr-2 text-green-600" />{info.title}
+                            </h4>
+                            <p className="text-sm text-slate-600 leading-relaxed pl-7 bg-slate-50 p-3 rounded-lg border border-slate-100/50">{info.content}</p>
+                        </div>
                     ))}
                 </div>
-                <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100 drop-shadow-lg">{data.title}</h1>
-                <div className="flex items-center mt-2 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
-                  <Calendar size={14} className="mr-2 text-amber-400" />
-                  {data.dateRange}
-                </div>
 
-                <div className="mt-6">
-                    {!showRSVP ? (
-                        <button 
-                            onClick={() => setShowRSVP(true)} 
-                            className="group relative overflow-hidden bg-white/10 backdrop-blur-md border border-amber-500/50 rounded-xl p-4 w-full max-w-sm flex items-center justify-between transition-all hover:bg-black/60 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-                        >
-                            <div className="flex items-center">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#aa771c] flex items-center justify-center text-slate-900 shadow-lg mr-4 group-hover:scale-110 transition-transform">
-                                    <Mail size={24} strokeWidth={2.5} />
+                <div className="mt-8 pt-6 border-t border-slate-100">
+                     <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
+                        <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
+                    </h4>
+                    <div className="grid gap-3">
+                        {travelData.contacts.map((contact, idx) => (
+                            <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span>
                                 </div>
-                                <div className="text-left">
-                                    <p className="text-[#D4AF37] font-bold text-xl tracking-widest font-serif mb-1 group-hover:text-amber-300 transition-colors">ITA 초청장</p>
-                                    <p className="text-slate-200 text-xl font-bold">참석 여부를 확인해주세요</p>
-                                </div>
-                            </div>
-                            <div className="text-amber-500/70 group-hover:translate-x-1 transition-transform group-hover:text-amber-400">
-                                <ChevronRight size={24} />
-                            </div>
-                        </button>
-                    ) : (
-                        <div className="bg-black/85 backdrop-blur-md p-4 rounded-xl border border-slate-600 w-full max-w-sm animate-in slide-in-from-bottom-2 fade-in shadow-2xl relative">
-                            {isLoading && (
-                                <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center rounded-xl">
-                                    <div className="loader"></div>
-                                </div>
-                            )}
-
-                            <div className="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
-                                <span className="text-sm text-amber-500 font-bold uppercase tracking-widest">참석 여부 확인</span>
-                                <button onClick={resetRSVP}><X size={18} className="text-slate-400 hover:text-white" /></button>
-                            </div>
-
-                            {rsvpStep === 'input' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-slate-300">사번을 입력하여 본인 확인을 진행해주세요.</p>
-                                    <div className="flex gap-2">
-                                        <input 
-                                            type="text" 
-                                            value={empId} 
-                                            onChange={(e) => setEmpId(e.target.value)}
-                                            placeholder="사번 입력 (예: 1611499)"
-                                            className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 placeholder-slate-500"
-                                            onKeyPress={(e) => e.key === 'Enter' && handleCheckId()}
-                                        />
-                                        <button onClick={handleCheckId} className="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-2 rounded font-bold whitespace-nowrap transition-colors">확인</button>
-                                    </div>
-                                    {errorMsg && <p className="text-xs text-red-400 mt-1">{errorMsg}</p>}
-                                </div>
-                            )}
-
-                            {rsvpStep === 'check_change' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님은 이미 제출하셨습니다.</p>
-                                    <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2 text-center">
-                                        현재 상태: {prevAttendance ? <span className="text-green-400 font-bold">"참석"</span> : <span className="text-red-400 font-bold">"불참"</span>}
-                                        <br/><span className="text-xs text-slate-400 block mt-1">참석 여부를 변경하시겠습니까?</span>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <button onClick={() => setRsvpStep('selection')} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">
-                                            네, 변경하겠습니다
-                                        </button>
-                                        <button onClick={() => {
-                                            setAttendance(prevAttendance); 
-                                            setRsvpStep('done'); 
-                                        }} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium transition-colors">
-                                            아니오 (여권 제출로 이동)
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'selection' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님, 환영합니다.</p>
-                                    <p className="text-xs text-slate-400 mb-2">이번 행사에 참석하시겠습니까?</p>
-                                    <div className="flex flex-col gap-2">
-                                        <button onClick={() => handleSelect(true)} className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded text-sm font-bold flex items-center justify-center transition-colors">
-                                            <UserCheck size={16} className="mr-2" /> 예, 참석하겠습니다.
-                                        </button>
-                                        <button onClick={() => handleSelect(false)} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium flex items-center justify-center transition-colors">
-                                            <UserX size={16} className="mr-2" /> 아니오, 참석하지 않겠습니다.
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'confirm' && (
-                                <div className="space-y-3 text-center">
-                                    <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2">
-                                        {attendance ? (
-                                            <span className="text-green-400 font-bold">"참석"</span>
-                                        ) : (
-                                            <span className="text-red-400 font-bold">"불참"</span>
-                                        )}
-                                        으로 선택하셨습니다.<br/>제출하시겠습니까?
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => handleFinalConfirm(true)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">네, 제출합니다</button>
-                                        <button onClick={() => handleFinalConfirm(false)} className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 rounded text-sm font-medium transition-colors">아니오</button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'done' && (
-                                <div className="text-center py-4">
-                                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
-                                        <CheckCircle size={24} />
-                                    </div>
-                                    <p className="text-white font-bold mb-1">
-                                        {prevAttendance !== null && attendance === prevAttendance ? "확인이 완료되었습니다." : "제출이 완료되었습니다."}
-                                    </p>
-                                    <p className="text-xs text-slate-400 mb-4">{userName}님의 소중한 의견 감사합니다.</p>
-                                    
-                                    {attendance && (
-                                        <div className="mb-5 p-3 bg-slate-800/50 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
-                                            <p className="text-xs text-amber-400 mb-2 font-bold flex items-center justify-center">
-                                                <AlertTriangle size={12} className="mr-1" /> 원활한 출국 수속을 위해 필수
-                                            </p>
-                                            <a 
-                                                href="https://script.google.com/macros/s/AKfycbzgqzph_1Cqcvb08Li_qN1odolUX0qoaTx8uqPRXEZLaGWsPjDuRXlFa_qP_ONXYuN7/exec" 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center shadow-lg transition-all transform hover:scale-[1.02]"
-                                            >
-                                                <Plane size={18} className="mr-2" /> 여권 정보 제출하러 가기
-                                            </a>
-                                        </div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
+                                    {contact.phone === "추후 기재" ? (
+                                        <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
+                                    ) : (
+                                        <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
                                     )}
-
-                                    <button onClick={resetRSVP} className="text-xs text-slate-500 hover:text-slate-300 underline">닫기</button>
                                 </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-              </div>
-            </header>
-          );
-        };
-
-        const NoticeFooter = () => (
-          <div className="mb-6 py-2 text-center">
-            <p className="text-sm font-bold text-slate-600 leading-relaxed">
-              ※ 아래 일정 및 내용은 현지 사정에 따라<br/>사전 고지 없이 변경될 수 있습니다.
-            </p>
-          </div>
-        );
-
-        const TabNavigation = ({ activeTab, setActiveTab }) => {
-          const tabs = [
-            { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
-            { id: 'Schedule', label: '일정', icon: Calendar },
-            { id: 'Hotel', label: '숙소', icon: BedDouble },
-            { id: 'Dining', label: '식사', icon: UtensilsCrossed },
-            { id: 'Attractions', label: '관광', icon: Mountain },
-          ];
-          return (
-            <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
-              <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button key={tab.id} onClick={() => {
-                        setActiveTab(tab.id);
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                    }} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
-                      <Icon size={20} className="mb-1" />
-                      {tab.label}
-                      {isActive && <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          );
-        };
-
-        const TimelineItem = ({ activity, isLast }) => (
-          <div className="relative pl-8 pb-8 group">
-            {!isLast && <div className="absolute left-[11px] top-2 h-full w-[2px] bg-slate-200 group-hover:bg-amber-200 transition-colors"></div>}
-            <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 bg-white flex items-center justify-center shadow-sm z-10 transition-colors ${activity.type === 'award' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 group-hover:border-amber-400'}`}>
-              <div className={activity.type === 'award' ? 'text-amber-600' : 'text-slate-500'}>
-                  {(() => {
-                      switch (activity.type) {
-                          case 'flight': return <Plane size={16} />;
-                          case 'food': return <Utensils size={16} />;
-                          case 'transport': return <Bus size={16} />;
-                          case 'hotel': return <Hotel size={16} />;
-                          case 'sightseeing': return <Camera size={16} />;
-                          case 'award': return <Award size={16} />;
-                          case 'wine': return <Wine size={16} />;
-                          case 'activity': return <Sun size={16} />;
-                          case 'ship': return <Ship size={16} />;
-                          case 'coffee': return <Coffee size={16} />;
-                          default: return <CheckCircle size={16} />;
-                      }
-                  })()}
-              </div>
-            </div>
-            <div className={`p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border ml-2 transition-transform active:scale-[0.99] ${activity.type === 'award' ? 'bg-gradient-to-br from-amber-50 to-white border-amber-100' : 'bg-white border-slate-100/50'}`}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-amber-600 font-bold text-sm font-mono">{activity.time}</span>
-                <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${activity.type === 'award' ? 'bg-amber-100 text-amber-700 font-bold' : 'bg-slate-50 text-slate-400'}`}>{activity.type}</span>
-              </div>
-              <h3 className="text-slate-800 font-semibold text-base mb-1">{activity.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{activity.desc}</p>
-            </div>
-          </div>
-        );
-
-        const HotelDetailCard = ({ hotel }) => (
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6 overflow-hidden group">
-            <div className="h-48 bg-slate-200 relative overflow-hidden">
-              <img src={hotel.image} alt={hotel.name} onError={handleImageError} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">{hotel.sub}</div>
-            </div>
-            <div className="p-6">
-              <h3 className="font-serif text-2xl text-slate-900 mb-2 font-[Playfair Display]">{hotel.name}</h3>
-              <div className="flex items-center text-slate-500 text-sm mb-4">
-                <MapPin size={14} className="mr-1 text-amber-600" />
-                {hotel.location || "New Zealand"}
-              </div>
-              <p className="text-slate-600 text-sm leading-relaxed mb-4 border-l-2 border-amber-200 pl-3">{hotel.desc}</p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {hotel.features.map((feature, i) => <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">{feature}</span>)}
-              </div>
-              <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
-                <div className="text-slate-500"><span className="block text-xs text-slate-400">체크인</span><span className="font-semibold text-slate-800">{hotel.checkIn}</span></div>
-                <div className="text-slate-300">|</div>
-                <div className="text-slate-500 text-right"><span className="block text-xs text-slate-400">체크아웃</span><span className="font-semibold text-slate-800">{hotel.checkOut}</span></div>
-              </div>
-            </div>
-          </div>
-        );
-
-        const DiningCard = ({ item }) => (
-          <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-5 overflow-hidden flex flex-col">
-            <div className="h-40 overflow-hidden relative">
-              <img src={item.image} alt={item.name} onError={handleImageError} className="w-full h-full object-cover" />
-              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 px-2 py-1 rounded-md text-xs font-bold w-fit mb-2 block shadow-sm">{item.day}</span>
-                <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
-              </div>
-            </div>
-            <div className="p-5">
-              <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
-              <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
-                  <Utensils size={12} className="mr-1" /> 대표 메뉴
-                </div>
-                <ul className="text-sm text-slate-700 space-y-1">
-                  {item.menu.map((menuItem, i) => <li key={i} className="flex items-start"><span className="mr-2 text-amber-500">•</span>{menuItem}</li>)}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-
-        const SpotCard = ({ spot }) => (
-          <div className="relative mb-5 rounded-2xl overflow-hidden shadow-lg h-64 group">
-            <img src={spot.image} alt={spot.name} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
-            <div className="absolute top-4 left-4">
-              <span className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
-            </div>
-            <div className="absolute bottom-0 p-6 text-white">
-              <h3 className="text-xl font-bold mb-2">{spot.name}</h3>
-              <p className="text-sm text-slate-200 leading-relaxed opacity-90 mb-2">{spot.desc}</p>
-              {spot.note && <div className="flex items-center text-xs text-amber-300 font-medium"><Info size={12} className="mr-1" /> {spot.note}</div>}
-            </div>
-          </div>
-        );
-
-        const EntryInfoModal = ({ isOpen, onClose }) => {
-            if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
-                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center">
-                                <Info size={18} className="mr-2" /> Travel Checklist
-                            </h3>
-                            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
-                        </div>
-                        <div className="p-5 overflow-y-auto">
-                            <div className="space-y-5">
-                                {travelData.entryInfo.map((info, idx) => (
-                                    <div key={idx} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0">
-                                        <h4 className="font-bold text-slate-800 mb-1 flex items-center text-sm"><CheckCircle size={14} className="mr-2 text-green-600" />{info.title}</h4>
-                                        <p className="text-xs text-slate-500 leading-relaxed pl-6 bg-slate-50 p-2 rounded">{info.content}</p>
-                                    </div>
-                                ))}
                             </div>
-                            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
-                                <AlertTriangle size={16} className="text-amber-600 mr-2 shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-amber-800 leading-snug">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
-                            </div>
-                        </div>
-                        <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
-                            <button onClick={onClose} className="w-full bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition-colors">확인했습니다</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ChecklistView = () => (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
-                    <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
-                </h2>
-
-                <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
-                    <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
-                    <div className="text-sm text-red-800 leading-snug font-bold">
-                        <p className="mb-1">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다.</p>
-                        <p className="mb-1">가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
-                        <p className="text-red-600 underline decoration-red-400 underline-offset-2">탑승 전 음식물은 절대 소지하지 말고 탑승하시기 바랍니다.</p>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    <div className="p-5">
-                        <div className="space-y-6">
-                            {travelData.entryInfo.map((info, idx) => (
-                                <div key={idx} className="border-b border-slate-100 last:border-0 pb-5 last:pb-0">
-                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base">
-                                        <CheckCircle size={18} className="mr-2 text-green-600" />{info.title}
-                                    </h4>
-                                    <p className="text-sm text-slate-600 leading-relaxed pl-7 bg-slate-50 p-3 rounded-lg border border-slate-100/50">{info.content}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-8 pt-6 border-t border-slate-100">
-                             <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
-                                <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
-                            </h4>
-                            <div className="grid gap-3">
-                                {travelData.contacts.map((contact, idx) => (
-                                    <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span>
-                                        </div>
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
-                                            {contact.phone === "추후 기재" ? (
-                                                <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
-                                            ) : (
-                                                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
-        );
+        </div>
+    </div>
+);
 
-        function App() {
-            const [step, setStep] = useState('intro');
-            const [activeTab, setActiveTab] = useState('Schedule');
-            const [showEntryInfo, setShowEntryInfo] = useState(false);
-            const [hasVisited, setHasVisited] = useState(false);
-            
-            useEffect(() => {
-                const visited = localStorage.getItem('hasVisited');
-                if (visited) {
-                    setHasVisited(true);
-                }
-            }, []);
-
-            const handleEnterClick = () => {
-                setStep('letter');
-            };
-
-            const handleLetterClose = () => {
-                localStorage.setItem('hasVisited', 'true');
-                setStep('main');
-            };
-
-            const handleSkip = () => {
-                localStorage.setItem('hasVisited', 'true');
-                setStep('main');
-            };
-
-            return (
-                <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
-                    {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} showSkip={hasVisited} />}
-                    {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
-                    {step === 'main' && (
-                        <div className="fade-enter block bg-[#f8fafc] min-h-screen">
-                            <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
-                            <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-                            <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
-                                {activeTab === 'Checklist' && <ChecklistView />}
-                                {activeTab === 'Schedule' && (
-                                    <div className="animate-in fade-in duration-500">
-                                        <NoticeFooter /> 
-                                        {travelData.itinerary.map((day, idx) => (
-                                            <div key={idx} className="mb-8 last:mb-24">
-                                                <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
-                                                    <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
-                                                        <span className="text-[10px] font-light opacity-80">DAY</span>
-                                                        <span className="text-lg font-bold leading-none">{day.day}</span>
-                                                    </div>
-                                                    <div>
-                                                        <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
-                                                        <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="px-1">
-                                                    {day.activities.map((act, i) => <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />)}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                {activeTab === 'Hotel' && (
-                                    <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> 
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
-                                        {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
-                                    </div>
-                                )}
-                                {activeTab === 'Dining' && (
-                                    <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> 
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
-                                        {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
-                                    </div>
-                                )}
-                                {activeTab === 'Attractions' && (
-                                    <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> 
-                                        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
-                                        {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
-                                    </div>
-                                )}
-                            </main>
-                            <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
-                        </div>
-                    )}
-                </div>
-            );
+const App = () => {
+    const [step, setStep] = useState('intro');
+    const [activeTab, setActiveTab] = useState('Schedule');
+    const [showEntryInfo, setShowEntryInfo] = useState(false);
+    const [hasVisited, setHasVisited] = useState(false);
+    
+    useEffect(() => {
+        const visited = localStorage.getItem('hasVisited');
+        if (visited) {
+            setHasVisited(true);
         }
+    }, []);
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+    const handleEnterClick = () => {
+        setStep('letter');
+    };
+
+    const handleLetterClose = () => {
+        localStorage.setItem('hasVisited', 'true');
+        setStep('main');
+    };
+
+    const handleSkip = () => {
+        localStorage.setItem('hasVisited', 'true');
+        setStep('main');
+    };
+
+    return (
+        <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
+            <GlobalStyles />
+            {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} showSkip={hasVisited} />}
+            {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
+            {step === 'main' && (
+                <div className="fade-enter block bg-[#f8fafc] min-h-screen">
+                    <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
+                    <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
+                        {activeTab === 'Checklist' && <ChecklistView />}
+                        {activeTab === 'Schedule' && (
+                            <div className="animate-in fade-in duration-500">
+                                <NoticeFooter /> 
+                                {travelData.itinerary.map((day, idx) => (
+                                    <div key={idx} className="mb-8 last:mb-24">
+                                        <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
+                                            <div className="bg-slate-900 text-white w-12 h-12 flex flex-col items-center justify-center rounded-xl shadow-lg mr-4">
+                                                <span className="text-[10px] font-light opacity-80">DAY</span>
+                                                <span className="text-lg font-bold leading-none">{day.day}</span>
+                                            </div>
+                                            <div>
+                                                <h2 className="text-lg font-bold text-slate-900">{day.date}</h2>
+                                                <p className="text-sm text-slate-500 line-clamp-1">{day.title}</p>
+                                            </div>
+                                        </div>
+                                        <div className="px-1">
+                                            {day.activities.map((act, i) => <TimelineItem key={i} activity={act} isLast={i === day.activities.length - 1} />)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {activeTab === 'Hotel' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <NoticeFooter /> 
+                                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
+                                {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
+                            </div>
+                        )}
+                        {activeTab === 'Dining' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <NoticeFooter /> 
+                                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
+                                {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
+                            </div>
+                        )}
+                        {activeTab === 'Attractions' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <NoticeFooter /> 
+                                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
+                                {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
+                            </div>
+                        )}
+                    </main>
+                    <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default App;
