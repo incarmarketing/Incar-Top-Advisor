@@ -13,7 +13,6 @@
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Cinzel(럭셔리/유럽풍) 추가 -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 
     <!-- CDN 라이브러리 -->
@@ -56,23 +55,23 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            width: 100%; 
-            height: 100%;
+            width: 350px; /* 고정 너비 */
+            height: 220px; /* 고정 높이 */
             transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             z-index: 20; 
             pointer-events: auto !important;
         }
-        /* 편지가 열렸을 때 화면 아래쪽으로 이동 */
-        .envelope-container.opened { transform: translateY(15vh); cursor: default; }
+        
+        /* 편지가 열렸을 때 위치 이동 (스크롤 방식이므로 많이 이동 안 해도 됨) */
+        .envelope-container.opened { transform: translateY(50px); cursor: default; }
         
         .envelope {
-            position: relative; width: 350px; height: 220px;
+            position: relative; width: 100%; height: 100%;
             background-color: #fcfbf9; 
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
             border-radius: 4px; z-index: 10; transform-style: preserve-3d;
             box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
-            pointer-events: auto; /* 봉투 자체 클릭 가능 */
         }
 
         /* [편지 본체] */
@@ -82,7 +81,7 @@
             width: 320px; 
             height: 180px; 
             background: #ffffff; 
-            padding: 24px 20px; 
+            padding: 30px 24px 24px 24px; 
             transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
             z-index: 5; 
             box-shadow: none; 
@@ -93,7 +92,7 @@
         }
         
         .letter-paper::after {
-            content: ''; position: absolute; inset: 10px;
+            content: ''; position: absolute; inset: 12px;
             border: 1px solid #D4AF37;
             outline: 1px solid #D4AF37;
             outline-offset: -4px;
@@ -109,10 +108,9 @@
             z-index: 60; 
         }
         
-        /* [중요] 편지가 열렸을 때 스타일 */
+        /* [중요] 편지가 열렸을 때: 높이 580px로 고정하여 가독성 확보 */
         .envelope.open .letter-paper {
-            /* 일반 비율에서는 600px 고정 (원안 복구) */
-            height: 600px; 
+            height: 580px; /* 충분한 높이 확보 */
             bottom: -60px; 
             z-index: 50; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
@@ -129,25 +127,6 @@
             width: 100%;
             position: relative;
             z-index: 70;
-        }
-
-        /* [수정] 화면 높이가 750px 이하(폴드 펼침 등)일 때만 비율 축소 */
-        @media (max-height: 750px) {
-            /* 인트로 화면 내용 축소 */
-            .intro-scale-wrapper { transform: scale(0.85); }
-            /* 봉투 및 편지 축소 */
-            .envelope { transform: scale(0.85); }
-            .envelope.open .letter-paper {
-                height: 80vh; 
-                max-height: 500px;
-                bottom: -30px;
-            }
-            /* 내부 간격 조정 */
-            .letter-logo-box { height: 2.5rem !important; margin-bottom: 0.25rem !important; }
-            .letter-title { font-size: 1rem !important; margin-bottom: 0.5rem !important; padding-bottom: 0.25rem !important; }
-            .letter-text p { font-size: 0.85rem !important; line-height: 1.5 !important; }
-            .letter-footer { margin-top: 0.5rem !important; gap: 0.5rem !important; }
-            .btn-letter-enter { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; font-size: 0.7rem !important; }
         }
 
         /* 봉투 부속품 (안감) */
@@ -184,13 +163,13 @@
         .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* [수정] ENTER 버튼 디자인 원복 (테두리 박스 스타일) */
+        /* [수정] ENTER 버튼 (박스 스타일 원복) */
         .btn-enter {
             position: relative; 
-            background: rgba(0, 0, 0, 0.3); /* 반투명 배경 */
-            backdrop-filter: blur(4px); /* 블러 효과 */
-            border: 1px solid rgba(212, 175, 55, 0.6); /* 금색 테두리 */
-            border-radius: 4px; /* 살짝 둥근 모서리 */
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            border-radius: 4px;
             color: #D4AF37; 
             font-family: 'Playfair Display', serif; 
             font-size: 1.5rem; 
@@ -210,7 +189,6 @@
             color: #fff; 
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
         }
-        /* 은은한 펄스 효과 */
         .btn-enter::before {
             content: ''; position: absolute; inset: -3px; 
             border: 1px solid rgba(212, 175, 55, 0.2);
@@ -240,10 +218,8 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // ▼▼▼ [중요] 여기에 배포한 Google Apps Script URL을 넣으세요 ▼▼▼
-        // 주의: 반드시 'exec'로 끝나는 URL이어야 합니다.
+        // [중요] 최신 Apps Script URL 사용
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         // --- 아이콘 컴포넌트 ---
         const LucideIcon = ({ name, size = 16, className = "", ...props }) => {
@@ -425,7 +401,7 @@
 
         const handleImageError = (e) => { e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; };
         
-        // --- 1. 컴포넌트 정의 (App보다 위에 있어야 함) ---
+        // --- 1. 컴포넌트 정의 ---
 
         // (1) 대기 화면
         const IntroScreen = ({ onEnter, onSkip, showSkip }) => {
@@ -466,13 +442,14 @@
                         
                         <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
                         
+                        {/* [수정] 박스형 ENTER 버튼 원복 */}
                         <button onClick={handleClick} className="btn-enter">ENTER</button>
                     </div>
                 </div>
             );
         };
 
-        // (2) 편지 화면
+        // (2) 편지 화면 [수정: 가독성 확보 & 스크롤 지원]
         const LetterIntro = ({ onClose }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [showContent, setShowContent] = useState(false);
@@ -480,58 +457,80 @@
             const [isMounting, setIsMounting] = useState(true);
 
             useEffect(() => { const timer = setTimeout(() => setIsMounting(false), 50); return () => clearTimeout(timer); }, []);
-            const handleOpen = () => { if (isOpen) return; setIsOpen(true); setTimeout(() => setShowContent(true), 1300); };
-            const handleClose = (e) => { e.stopPropagation(); setIsExiting(true); setTimeout(() => { onClose(); }, 1000); };
+            
+            const handleOpen = () => { 
+                if (isOpen) return; 
+                setIsOpen(true); 
+                setTimeout(() => setShowContent(true), 1300); 
+            };
+            
+            const handleClose = (e) => { 
+                e.stopPropagation(); 
+                setIsExiting(true); 
+                setTimeout(() => { onClose(); }, 1000); 
+            };
 
             return (
-                <div className={`fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
-                    <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
-                        <div className={`envelope ${isOpen ? 'open' : ''}`}>
-                            <div className="envelope-lid"></div>
-                            <div className="letter-paper">
-                                <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                    <div className="letter-content-flex">
-                                        <div className="shrink-0 w-full flex flex-col items-center pt-1 letter-header">
-                                            <div className="h-16 md:h-24 mb-3 flex items-center justify-center letter-logo-box">
-                                                <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
+                /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
+                <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
+                    
+                    {/* [수정] 내부 컨테이너: 화면 높이가 작아도 잘리지 않도록 min-h 지정 및 padding 추가 */}
+                    <div className="min-h-full flex flex-col items-center justify-center py-20">
+                        <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
+                            <div className={`envelope ${isOpen ? 'open' : ''}`}>
+                                <div className="envelope-lid"></div>
+                                <div className="letter-paper">
+                                    <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+                                        <div className="letter-content-flex">
+                                            
+                                            {/* 로고 & 제목 (크기 원복) */}
+                                            <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
+                                                <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
+                                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
+                                                </div>
+                                                <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
                                             </div>
-                                            <h3 className="font-serif text-slate-900 text-lg md:text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-2 font-[Playfair Display] letter-title">INVITATION</h3>
-                                        </div>
-                                        <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-1 px-2">
-                                            <div className="text-sm md:text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
-                                                {travelData.letter.content.map((line, i) => (
-                                                    <p key={i} className="whitespace-nowrap">{line}</p>
-                                                ))}
+                                            
+                                            {/* 본문 (크기 원복) */}
+                                            <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
+                                                <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
+                                                    {travelData.letter.content.map((line, i) => (
+                                                        <p key={i} className="whitespace-nowrap">{line}</p>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="shrink-0 w-full text-center pb-1 flex flex-col items-center gap-2 letter-footer">
-                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-sm md:text-base tracking-tighter">{travelData.letter.from}</p>
-                                            {showContent && (
-                                                <button 
-                                                    onClick={handleClose} 
-                                                    className="w-full max-w-[200px] bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
-                                                >
-                                                    Enter Invitation
-                                                </button>
-                                            )}
+
+                                            {/* 하단 서명 & 버튼 (크기 원복) */}
+                                            <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
+                                                <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
+                                                
+                                                {showContent && (
+                                                    <button 
+                                                        onClick={handleClose} 
+                                                        className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
+                                                    >
+                                                        Enter Invitation
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div className="flap flap-left"></div>
+                                <div className="flap flap-right"></div>
+                                <div className="flap flap-bottom"></div>
+                                <div className="wax-seal-wrapper">
+                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
+                                </div>
                             </div>
-                            <div className="flap flap-left"></div>
-                            <div className="flap flap-right"></div>
-                            <div className="flap flap-bottom"></div>
-                            <div className="wax-seal-wrapper">
-                                <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
-                            </div>
+                            {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
                         </div>
-                        {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
                     </div>
                 </div>
             );
         };
 
-        // (3) Header with Multi-step RSVP using Google Apps Script
+        // (3) Header with Multi-step RSVP
         const Header = ({ data, onInfoClick }) => {
           const [showRSVP, setShowRSVP] = useState(false);
           const [rsvpStep, setRsvpStep] = useState('input'); 
@@ -555,9 +554,8 @@
 
           const handleCheckId = async () => {
             if (!empId) return;
-            
-            // [중요] 사번 체크: 기기 무관하게 중복 확인 (서버 통신)
-            // 테스트 모드: 사번 1111(참석), 2222(불참) 입력 시 이미 제출된 상태로 테스트 가능
+
+            // [테스트용 가짜 데이터]
             const testModeUsers = {
                 "1111": { status: 'success', name: "박금융(테스트)", submitted: true, attendance: true }, 
                 "2222": { status: 'success', name: "이보험(테스트)", submitted: true, attendance: false },
@@ -569,7 +567,6 @@
                 setTimeout(() => {
                     const result = testModeUsers[empId];
                     setUserName(result.name);
-                    // 이미 제출된 경우 처리
                     if (result.submitted) {
                         setPrevAttendance(result.attendance);
                         setRsvpStep('check_change');
@@ -581,7 +578,6 @@
                 return;
             }
 
-            // 스프레드시트 URL 입력 방지
             if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
                 setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
                 return;
@@ -591,7 +587,6 @@
             setErrorMsg("");
 
             try {
-                // [중요] cache: 'no-store' 옵션 추가로 항상 서버의 최신 데이터를 가져옴
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     cache: 'no-store', 
@@ -602,13 +597,12 @@
                 if (result.status === 'success') {
                     setUserName(result.name);
                     
-                    // 서버 응답값(문자열/불리언) 모두 대응
                     const isSubmitted = result.submitted === true || result.submitted === "true";
                     
                     if (isSubmitted) {
                         const prevStatus = result.attendance === true || result.attendance === "true";
                         setPrevAttendance(prevStatus);
-                        setRsvpStep('check_change'); // 변경 여부 확인 화면으로 이동
+                        setRsvpStep('check_change'); 
                     } else {
                         setRsvpStep('selection');
                     }
@@ -666,9 +660,12 @@
             <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
               <div className="absolute inset-0">
                 <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
+                {/* [수정] 배경 그라데이션을 별도 레이어로 분리하여 텍스트 영역과 독립시킴 (잘림 방지) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
               </div>
               
-              <div className="absolute bottom-0 left-0 w-full px-8 pb-10 pt-40 text-white z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+              {/* [수정] 텍스트 컨테이너: 절대 위치 + 패딩 방식에서 -> Flexbox 하단 정렬 방식으로 변경 */}
+              <div className="absolute inset-0 z-10 flex flex-col justify-end px-8 pb-10 text-white">
                 <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl">
                     {data.subtitle.map((line, i) => (
                         <span key={i} className="block">{line}</span>
