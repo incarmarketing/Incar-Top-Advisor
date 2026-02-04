@@ -74,7 +74,7 @@
             box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        /* [편지 본체] */
+        /* [편지 본체] - 가독성을 위해 크기 원복 */
         .letter-paper {
             position: absolute; 
             bottom: 0; left: 50%; transform: translateX(-50%); 
@@ -442,7 +442,6 @@
                         
                         <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
                         
-                        {/* [수정] 박스형 ENTER 버튼 원복 */}
                         <button onClick={handleClick} className="btn-enter">ENTER</button>
                     </div>
                 </div>
@@ -475,7 +474,7 @@
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
                     
                     {/* [수정] 내부 컨테이너: 화면 높이가 작아도 잘리지 않도록 min-h 지정 및 padding 추가 */}
-                    <div className="min-h-full flex flex-col items-center justify-center py-20">
+                    <div className="min-h-full w-full flex flex-col items-center justify-center py-10">
                         <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
                             <div className={`envelope ${isOpen ? 'open' : ''}`}>
                                 <div className="envelope-lid"></div>
