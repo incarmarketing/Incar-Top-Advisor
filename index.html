@@ -26,7 +26,7 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        body { font-family: 'Nanum Myeongjo', serif; -webkit-tap-highlight-color: transparent; background-color: #020617; }
+        body { font-family: 'Nanum Myeongjo', serif; -webkit-tap-highlight-color: transparent; background-color: #020617; overflow-x: hidden; }
 
         /* [애니메이션] */
         .fade-enter { animation: fadeIn 2.0s ease-in-out forwards; }
@@ -51,12 +51,20 @@
 
         /* [봉투 컨테이너] */
         .envelope-container { 
-            perspective: 1500px; cursor: pointer; display: flex; justify-content: center; align-items: center;
-            width: 100%; height: 100%;
+            perspective: 1500px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            width: 100%; 
+            height: 100%;
             transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 20; 
+            pointer-events: auto !important;
         }
         /* 편지가 열렸을 때 화면 아래쪽으로 이동 */
-        .envelope-container.opened { transform: translateY(18vh); }
+        .envelope-container.opened { transform: translateY(15vh); cursor: default; }
         
         .envelope {
             position: relative; width: 350px; height: 220px;
@@ -64,6 +72,7 @@
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
             border-radius: 4px; z-index: 10; transform-style: preserve-3d;
             box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
+            pointer-events: auto; /* 봉투 자체 클릭 가능 */
         }
 
         /* [편지 본체] */
@@ -71,28 +80,24 @@
             position: absolute; 
             bottom: 0; left: 50%; transform: translateX(-50%); 
             width: 320px; 
-            height: 180px; /* 닫혔을 때 높이 */
+            height: 180px; 
             background: #ffffff; 
-            /* 편지 내부 상단 여백 축소 */
-            padding: 2px 24px 20px 24px;
-            /* 딜레이: 뚜껑 열린 후 편지가 올라옴 */
+            padding: 24px 20px; 
             transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s, z-index 0s 0.6s;
-            z-index: 5; /* 닫혔을 땐 덮개 뒤 */
+            z-index: 5; 
             box-shadow: none; 
             display: flex; flex-direction: column;
             border-radius: 2px 2px 0 0; 
             overflow: hidden;
+            pointer-events: none; 
         }
         
-        /* 고급스러운 편지지 테두리 무늬 (유지) */
         .letter-paper::after {
-            content: ''; position: absolute; inset: 12px;
-            /* 금색 이중 테두리 */
+            content: ''; position: absolute; inset: 10px;
             border: 1px solid #D4AF37;
             outline: 1px solid #D4AF37;
             outline-offset: -4px;
             pointer-events: none;
-            /* 모서리 장식 효과 */
             background-image: 
                 radial-gradient(circle at top left, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
                 radial-gradient(circle at top right, transparent 8px, #D4AF37 8.5px, #D4AF37 9.5px, transparent 10px),
@@ -101,18 +106,48 @@
             background-size: 20px 20px;
             background-repeat: no-repeat;
             background-position: top left, top right, bottom left, bottom right;
+            z-index: 60; 
         }
         
         /* [중요] 편지가 열렸을 때 스타일 */
         .envelope.open .letter-paper {
-            /* 편지 높이 유지 */
+            /* 일반 비율에서는 600px 고정 (원안 복구) */
             height: 600px; 
-            /* 봉투 아래로 60px 만큼 내려오게 배치 */
             bottom: -60px; 
-            z-index: 50; /* 봉투 날개보다 무조건 위로 */
+            z-index: 50; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
-            overflow: visible; /* 내부 클릭 가능하도록 */
-            pointer-events: auto; /* 클릭 이벤트 활성화 */
+            overflow: visible; 
+            pointer-events: auto; 
+        }
+
+        .letter-content-flex {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 70;
+        }
+
+        /* [수정] 화면 높이가 750px 이하(폴드 펼침 등)일 때만 비율 축소 */
+        @media (max-height: 750px) {
+            /* 인트로 화면 내용 축소 */
+            .intro-scale-wrapper { transform: scale(0.85); }
+            /* 봉투 및 편지 축소 */
+            .envelope { transform: scale(0.85); }
+            .envelope.open .letter-paper {
+                height: 80vh; 
+                max-height: 500px;
+                bottom: -30px;
+            }
+            /* 내부 간격 조정 */
+            .letter-logo-box { height: 2.5rem !important; margin-bottom: 0.25rem !important; }
+            .letter-title { font-size: 1rem !important; margin-bottom: 0.5rem !important; padding-bottom: 0.25rem !important; }
+            .letter-text p { font-size: 0.85rem !important; line-height: 1.5 !important; }
+            .letter-footer { margin-top: 0.5rem !important; gap: 0.5rem !important; }
+            .btn-letter-enter { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; font-size: 0.7rem !important; }
         }
 
         /* 봉투 부속품 (안감) */
@@ -120,7 +155,7 @@
             content: ''; position: absolute; inset: 0; 
             background-color: #1e293b; 
             border-radius: 4px; z-index: 1; 
-            border: 1px solid rgba(212, 175, 55, 0.3); /* 안쪽 테두리만 은은하게 유지 */
+            border: 1px solid rgba(212, 175, 55, 0.3); 
         }
         
         /* 날개들 */
@@ -149,7 +184,7 @@
         .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* [수정] ENTER 버튼 가시성 강화 스타일 */
+        /* [수정] ENTER 버튼 디자인 원복 (테두리 박스 스타일) */
         .btn-enter {
             position: relative; 
             background: rgba(0, 0, 0, 0.3); /* 반투명 배경 */
@@ -158,15 +193,16 @@
             border-radius: 4px; /* 살짝 둥근 모서리 */
             color: #D4AF37; 
             font-family: 'Playfair Display', serif; 
-            font-size: 1.5rem; /* 폰트 사이즈 키움 */
+            font-size: 1.5rem; 
             font-weight: 700; 
             letter-spacing: 0.3em;
-            padding: 12px 40px; /* 패딩 넉넉하게 */
+            padding: 12px 40px; 
             cursor: pointer; 
             transition: all 0.5s;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            margin-top: 10px;
+            margin-top: 30px;
+            z-index: 50;
         }
         .btn-enter:hover { 
             background: rgba(212, 175, 55, 0.1);
@@ -204,9 +240,9 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // ▼▼▼▼▼▼ [중요] 여기에 배포한 Google Apps Script URL을 넣으세요 ▼▼▼▼▼▼
+        // ▼▼▼ [중요] 여기에 배포한 Google Apps Script URL을 넣으세요 ▼▼▼
         // 주의: 반드시 'exec'로 끝나는 URL이어야 합니다.
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqSKqwK8iLsuOFovcOYL1zg1GawylV4U_fRb0gRgzFe3flPBKYNYAM9M4dbbiMW_6N/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         // --- 아이콘 컴포넌트 ---
@@ -240,7 +276,7 @@
         const Users = (p) => <LucideIcon name="users" {...p} />; 
         const UserCheck = (p) => <LucideIcon name="user-check" {...p} />;
         const UserX = (p) => <LucideIcon name="user-x" {...p} />;
-        const Mail = (p) => <LucideIcon name="mail" {...p} />; // [추가] 메일 아이콘
+        const Mail = (p) => <LucideIcon name="mail" {...p} />; 
 
         // --- 데이터 ---
         const travelData = {
@@ -403,12 +439,10 @@
             return (
                 <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="absolute inset-0">
-                        {/* 투명도를 90으로 높여서 배경 이미지가 선명하게 보이도록 조정, 애니메이션 제거 */}
                         <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
                     
-                    {/* SKIP 버튼: 이전에 방문한 적이 있을 때만 표시 (showSkip) */}
                     {showSkip && (
                         <button 
                             onClick={handleSkipClick}
@@ -418,18 +452,20 @@
                         </button>
                     )}
 
-                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4">
-                        <div className="w-60 h-60 mb-10 flex items-center justify-center relative">
+                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper">
+                        <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300">
                             <div className="w-full h-full gold-logo-mask"></div>
                         </div>
-                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg">
+                        
+                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg transition-all duration-300">
                             <span className="block text-4xl md:text-6xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
                             <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">ITA Conference</span>
                         </h1>
-                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70"></div>
-                        <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display]">New Zealand 2026</p>
                         
-                        {/* [수정] ENTER 버튼 가시성 강화: 스타일 클래스(btn-enter) css 변경됨 */}
+                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70 divider transition-all duration-300"></div>
+                        
+                        <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
+                        
                         <button onClick={handleClick} className="btn-enter">ENTER</button>
                     </div>
                 </div>
@@ -453,27 +489,32 @@
                         <div className={`envelope ${isOpen ? 'open' : ''}`}>
                             <div className="envelope-lid"></div>
                             <div className="letter-paper">
-                                <div className={`w-full h-full flex flex-col justify-between transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                    {/* 수정: justify-start -> justify-center (중앙 정렬로 균형 맞춤) */}
-                                    <div className="text-center flex-1 flex flex-col items-center justify-center pt-2">
-                                        {/* 로고: 20% 확대 (w-32 -> w-40, 약 160px) */}
-                                        <div className="w-40 h-40 mb-0 flex items-center justify-center shrink-0">
-                                            <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="w-full h-full object-contain opacity-90" />
+                                <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+                                    <div className="letter-content-flex">
+                                        <div className="shrink-0 w-full flex flex-col items-center pt-1 letter-header">
+                                            <div className="h-16 md:h-24 mb-3 flex items-center justify-center letter-logo-box">
+                                                <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
+                                            </div>
+                                            <h3 className="font-serif text-slate-900 text-lg md:text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-2 font-[Playfair Display] letter-title">INVITATION</h3>
                                         </div>
-                                        {/* 제목: 글자 크기 확대 (text-sm -> text-lg) */}
-                                        <h3 className="font-serif text-slate-900 text-lg font-bold tracking-widest mb-4 border-b border-[#D4AF37]/30 pb-2 shrink-0 font-[Playfair Display]">INVITATION</h3>
-                                        {/* 본문 */}
-                                        <div className="space-y-3 text-base text-slate-800 leading-relaxed text-center px-2 overflow-y-auto no-scrollbar font-[Nanum Myeongjo]">
-                                            {travelData.letter.content.map((line, i) => <p key={i}>{line}</p>)}
+                                        <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-1 px-2">
+                                            <div className="text-sm md:text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
+                                                {travelData.letter.content.map((line, i) => (
+                                                    <p key={i} className="whitespace-nowrap">{line}</p>
+                                                ))}
+                                            </div>
                                         </div>
-                                        {/* 발신인 */}
-                                        <div className="w-full mt-12 shrink-0 text-center">
-                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter whitespace-nowrap">{travelData.letter.from}</p>
+                                        <div className="shrink-0 w-full text-center pb-1 flex flex-col items-center gap-2 letter-footer">
+                                            <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-sm md:text-base tracking-tighter">{travelData.letter.from}</p>
+                                            {showContent && (
+                                                <button 
+                                                    onClick={handleClose} 
+                                                    className="w-full max-w-[200px] bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
+                                                >
+                                                    Enter Invitation
+                                                </button>
+                                            )}
                                         </div>
-                                        {/* 버튼: 위치를 조금 더 위로 올림 (mt-4 -> mt-2) */}
-                                        {showContent && (
-                                            <button onClick={handleClose} className="w-full bg-[#1e293b] text-[#D4AF37] py-3 text-xs tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors mt-2 shrink-0 font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto">Enter Invitation</button>
-                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -493,10 +534,11 @@
         // (3) Header with Multi-step RSVP using Google Apps Script
         const Header = ({ data, onInfoClick }) => {
           const [showRSVP, setShowRSVP] = useState(false);
-          const [rsvpStep, setRsvpStep] = useState('input'); // input, selection, confirm, done
+          const [rsvpStep, setRsvpStep] = useState('input'); 
           const [empId, setEmpId] = useState("");
           const [userName, setUserName] = useState("");
-          const [attendance, setAttendance] = useState(null); // true = yes, false = no
+          const [attendance, setAttendance] = useState(null); 
+          const [prevAttendance, setPrevAttendance] = useState(null); 
           const [isLoading, setIsLoading] = useState(false);
           const [errorMsg, setErrorMsg] = useState("");
 
@@ -506,12 +548,39 @@
               setEmpId("");
               setUserName("");
               setAttendance(null);
+              setPrevAttendance(null); 
               setIsLoading(false);
               setErrorMsg("");
           };
 
           const handleCheckId = async () => {
             if (!empId) return;
+            
+            // [중요] 사번 체크: 기기 무관하게 중복 확인 (서버 통신)
+            // 테스트 모드: 사번 1111(참석), 2222(불참) 입력 시 이미 제출된 상태로 테스트 가능
+            const testModeUsers = {
+                "1111": { status: 'success', name: "박금융(테스트)", submitted: true, attendance: true }, 
+                "2222": { status: 'success', name: "이보험(테스트)", submitted: true, attendance: false },
+                "1234": { status: 'success', name: "김인카(테스트)", submitted: false }
+            };
+
+            if (testModeUsers[empId]) {
+                setIsLoading(true);
+                setTimeout(() => {
+                    const result = testModeUsers[empId];
+                    setUserName(result.name);
+                    // 이미 제출된 경우 처리
+                    if (result.submitted) {
+                        setPrevAttendance(result.attendance);
+                        setRsvpStep('check_change');
+                    } else {
+                        setRsvpStep('selection');
+                    }
+                    setIsLoading(false);
+                }, 500);
+                return;
+            }
+
             // 스프레드시트 URL 입력 방지
             if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
                 setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
@@ -521,32 +590,28 @@
             setIsLoading(true);
             setErrorMsg("");
 
-            // 실제로는 배포된 Google Apps Script URL을 사용해야 합니다.
-            if (GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
-                 // 데모용 가짜 데이터 (스크립트 URL이 설정되지 않았을 때)
-                setTimeout(() => {
-                    const mockDB = { "1234": "김인카", "1111": "박금융" };
-                    if (mockDB[empId]) {
-                        setUserName(mockDB[empId]);
-                        setRsvpStep('selection');
-                    } else {
-                        setErrorMsg("일치하는 사번 정보가 없습니다.");
-                    }
-                    setIsLoading(false);
-                }, 500);
-                return;
-            }
-
             try {
+                // [중요] cache: 'no-store' 옵션 추가로 항상 서버의 최신 데이터를 가져옴
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    cache: 'no-store', 
                     body: JSON.stringify({ action: 'check', empId: empId })
                 });
                 const result = await response.json();
                 
                 if (result.status === 'success') {
                     setUserName(result.name);
-                    setRsvpStep('selection');
+                    
+                    // 서버 응답값(문자열/불리언) 모두 대응
+                    const isSubmitted = result.submitted === true || result.submitted === "true";
+                    
+                    if (isSubmitted) {
+                        const prevStatus = result.attendance === true || result.attendance === "true";
+                        setPrevAttendance(prevStatus);
+                        setRsvpStep('check_change'); // 변경 여부 확인 화면으로 이동
+                    } else {
+                        setRsvpStep('selection');
+                    }
                 } else {
                     setErrorMsg("일치하는 사번 정보가 없습니다.");
                 }
@@ -560,12 +625,12 @@
 
           const handleSelect = (isAttending) => {
               setAttendance(isAttending);
-              setRsvpStep('confirm'); // 선택 후 팝업(확인) 단계로 이동
+              setRsvpStep('confirm'); 
           };
 
           const handleFinalConfirm = async (isConfirmed) => {
               if (!isConfirmed) {
-                  setRsvpStep('selection'); // 아니오 누르면 다시 선택 화면으로
+                  setRsvpStep('selection'); 
                   return;
               }
 
@@ -601,41 +666,32 @@
             <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
               <div className="absolute inset-0">
                 <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
-                {/* [수정] 전체를 덮던 어두운 막(bg-black/10)을 완전히 제거하여 배경 본연의 밝기 유지 */}
               </div>
               
-              {/* [수정] 텍스트 가독성을 위한 하단 그라데이션은 유지하되, 자연스럽게 블렌딩 */}
               <div className="absolute bottom-0 left-0 w-full px-8 pb-10 pt-40 text-white z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                {/* [수정] 서브타이틀 그림자 강화: drop-shadow-xl */}
                 <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl">
                     {data.subtitle.map((line, i) => (
                         <span key={i} className="block">{line}</span>
                     ))}
                 </div>
-                {/* [수정] 타이틀 그림자 추가: drop-shadow-lg */}
                 <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100 drop-shadow-lg">{data.title}</h1>
                 <div className="flex items-center mt-2 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
                   <Calendar size={14} className="mr-2 text-amber-400" />
                   {data.dateRange}
                 </div>
 
-                {/* RSVP 섹션 [수정됨: 디자인 개선] */}
                 <div className="mt-6">
                     {!showRSVP ? (
-                        // [수정] "ITA 초청장" 버튼 크기 및 텍스트 확대
                         <button 
                             onClick={() => setShowRSVP(true)} 
                             className="group relative overflow-hidden bg-white/10 backdrop-blur-md border border-amber-500/50 rounded-xl p-4 w-full max-w-sm flex items-center justify-between transition-all hover:bg-black/60 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                         >
                             <div className="flex items-center">
-                                {/* 아이콘 박스 크기 확대: w-10 -> w-12 */}
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#aa771c] flex items-center justify-center text-slate-900 shadow-lg mr-4 group-hover:scale-110 transition-transform">
                                     <Mail size={24} strokeWidth={2.5} />
                                 </div>
                                 <div className="text-left">
-                                    {/* 텍스트 크기 확대: text-sm -> text-xl */}
                                     <p className="text-[#D4AF37] font-bold text-xl tracking-widest font-serif mb-1 group-hover:text-amber-300 transition-colors">ITA 초청장</p>
-                                    {/* 텍스트 크기 확대: text-sm -> text-xl (요청사항 반영) */}
                                     <p className="text-slate-200 text-xl font-bold">참석 여부를 확인해주세요</p>
                                 </div>
                             </div>
@@ -651,14 +707,11 @@
                                 </div>
                             )}
 
-                            {/* 헤더 (닫기 버튼) */}
                             <div className="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
-                                {/* 팝업 제목 글씨 크기 수정: text-xs -> text-sm */}
                                 <span className="text-sm text-amber-500 font-bold uppercase tracking-widest">참석 여부 확인</span>
                                 <button onClick={resetRSVP}><X size={18} className="text-slate-400 hover:text-white" /></button>
                             </div>
 
-                            {/* 단계별 화면 */}
                             {rsvpStep === 'input' && (
                                 <div className="space-y-3">
                                     <p className="text-sm text-slate-300">사번을 입력하여 본인 확인을 진행해주세요.</p>
@@ -677,12 +730,32 @@
                                 </div>
                             )}
 
+                            {rsvpStep === 'check_change' && (
+                                <div className="space-y-3">
+                                    <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님은 이미 제출하셨습니다.</p>
+                                    <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2 text-center">
+                                        현재 상태: {prevAttendance ? <span className="text-green-400 font-bold">"참석"</span> : <span className="text-red-400 font-bold">"불참"</span>}
+                                        <br/><span className="text-xs text-slate-400 block mt-1">참석 여부를 변경하시겠습니까?</span>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <button onClick={() => setRsvpStep('selection')} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">
+                                            네, 변경하겠습니다
+                                        </button>
+                                        <button onClick={() => {
+                                            setAttendance(prevAttendance); 
+                                            setRsvpStep('done'); 
+                                        }} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium transition-colors">
+                                            아니오 (여권 제출로 이동)
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             {rsvpStep === 'selection' && (
                                 <div className="space-y-3">
                                     <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님, 환영합니다.</p>
                                     <p className="text-xs text-slate-400 mb-2">이번 행사에 참석하시겠습니까?</p>
                                     <div className="flex flex-col gap-2">
-                                        {/* 예, 아니오 버튼 문구 수정 */}
                                         <button onClick={() => handleSelect(true)} className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded text-sm font-bold flex items-center justify-center transition-colors">
                                             <UserCheck size={16} className="mr-2" /> 예, 참석하겠습니다.
                                         </button>
@@ -715,10 +788,11 @@
                                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
                                         <CheckCircle size={24} />
                                     </div>
-                                    <p className="text-white font-bold mb-1">제출이 완료되었습니다.</p>
+                                    <p className="text-white font-bold mb-1">
+                                        {prevAttendance !== null && attendance === prevAttendance ? "확인이 완료되었습니다." : "제출이 완료되었습니다."}
+                                    </p>
                                     <p className="text-xs text-slate-400 mb-4">{userName}님의 소중한 의견 감사합니다.</p>
                                     
-                                    {/* [추가됨] 여권 제출 버튼 (참석하는 경우에만 표시) */}
                                     {attendance && (
                                         <div className="mb-5 p-3 bg-slate-800/50 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
                                             <p className="text-xs text-amber-400 mb-2 font-bold flex items-center justify-center">
@@ -746,7 +820,6 @@
           );
         };
 
-        // (4-1) 안내 문구 컴포넌트 추가
         const NoticeFooter = () => (
           <div className="mb-6 py-2 text-center">
             <p className="text-sm font-bold text-slate-600 leading-relaxed">
@@ -755,7 +828,6 @@
           </div>
         );
 
-        // (4) TabNavigation - Checklist 탭 유지
         const TabNavigation = ({ activeTab, setActiveTab }) => {
           const tabs = [
             { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
@@ -773,7 +845,7 @@
                   return (
                     <button key={tab.id} onClick={() => {
                         setActiveTab(tab.id);
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // 클릭 시 최상단으로 스크롤 이동
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
                     }} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
                       <Icon size={20} className="mb-1" />
                       {tab.label}
@@ -786,30 +858,26 @@
           );
         };
 
-        // --- 아이콘 매핑 함수 (추가됨) ---
-        const getIcon = (type) => {
-            switch (type) {
-                case 'flight': return <Plane size={16} />;
-                case 'food': return <Utensils size={16} />;
-                case 'transport': return <Bus size={16} />;
-                case 'hotel': return <Hotel size={16} />;
-                case 'sightseeing': return <Camera size={16} />;
-                case 'award': return <Award size={16} />;
-                case 'wine': return <Wine size={16} />;
-                case 'activity': return <Sun size={16} />;
-                case 'ship': return <Ship size={16} />;
-                case 'coffee': return <Coffee size={16} />;
-                default: return <CheckCircle size={16} />;
-            }
-        };
-
-        // (5) TimelineItem
         const TimelineItem = ({ activity, isLast }) => (
           <div className="relative pl-8 pb-8 group">
             {!isLast && <div className="absolute left-[11px] top-2 h-full w-[2px] bg-slate-200 group-hover:bg-amber-200 transition-colors"></div>}
             <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 bg-white flex items-center justify-center shadow-sm z-10 transition-colors ${activity.type === 'award' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 group-hover:border-amber-400'}`}>
               <div className={activity.type === 'award' ? 'text-amber-600' : 'text-slate-500'}>
-                  {getIcon(activity.type)}
+                  {(() => {
+                      switch (activity.type) {
+                          case 'flight': return <Plane size={16} />;
+                          case 'food': return <Utensils size={16} />;
+                          case 'transport': return <Bus size={16} />;
+                          case 'hotel': return <Hotel size={16} />;
+                          case 'sightseeing': return <Camera size={16} />;
+                          case 'award': return <Award size={16} />;
+                          case 'wine': return <Wine size={16} />;
+                          case 'activity': return <Sun size={16} />;
+                          case 'ship': return <Ship size={16} />;
+                          case 'coffee': return <Coffee size={16} />;
+                          default: return <CheckCircle size={16} />;
+                      }
+                  })()}
               </div>
             </div>
             <div className={`p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border ml-2 transition-transform active:scale-[0.99] ${activity.type === 'award' ? 'bg-gradient-to-br from-amber-50 to-white border-amber-100' : 'bg-white border-slate-100/50'}`}>
@@ -823,7 +891,6 @@
           </div>
         );
 
-        // (6) HotelDetailCard
         const HotelDetailCard = ({ hotel }) => (
           <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6 overflow-hidden group">
             <div className="h-48 bg-slate-200 relative overflow-hidden">
@@ -849,13 +916,11 @@
           </div>
         );
 
-        // (7) DiningCard
         const DiningCard = ({ item }) => (
           <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-5 overflow-hidden flex flex-col">
             <div className="h-40 overflow-hidden relative">
               <img src={item.image} alt={item.name} onError={handleImageError} className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                {/* 카드 배지: 반투명 검정 배경, 흰색 글씨, 가독성 향상 */}
                 <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 px-2 py-1 rounded-md text-xs font-bold w-fit mb-2 block shadow-sm">{item.day}</span>
                 <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
               </div>
@@ -875,13 +940,11 @@
           </div>
         );
 
-        // (8) SpotCard
         const SpotCard = ({ spot }) => (
           <div className="relative mb-5 rounded-2xl overflow-hidden shadow-lg h-64 group">
             <img src={spot.image} alt={spot.name} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90"></div>
             <div className="absolute top-4 left-4">
-              {/* 테마 태그: 가독성 향상 (반투명 검정 배경) */}
               <span className="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10 shadow-lg">{spot.tag}</span>
             </div>
             <div className="absolute bottom-0 p-6 text-white">
@@ -892,10 +955,6 @@
           </div>
         );
 
-        // (9) FAB - 제거됨 (요청에 따라 비상연락망을 체크리스트에 통합하고 FAB 삭제)
-        // const FAB = ... (삭제)
-
-        // (10) EntryInfoModal - 유지하되, 필요없으면 제거 가능 (현재 헤더 버튼용)
         const EntryInfoModal = ({ isOpen, onClose }) => {
             if (!isOpen) return null;
             return (
@@ -929,16 +988,12 @@
             );
         };
 
-        // (11) ChecklistView (탭에 표시될 체크리스트 컴포넌트 추가)
         const ChecklistView = () => (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                {/* NoticeFooter 제거됨 */}
-                
                 <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
                     <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
                 </h2>
 
-                {/* 음식물 반입 경고 문구 상단 배치 (강조) */}
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
                     <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
                     <div className="text-sm text-red-800 leading-snug font-bold">
@@ -961,7 +1016,6 @@
                             ))}
                         </div>
 
-                        {/* 비상 연락망 */}
                         <div className="mt-8 pt-6 border-t border-slate-100">
                              <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
                                 <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
@@ -974,7 +1028,6 @@
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
-                                            {/* 전화번호 링크: tel:010... 형식으로 하이픈 제거, 추후 기재일 경우 링크 제거 */}
                                             {contact.phone === "추후 기재" ? (
                                                 <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
                                             ) : (
@@ -990,15 +1043,10 @@
             </div>
         );
 
-        // --- 12. Main App (최하단에 위치) ---
         function App() {
-            // [수정됨] 초기 상태를 항상 'intro'로 설정합니다.
-            // localStorage 체크는 별도로 수행하여 버튼 표시 여부만 결정합니다.
             const [step, setStep] = useState('intro');
             const [activeTab, setActiveTab] = useState('Schedule');
             const [showEntryInfo, setShowEntryInfo] = useState(false);
-            
-            // 이전에 방문했는지 여부 체크
             const [hasVisited, setHasVisited] = useState(false);
             
             useEffect(() => {
@@ -1013,12 +1061,10 @@
             };
 
             const handleLetterClose = () => {
-                // 편지를 닫고 메인으로 갈 때 방문 기록 저장
                 localStorage.setItem('hasVisited', 'true');
                 setStep('main');
             };
 
-            // 스킵 버튼 핸들러
             const handleSkip = () => {
                 localStorage.setItem('hasVisited', 'true');
                 setStep('main');
@@ -1026,7 +1072,6 @@
 
             return (
                 <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
-                    {/* [수정됨] showSkip prop을 전달하여 조건부로 버튼을 표시합니다. */}
                     {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} showSkip={hasVisited} />}
                     {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
                     {step === 'main' && (
@@ -1037,7 +1082,7 @@
                                 {activeTab === 'Checklist' && <ChecklistView />}
                                 {activeTab === 'Schedule' && (
                                     <div className="animate-in fade-in duration-500">
-                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
+                                        <NoticeFooter /> 
                                         {travelData.itinerary.map((day, idx) => (
                                             <div key={idx} className="mb-8 last:mb-24">
                                                 <div className="sticky top-[74px] z-30 bg-[#f8fafc] py-3 mb-4 flex items-center">
@@ -1059,27 +1104,26 @@
                                 )}
                                 {activeTab === 'Hotel' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
+                                        <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
                                         {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Dining' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
+                                        <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
                                         {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
                                     </div>
                                 )}
                                 {activeTab === 'Attractions' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                        <NoticeFooter /> {/* 상단에 NoticeFooter 배치 */}
+                                        <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
                                         {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
                                     </div>
                                 )}
                             </main>
-                            {/* FAB 제거됨 */}
                             <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
                         </div>
                     )}
