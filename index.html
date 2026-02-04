@@ -412,9 +412,11 @@
                 onSkip(); 
             };
 
+            // [수정] justify-center 제거: 가로 모드에서 높이가 부족할 때 상단이 잘리는 현상 방지
+            // 배경 이미지를 fixed로 변경하여 스크롤 시에도 배경이 고정되도록 수정
             return (
-                <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] text-white overflow-hidden transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
-                    <div className="absolute inset-0">
+                <div className={`fixed inset-0 z-[100] flex flex-col items-center bg-[#020617] text-white overflow-y-auto transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
+                    <div className="fixed inset-0 overflow-hidden pointer-events-none">
                         <img src={travelData.meta.introImage} alt="Background" className="w-full h-full object-cover opacity-100 scale-110"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50"></div>
                     </div>
@@ -422,27 +424,28 @@
                     {showSkip && (
                         <button 
                             onClick={handleSkipClick}
-                            className="absolute top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
+                            className="fixed top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
                         >
                             SKIP
                         </button>
                     )}
 
-                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper">
-                        <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300">
+                    {/* [수정] my-auto 추가: 화면이 높을 땐 중앙 정렬, 낮을 땐 상단부터 스크롤 가능하게 함 */}
+                    <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper my-auto py-10 w-full max-w-screen-lg">
+                        <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300 shrink-0">
                             <div className="w-full h-full gold-logo-mask"></div>
                         </div>
                         
-                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg transition-all duration-300">
+                        <h1 className="text-center font-serif text-white font-light mb-6 drop-shadow-lg transition-all duration-300 shrink-0">
                             <span className="block text-4xl md:text-6xl tracking-[0.1em] mb-2 font-[Playfair Display]">Your Honor</span>
                             <span className="block text-2xl md:text-4xl tracking-[0.05em] text-[#D4AF37] opacity-90 font-[Playfair Display]">ITA Conference</span>
                         </h1>
                         
-                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70 divider transition-all duration-300"></div>
+                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6 opacity-70 divider transition-all duration-300 shrink-0"></div>
                         
-                        <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300">New Zealand 2026</p>
+                        <p className="text-lg md:text-xl text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 font-bold mb-16 font-[Playfair Display] location-text transition-all duration-300 shrink-0">New Zealand 2026</p>
                         
-                        <button onClick={handleClick} className="btn-enter">ENTER</button>
+                        <button onClick={handleClick} className="btn-enter shrink-0">ENTER</button>
                     </div>
                 </div>
             );
@@ -473,56 +476,69 @@
                 /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
                     
-                    {/* [수정] 내부 컨테이너: 화면 높이가 작아도 잘리지 않도록 min-h 지정 및 padding 추가 */}
-                    <div className="min-h-full w-full flex flex-col items-center justify-center py-10">
-                        <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
-                            <div className={`envelope ${isOpen ? 'open' : ''}`}>
-                                <div className="envelope-lid"></div>
-                                <div className="letter-paper">
-                                    <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-                                        <div className="letter-content-flex">
-                                            
-                                            {/* 로고 & 제목 (크기 원복) */}
-                                            <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
-                                                <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
-                                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
-                                                </div>
-                                                <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
-                                            </div>
-                                            
-                                            {/* 본문 (크기 원복) */}
-                                            <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
-                                                <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
-                                                    {travelData.letter.content.map((line, i) => (
-                                                        <p key={i} className="whitespace-nowrap">{line}</p>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* 하단 서명 & 버튼 (크기 원복) */}
-                                            <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
-                                                <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
+                    {/* [수정] Flex 컨테이너: justify-center를 제거하고 min-h-full을 사용하여 스크롤 영역 확보 */}
+                    <div className="min-h-full w-full flex flex-col items-center">
+                        
+                        {/* [스마트 레이아웃 수정]
+                            - my-auto: 화면이 높을 때는 자동으로 수직 중앙 정렬을 수행합니다.
+                            - transition-all: 패딩 변화를 부드럽게 애니메이션합니다.
+                            - 패딩 로직:
+                                - 닫혔을 때 (py-20): 기본적인 여백만 줍니다. my-auto가 중앙에 배치합니다.
+                                - 열렸을 때 (pt-[340px] pb-[100px]): 
+                                  편지가 봉투 위로 약 300px 솟아오르므로, 상단에 340px의 공간을 확보합니다.
+                                  이렇게 하면 가로 모드에서도 잘리지 않고 스크롤하여 위쪽을 볼 수 있습니다.
+                        */}
+                        <div className={`transition-all duration-1000 ease-in-out my-auto flex flex-col items-center justify-center ${isOpen ? 'pt-[340px] pb-[100px]' : 'py-20'}`}>
+                            
+                            <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
+                                <div className={`envelope ${isOpen ? 'open' : ''}`}>
+                                    <div className="envelope-lid"></div>
+                                    <div className="letter-paper">
+                                        <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+                                            <div className="letter-content-flex">
                                                 
-                                                {showContent && (
-                                                    <button 
-                                                        onClick={handleClose} 
-                                                        className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
-                                                    >
-                                                        Enter Invitation
-                                                    </button>
-                                                )}
+                                                {/* 로고 & 제목 (크기 원복) */}
+                                                <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
+                                                    <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
+                                                        <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
+                                                    </div>
+                                                    <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
+                                                </div>
+                                                
+                                                {/* 본문 (크기 원복) */}
+                                                <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
+                                                    <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
+                                                        {travelData.letter.content.map((line, i) => (
+                                                            <p key={i} className="whitespace-nowrap">{line}</p>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* 하단 서명 & 버튼 (크기 원복) */}
+                                                <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
+                                                    <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
+                                                    
+                                                    {showContent && (
+                                                        <button 
+                                                            onClick={handleClose} 
+                                                            className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
+                                                        >
+                                                            Enter Invitation
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="flap flap-left"></div>
+                                    <div className="flap flap-right"></div>
+                                    <div className="flap flap-bottom"></div>
+                                    <div className="wax-seal-wrapper">
+                                        <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
+                                    </div>
                                 </div>
-                                <div className="flap flap-left"></div>
-                                <div className="flap flap-right"></div>
-                                <div className="flap flap-bottom"></div>
-                                <div className="wax-seal-wrapper">
-                                    <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/sealing.png" alt="Wax Seal" className="wax-seal-img" onError={(e) => e.target.style.display = 'none'} />
-                                </div>
+                                {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
                             </div>
-                            {!isOpen && <div className="tap-hint">Tap Envelope to Open</div>}
                         </div>
                     </div>
                 </div>
@@ -656,7 +672,8 @@
           };
 
           return (
-            <header className="relative h-[50vh] w-full overflow-hidden shadow-2xl">
+            /* [수정] 반응형 헤더: 가로 모드에서 높이가 너무 작아지는 것을 방지하기 위해 min-h-[400px] 추가 */
+            <header className="relative h-[50vh] min-h-[400px] w-full overflow-hidden shadow-2xl">
               <div className="absolute inset-0">
                 <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
                 {/* [수정] 배경 그라데이션을 별도 레이어로 분리하여 텍스트 영역과 독립시킴 (잘림 방지) */}
@@ -834,7 +851,8 @@
           ];
           return (
             <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
-              <div className="flex justify-between min-w-[360px] max-w-md mx-auto px-2">
+              {/* [수정] 탭 너비: sm(모바일 가로) 이상에서 넓게 확장하도록 기준점 완화 (sm:max-w-4xl) */}
+              <div className="flex justify-between min-w-[360px] max-w-md sm:max-w-4xl mx-auto px-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -921,9 +939,9 @@
                 <h3 className="text-white text-lg font-bold leading-none shadow-black drop-shadow-md">{item.name}</h3>
               </div>
             </div>
-            <div className="p-5">
+            <div className="p-5 flex-1 flex flex-col">
               <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
-              <p className="text-slate-600 text-sm mb-4">{item.desc}</p>
+              <p className="text-slate-600 text-sm mb-4 flex-1">{item.desc}</p>
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
                 <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
                   <Utensils size={12} className="mr-1" /> 대표 메뉴
@@ -1074,7 +1092,9 @@
                         <div className="fade-enter block bg-[#f8fafc] min-h-screen">
                             <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
                             <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-                            <main className="max-w-md mx-auto px-5 py-6 min-h-[50vh]">
+                            
+                            {/* [수정] 메인 컨텐츠 영역: sm(모바일 가로) 이상에서 넓게 확장 */}
+                            <main className="max-w-md sm:max-w-4xl mx-auto px-5 py-6 min-h-[50vh]">
                                 {activeTab === 'Checklist' && <ChecklistView />}
                                 {activeTab === 'Schedule' && (
                                     <div className="animate-in fade-in duration-500">
@@ -1102,21 +1122,30 @@
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
-                                        {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
+                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
+                                        </div>
                                     </div>
                                 )}
                                 {activeTab === 'Dining' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
-                                        {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
+                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
+                                        </div>
                                     </div>
                                 )}
                                 {activeTab === 'Attractions' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
-                                        {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
+                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
+                                        </div>
                                     </div>
                                 )}
                             </main>
