@@ -458,24 +458,13 @@
             const [isExiting, setIsExiting] = useState(false); 
             const [isMounting, setIsMounting] = useState(true);
             
-            // [New] 레이아웃 단계 관리 상태: 'idle'(대기) -> 'animating'(이동 중) -> 'expanded'(공간 확보 완료)
-            const [layoutPhase, setLayoutPhase] = useState('idle');
+            // [개선] 복잡한 단계별 상태(layoutPhase) 제거 -> 단일 애니메이션으로 통합
 
             useEffect(() => { const timer = setTimeout(() => setIsMounting(false), 50); return () => clearTimeout(timer); }, []);
             
             const handleOpen = () => { 
                 if (isOpen) return; 
                 setIsOpen(true); 
-                
-                // 1단계: 애니메이션 시작 (Transform으로 부드럽게 이동)
-                setLayoutPhase('animating');
-                
-                // 2단계: 애니메이션 종료 후 실제 공간 확보 (Padding 적용)
-                // 0.8초(800ms)는 부드러운 전환을 위한 시간입니다.
-                setTimeout(() => {
-                    setLayoutPhase('expanded');
-                }, 800); 
-
                 setTimeout(() => setShowContent(true), 1300); 
             };
             
@@ -485,45 +474,19 @@
                 setTimeout(() => { onClose(); }, 1000); 
             };
 
-            // [핵심] 단계별 스타일 계산
-            // 모바일 떨림의 주원인인 '실시간 레이아웃 재계산(Reflow)'을 방지합니다.
-            const getWrapperStyle = () => {
-                if (layoutPhase === 'idle') return {};
-                
-                if (layoutPhase === 'animating') {
-                    // 애니메이션 중에는 오직 'transform'만 사용하여 위치를 옮깁니다. (GPU 가속, 떨림 없음)
-                    // 계산: 상단여백(340) + 하단여백(100) = 440 증가 -> m-auto가 220만큼 위로 당김 -> 이를 상쇄(-220)하고 +340위치로 가려면? 
-                    // => 결론적으로 +120px 만큼 내려야 함.
-                    return {
-                        transform: 'translate3d(0, 120px, 0)',
-                        transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
-                    };
-                }
-                
-                if (layoutPhase === 'expanded') {
-                    // 애니메이션이 끝나면 실제 padding을 적용하여 스크롤 공간을 만듭니다.
-                    // 이때 transition을 꺼서(none) 레이아웃 변경이 즉시 반영되게 하여 '덜컥'거림을 막습니다.
-                    return {
-                        paddingTop: '340px',
-                        paddingBottom: '100px',
-                        transform: 'translate3d(0, 0, 0)',
-                        transition: 'none'
-                    };
-                }
-                return {};
-            };
-
             return (
                 /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
                     
-                    {/* [모바일 떨림 방지 최적화]
-                       min-h-[100dvh]: 모바일 브라우저 주소창 대응
+                    {/* [최종 개선: 단일 트랙 애니메이션 + GPU 최적화]
+                       1. 복잡한 JS 로직 대신 CSS transition 하나로 통합하여 '끊김' 제거
+                       2. willChange: 'padding'을 사용하여 브라우저 렌더링 최적화 -> '떨림' 방지
+                       3. ease-out 곡선 적용으로 자리를 찾아가는 느낌을 부드럽게 만듦
                     */}
                     <div className="min-h-[100dvh] w-full flex flex-col p-4">
                         <div 
-                            className={`relative m-auto`}
-                            style={getWrapperStyle()}
+                            className={`relative m-auto transition-[padding] duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'pt-[340px] pb-[100px]' : ''}`}
+                            style={{ willChange: 'padding' }}
                         >
                             <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
                                 <div className={`envelope ${isOpen ? 'open' : ''}`}>
