@@ -476,20 +476,22 @@
                 /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
                     
-                    {/* [수정] Flex 컨테이너: justify-center를 제거하고 min-h-full을 사용하여 스크롤 영역 확보 */}
-                    <div className="min-h-full w-full flex flex-col items-center">
-                        
-                        {/* [스마트 레이아웃 수정]
-                            - my-auto: 화면이 높을 때는 자동으로 수직 중앙 정렬을 수행합니다.
-                            - transition-all: 패딩 변화를 부드럽게 애니메이션합니다.
-                            - 패딩 로직:
-                                - 닫혔을 때 (py-20): 기본적인 여백만 줍니다. my-auto가 중앙에 배치합니다.
-                                - 열렸을 때 (pt-[340px] pb-[100px]): 
-                                  편지가 봉투 위로 약 300px 솟아오르므로, 상단에 340px의 공간을 확보합니다.
-                                  이렇게 하면 가로 모드에서도 잘리지 않고 스크롤하여 위쪽을 볼 수 있습니다.
-                        */}
-                        <div className={`transition-all duration-1000 ease-in-out my-auto flex flex-col items-center justify-center ${isOpen ? 'pt-[340px] pb-[100px]' : 'py-20'}`}>
-                            
+                    {/* [수정 전략: m-auto + Padding Transition]
+                       1. min-h-full flex flex-col p-4: 
+                          화면 전체 높이를 잡고 flexbox 컨텍스트를 만듭니다. p-4로 최소 여백을 줍니다.
+                       
+                       2. m-auto Wrapper: 
+                          - m-auto는 Flexbox 내에서 '남는 공간을 균등하게 분배'하여 요소를 정중앙에 배치합니다.
+                          - 하지만 요소의 크기(Padding 포함)가 화면보다 커지면, 자동으로 '상단 정렬(Top Align)'로 동작하여 스크롤이 가능해집니다.
+                          - 이것이 justify-center가 화면을 벗어날 때 상단을 잘라먹는 문제를 근본적으로 해결합니다.
+                       
+                       3. Transition Logic: 
+                          - 닫혔을 때: padding 없음. (m-auto가 알아서 중앙 배치)
+                          - 열렸을 때: pt-[340px] (편지 위쪽 공간 확보), pb-[100px] (아래쪽 공간 확보)
+                          - transition-all: 이 변화를 부드럽게 연결합니다.
+                    */}
+                    <div className="min-h-full w-full flex flex-col p-4">
+                        <div className={`relative m-auto transition-all duration-1000 ease-in-out ${isOpen ? 'pt-[340px] pb-[100px]' : ''}`}>
                             <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
                                 <div className={`envelope ${isOpen ? 'open' : ''}`}>
                                     <div className="envelope-lid"></div>
