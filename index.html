@@ -476,22 +476,17 @@
                 /* [수정] 배경 div에 overflow-y-auto 적용하여 내용이 넘치면 스크롤 가능하게 함 */
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm overflow-y-auto no-scrollbar transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')}`}>
                     
-                    {/* [수정 전략: m-auto + Padding Transition]
-                       1. min-h-full flex flex-col p-4: 
-                          화면 전체 높이를 잡고 flexbox 컨텍스트를 만듭니다. p-4로 최소 여백을 줍니다.
-                       
-                       2. m-auto Wrapper: 
-                          - m-auto는 Flexbox 내에서 '남는 공간을 균등하게 분배'하여 요소를 정중앙에 배치합니다.
-                          - 하지만 요소의 크기(Padding 포함)가 화면보다 커지면, 자동으로 '상단 정렬(Top Align)'로 동작하여 스크롤이 가능해집니다.
-                          - 이것이 justify-center가 화면을 벗어날 때 상단을 잘라먹는 문제를 근본적으로 해결합니다.
-                       
-                       3. Transition Logic: 
-                          - 닫혔을 때: padding 없음. (m-auto가 알아서 중앙 배치)
-                          - 열렸을 때: pt-[340px] (편지 위쪽 공간 확보), pb-[100px] (아래쪽 공간 확보)
-                          - transition-all: 이 변화를 부드럽게 연결합니다.
+                    {/* [모바일 떨림 방지 최적화]
+                       1. min-h-[100dvh]: 모바일 뷰포트 높이 변화 대응 (min-h-full 대체)
+                       2. transition-[padding]: 불필요한 속성 애니메이션 방지 (transition-all 대체)
+                       3. transform: translate3d: GPU 가속 강제
+                       4. ease-out + duration-700: 더 빠르고 부드러운 애니메이션
                     */}
-                    <div className="min-h-full w-full flex flex-col p-4">
-                        <div className={`relative m-auto transition-all duration-1000 ease-in-out ${isOpen ? 'pt-[340px] pb-[100px]' : ''}`}>
+                    <div className="min-h-[100dvh] w-full flex flex-col p-4">
+                        <div 
+                            className={`relative m-auto transition-[padding] duration-700 ease-out ${isOpen ? 'pt-[340px] pb-[100px]' : ''}`}
+                            style={{ transform: 'translate3d(0,0,0)' }}
+                        >
                             <div className={`envelope-container ${isOpen ? 'opened' : 'hover:scale-105'}`} onClick={handleOpen}>
                                 <div className={`envelope ${isOpen ? 'open' : ''}`}>
                                     <div className="envelope-lid"></div>
