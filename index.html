@@ -55,15 +55,14 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            width: 350px; /* 고정 너비 */
-            height: 220px; /* 고정 높이 */
+            width: 350px; 
+            height: 220px; 
             transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             z-index: 20; 
             pointer-events: auto !important;
         }
         
-        /* 편지가 열렸을 때 위치 이동 (스크롤 방식이므로 많이 이동 안 해도 됨) */
         .envelope-container.opened { transform: translateY(50px); cursor: default; }
         
         .envelope {
@@ -74,7 +73,6 @@
             box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        /* [편지 본체] - 가독성을 위해 크기 원복 */
         .letter-paper {
             position: absolute; 
             bottom: 0; left: 50%; transform: translateX(-50%); 
@@ -108,9 +106,8 @@
             z-index: 60; 
         }
         
-        /* [중요] 편지가 열렸을 때: 높이 580px로 고정하여 가독성 확보 */
         .envelope.open .letter-paper {
-            height: 580px; /* 충분한 높이 확보 */
+            height: 580px; 
             bottom: -60px; 
             z-index: 50; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.25); 
@@ -119,25 +116,17 @@
         }
 
         .letter-content-flex {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            position: relative;
-            z-index: 70;
+            display: flex; flex-direction: column; height: 100%;
+            justify-content: space-between; align-items: center; width: 100%;
+            position: relative; z-index: 70;
         }
 
-        /* 봉투 부속품 (안감) */
         .envelope::before { 
             content: ''; position: absolute; inset: 0; 
-            background-color: #1e293b; 
-            border-radius: 4px; z-index: 1; 
+            background-color: #1e293b; border-radius: 4px; z-index: 1; 
             border: 1px solid rgba(212, 175, 55, 0.3); 
         }
         
-        /* 날개들 */
         .flap { 
             position: absolute; inset: 0; pointer-events: none; 
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
@@ -146,7 +135,6 @@
         .flap-right { z-index: 10; background-color: #f8f6f2; background-blend-mode: multiply; clip-path: polygon(100% 0, 45% 50%, 100% 100%); filter: drop-shadow(-1px 0 2px rgba(0,0,0,0.15)); }
         .flap-bottom { z-index: 11; clip-path: polygon(0 100%, 50% 50%, 100% 100%); background-color: #fcfbf9; background-blend-mode: multiply; background: linear-gradient(to top, #e2e2e2 0%, #fcfbf9 100%); filter: drop-shadow(0 -3px 5px rgba(0,0,0,0.1)); }
         
-        /* 뚜껑 */
         .envelope-lid {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 12;
             background-color: #fcfbf9; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
@@ -163,53 +151,43 @@
         .tap-hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: bounce 2s infinite; font-weight: 500; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        /* [수정] ENTER 버튼 (박스 스타일 원복) */
         .btn-enter {
-            position: relative; 
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(212, 175, 55, 0.6);
-            border-radius: 4px;
-            color: #D4AF37; 
-            font-family: 'Playfair Display', serif; 
-            font-size: 1.5rem; 
-            font-weight: 700; 
-            letter-spacing: 0.3em;
-            padding: 12px 40px; 
-            cursor: pointer; 
-            transition: all 0.5s;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            margin-top: 30px;
-            z-index: 50;
+            position: relative; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(4px);
+            border: 1px solid rgba(212, 175, 55, 0.6); border-radius: 4px;
+            color: #D4AF37; font-family: 'Playfair Display', serif; 
+            font-size: 1.5rem; font-weight: 700; letter-spacing: 0.3em;
+            padding: 12px 40px; cursor: pointer; transition: all 0.5s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            margin-top: 30px; z-index: 50;
         }
         .btn-enter:hover { 
-            background: rgba(212, 175, 55, 0.1);
-            border-color: #D4AF37;
-            color: #fff; 
+            background: rgba(212, 175, 55, 0.1); border-color: #D4AF37; color: #fff; 
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
         }
         .btn-enter::before {
             content: ''; position: absolute; inset: -3px; 
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 6px;
             animation: pulseBorder 2s infinite;
         }
-        @keyframes pulseBorder {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.05); opacity: 0; }
-        }
+        @keyframes pulseBorder { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.05); opacity: 0; } }
         
-        /* 로딩 스피너 */
         .loader {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #D4AF37;
-            width: 20px;
-            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%;
+            border-top: 3px solid #D4AF37; width: 20px; height: 20px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 스크롤바 감추기 (입력 필드용) */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        /* 슬라이드 메뉴 애니메이션 */
+        .sidebar-enter { transform: translateX(100%); }
+        .sidebar-enter-active { transform: translateX(0); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .sidebar-exit { transform: translateX(0); }
+        .sidebar-exit-active { transform: translateX(100%); transition: transform 0.3s ease-in; }
     </style>
 </head>
 <body class="bg-[#020617]">
@@ -218,7 +196,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // [중요] 최신 Apps Script URL 사용
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
 
         // --- 아이콘 컴포넌트 ---
@@ -253,6 +230,12 @@
         const UserCheck = (p) => <LucideIcon name="user-check" {...p} />;
         const UserX = (p) => <LucideIcon name="user-x" {...p} />;
         const Mail = (p) => <LucideIcon name="mail" {...p} />; 
+        // [신규 도구용 아이콘]
+        const Clock = (p) => <LucideIcon name="clock" {...p} />;
+        const Calculator = (p) => <LucideIcon name="calculator" {...p} />;
+        const ArrowRightLeft = (p) => <LucideIcon name="arrow-right-left" {...p} />;
+        const Globe = (p) => <LucideIcon name="globe" {...p} />;
+        const MenuIcon = (p) => <LucideIcon name="menu" {...p} />;
 
         // --- 데이터 ---
         const travelData = {
@@ -262,7 +245,9 @@
             dateRange: "2026. 04. 10 (Fri) - 04. 16 (Thu)",
             introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
             headerImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/queenstown.png",
-            themeColor: { primary: "#1e293b", accent: "#d97706" }
+            themeColor: { primary: "#1e293b", accent: "#d97706" },
+            // [추가] RSVP 기능 활성화 여부 토글
+            isRsvpActive: true 
           },
           letter: {
             from: "대표이사 최병채 천대권",
@@ -293,17 +278,11 @@
           ],
           itinerary: [
             {
-              day: "1",
-              date: "04. 10 (Fri)",
-              title: "출국",
-              activities: [
-                { time: "18:00", title: "인천공항 출발", type: "flight", desc: "대한항공 KE413 (약 11시간 35분 소요)" },
-              ]
+              day: "1", date: "04. 10 (Fri)", title: "출국",
+              activities: [ { time: "18:00", title: "인천공항 출발", type: "flight", desc: "대한항공 KE413 (약 11시간 35분 소요)" } ]
             },
             {
-              day: "2",
-              date: "04. 11 (Sat)",
-              title: "뉴질랜드 도착 및 퀸즈타운 이동",
+              day: "2", date: "04. 11 (Sat)", title: "뉴질랜드 도착 및 퀸즈타운 이동",
               activities: [
                 { time: "08:30", title: "오클랜드 도착", type: "flight", desc: "입국 심사 및 수하물 수령" },
                 { time: "10:30", title: "마이클 조셉 새비지 공원", type: "sightseeing", desc: "오클랜드 전경 조망" },
@@ -314,9 +293,7 @@
               ]
             },
             {
-              day: 3,
-              date: "04. 12 (Sun)",
-              title: "ITA 시상식 & 갈라 디너",
+              day: 3, date: "04. 12 (Sun)", title: "ITA 시상식 & 갈라 디너",
               activities: [
                 { time: "10:00", title: "오전 관광", type: "sightseeing", desc: "애로우타운 단풍 산책" },
                 { time: "12:00", title: "점심 (더 스토커 룸)", type: "food", desc: "시그니처 테이스팅 플레터 (모둠 요리)" },
@@ -326,9 +303,7 @@
               ]
             },
             {
-              day: 4,
-              date: "04. 13 (Mon)",
-              title: "밀포드사운드 대자연 투어",
+              day: 4, date: "04. 13 (Mon)", title: "밀포드사운드 대자연 투어",
               activities: [
                 { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "미러레이크 경유" },
                 { time: "13:00", title: "점심 (크루즈 선상 뷔페)", type: "food", desc: "식사 후 크루즈 출항" },
@@ -338,9 +313,7 @@
               ]
             },
             {
-              day: 5,
-              date: "04. 14 (Tue)",
-              title: "증기선 투어 & 페어웰 파티",
+              day: 5, date: "04. 14 (Tue)", title: "증기선 투어 & 페어웰 파티",
               activities: [
                 { time: "AM", title: "오전 휴식", type: "coffee", desc: "자유 시간 (~12:00)" },
                 { time: "13:00", title: "증기선 탑승", type: "ship", desc: "TSS 언슬로우" },
@@ -350,9 +323,7 @@
               ]
             },
             {
-              day: 6,
-              date: "04. 15 (Wed)",
-              title: "오클랜드 이동",
+              day: 6, date: "04. 15 (Wed)", title: "오클랜드 이동",
               activities: [
                 { time: "08:00", title: "공항 이동", type: "transport", desc: "오클랜드행 국내선 탑승" },
                 { time: "13:30", title: "점심 (라오 광저우)", type: "food", desc: "중국식 훠궈 (핫팟)" },
@@ -363,9 +334,7 @@
               ]
             },
             {
-              day: 7,
-              date: "04. 16 (Thu)",
-              title: "귀국",
+              day: 7, date: "04. 16 (Thu)", title: "귀국",
               activities: [
                 { time: "08:00", title: "호텔 체크아웃 ", type: "transport", desc: "오클랜드 공항으로 이동" },
                 { time: "11:05", title: "오클랜드 출발", type: "flight", desc: "대한항공 KE414 (약 12시간 소요)" },
@@ -401,19 +370,13 @@
 
         const handleImageError = (e) => { e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"; };
         
-        // --- 1. 컴포넌트 정의 ---
+        // --- 컴포넌트 정의 ---
 
-        // (1) 대기 화면
         const IntroScreen = ({ onEnter, onSkip, showSkip }) => {
             const [isExiting, setIsExiting] = useState(false);
             const handleClick = () => { setIsExiting(true); setTimeout(() => { onEnter(); }, 2500); };
-            const handleSkipClick = (e) => { 
-                e.stopPropagation(); 
-                onSkip(); 
-            };
+            const handleSkipClick = (e) => { e.stopPropagation(); onSkip(); };
 
-            // [수정] justify-center 제거: 가로 모드에서 높이가 부족할 때 상단이 잘리는 현상 방지
-            // 배경 이미지를 fixed로 변경하여 스크롤 시에도 배경이 고정되도록 수정
             return (
                 <div className={`fixed inset-0 z-[100] flex flex-col items-center bg-[#020617] text-white overflow-y-auto transition-all duration-[2500ms] ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -422,15 +385,11 @@
                     </div>
                     
                     {showSkip && (
-                        <button 
-                            onClick={handleSkipClick}
-                            className="fixed top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm"
-                        >
+                        <button onClick={handleSkipClick} className="fixed top-8 right-6 z-50 text-sm font-bold text-white border border-white/50 bg-black/30 hover:bg-white hover:text-black px-5 py-2 rounded-full transition-all tracking-widest backdrop-blur-sm">
                             SKIP
                         </button>
                     )}
 
-                    {/* [수정] my-auto 추가: 화면이 높을 땐 중앙 정렬, 낮을 땐 상단부터 스크롤 가능하게 함 */}
                     <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-5 px-4 intro-scale-wrapper my-auto py-10 w-full max-w-screen-lg">
                         <div className="w-60 h-60 mb-10 flex items-center justify-center relative gold-logo-container transition-all duration-300 shrink-0">
                             <div className="w-full h-full gold-logo-mask"></div>
@@ -451,14 +410,11 @@
             );
         };
 
-        // (2) 편지 화면 [수정: 가독성 확보 & 스크롤 지원]
         const LetterIntro = ({ onClose }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [showContent, setShowContent] = useState(false);
             const [isExiting, setIsExiting] = useState(false); 
             const [isMounting, setIsMounting] = useState(true);
-            
-            // [개선] 스크롤 활성화 타이밍 관리 (애니메이션 중에는 스크롤 막아서 떨림 방지)
             const [canScroll, setCanScroll] = useState(false);
 
             useEffect(() => { const timer = setTimeout(() => setIsMounting(false), 50); return () => clearTimeout(timer); }, []);
@@ -466,8 +422,6 @@
             const handleOpen = () => { 
                 if (isOpen) return; 
                 setIsOpen(true); 
-                
-                // 애니메이션이 끝난 후 스크롤 활성화 (1.5초 후)
                 setTimeout(() => setCanScroll(true), 1500);
                 setTimeout(() => setShowContent(true), 1300); 
             };
@@ -479,29 +433,12 @@
             };
 
             return (
-                /* [수정] 배경 div */
                 <div className={`fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm transition-opacity duration-[2000ms] ${isMounting ? 'opacity-0' : (isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100')} ${canScroll ? 'overflow-y-auto no-scrollbar' : 'overflow-hidden'}`}>
-                    
-                    {/* [최종 개선: Reflow Free Animation]
-                       1. Layout Pre-allocation: 
-                          애니메이션 중에 padding을 변화시키지 않습니다. 
-                          처음부터 pt-[380px] (편지 솟는 공간 + 여유)를 확보해둡니다.
-                       
-                       2. Transform Positioning:
-                          닫혀있을 때는 `translateY`를 사용하여 시각적으로 화면 중앙(50dvh)에 위치시킵니다.
-                          열릴 때는 `translateY(0)`으로 이동하여 원래 레이아웃 위치(상단 패딩 아래)로 돌아갑니다.
-                          
-                       3. 장점:
-                          레이아웃 변경(Reflow)이 전혀 발생하지 않아 모바일에서도 절대 떨리지 않습니다.
-                    */}
                     <div className="min-h-[100dvh] w-full flex flex-col items-center pt-[380px] pb-[100px]">
                         <div 
                             className={`relative transition-transform duration-[1000ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
                             style={{ 
-                                // 닫힘: 화면 중앙(50dvh) - (상단패딩 380 + 봉투반 110 = 490) => 중앙 정렬 보정
-                                // 열림: 원래 위치 (0)
                                 transform: isOpen ? 'translateY(0)' : 'translateY(calc(50dvh - 490px))',
-                                // 뚜껑 열리는 시간(0.6s) 동안 대기 후 이동
                                 transitionDelay: isOpen ? '400ms' : '0ms'
                             }}
                         >
@@ -511,8 +448,6 @@
                                     <div className="letter-paper">
                                         <div className={`w-full h-full transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
                                             <div className="letter-content-flex">
-                                                
-                                                {/* 로고 & 제목 (크기 원복) */}
                                                 <div className="shrink-0 w-full flex flex-col items-center pt-2 letter-header">
                                                     <div className="h-20 mb-3 flex items-center justify-center letter-logo-box">
                                                         <img src="https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/ITA.png" alt="ITA Logo" className="h-full w-auto object-contain opacity-90" />
@@ -520,7 +455,6 @@
                                                     <h3 className="font-serif text-slate-900 text-xl font-bold tracking-widest border-b border-[#D4AF37]/30 pb-3 mb-4 font-[Playfair Display] letter-title">INVITATION</h3>
                                                 </div>
                                                 
-                                                {/* 본문 (크기 원복) */}
                                                 <div className="flex-1 w-full min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-center items-center text-center my-2 px-2">
                                                     <div className="text-base text-slate-800 leading-relaxed font-[Nanum Myeongjo] space-y-1 letter-text">
                                                         {travelData.letter.content.map((line, i) => (
@@ -529,15 +463,10 @@
                                                     </div>
                                                 </div>
 
-                                                {/* 하단 서명 & 버튼 (크기 원복) */}
                                                 <div className="shrink-0 w-full text-center pb-2 flex flex-col items-center gap-4 letter-footer">
                                                     <p className="font-bold text-slate-900 font-[Nanum Myeongjo] text-base tracking-tighter">{travelData.letter.from}</p>
-                                                    
                                                     {showContent && (
-                                                        <button 
-                                                            onClick={handleClose} 
-                                                            className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter"
-                                                        >
+                                                        <button onClick={handleClose} className="w-full max-w-[240px] bg-[#1e293b] text-[#D4AF37] py-3 text-sm tracking-[0.2em] uppercase hover:bg-slate-800 transition-colors font-bold border border-[#D4AF37]/50 relative z-50 pointer-events-auto rounded-sm shadow-md btn-letter-enter">
                                                             Enter Invitation
                                                         </button>
                                                     )}
@@ -560,292 +489,154 @@
             );
         };
 
-        // (3) Header with Multi-step RSVP
         const Header = ({ data, onInfoClick }) => {
-          const [showRSVP, setShowRSVP] = useState(false);
-          const [rsvpStep, setRsvpStep] = useState('input'); 
-          const [empId, setEmpId] = useState("");
-          const [userName, setUserName] = useState("");
-          const [attendance, setAttendance] = useState(null); 
-          const [prevAttendance, setPrevAttendance] = useState(null); 
-          const [isLoading, setIsLoading] = useState(false);
-          const [errorMsg, setErrorMsg] = useState("");
+            const [now, setNow] = useState(new Date());
+            const [activeTab, setActiveTab] = useState('time'); // 'time' or 'exchange'
+            const [exchangeRate, setExchangeRate] = useState(null);
+            const [nzd, setNzd] = useState('1');
+            const [krw, setKrw] = useState('');
 
-          const resetRSVP = () => {
-              setShowRSVP(false);
-              setRsvpStep('input');
-              setEmpId("");
-              setUserName("");
-              setAttendance(null);
-              setPrevAttendance(null); 
-              setIsLoading(false);
-              setErrorMsg("");
-          };
+            // 시간 업데이트
+            useEffect(() => {
+                const timer = setInterval(() => setNow(new Date()), 1000);
+                return () => clearInterval(timer);
+            }, []);
 
-          const handleCheckId = async () => {
-            if (!empId) return;
+            // 실시간 환율 API 연동
+            useEffect(() => {
+                fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/nzd.json')
+                    .then(res => res.json())
+                    .then(resData => {
+                        const rate = resData.nzd.krw;
+                        setExchangeRate(rate);
+                        setKrw(Math.floor(rate).toLocaleString('ko-KR'));
+                    })
+                    .catch(err => {
+                        console.error("Exchange rate fetch failed, using fallback", err);
+                        // API 호출 실패 시 최근 기준 환율 870원 적용 (Fallback)
+                        setExchangeRate(870); 
+                        setKrw((870).toLocaleString('ko-KR'));
+                    });
+            }, []);
 
-            // [테스트용 가짜 데이터]
-            const testModeUsers = {
-                "1111": { status: 'success', name: "박금융(테스트)", submitted: true, attendance: true }, 
-                "2222": { status: 'success', name: "이보험(테스트)", submitted: true, attendance: false },
-                "1234": { status: 'success', name: "김인카(테스트)", submitted: false }
+            const getTimeFormat = (date, tz) => new Intl.DateTimeFormat('ko-KR', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(date);
+            const getDateFormat = (date, tz) => new Intl.DateTimeFormat('en-US', { timeZone: tz, month: 'short', day: 'numeric', weekday: 'short' }).format(date);
+
+            const kstTime = getTimeFormat(now, 'Asia/Seoul');
+            const nztTime = getTimeFormat(now, 'Pacific/Auckland');
+            const kstDate = getDateFormat(now, 'Asia/Seoul');
+            const nztDate = getDateFormat(now, 'Pacific/Auckland');
+
+            // 동적 시차 계산 (썸머타임 자동 반영)
+            const getHourDiff = () => {
+                const krTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+                const nzTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Auckland"}));
+                return Math.round((nzTime - krTime) / (1000 * 60 * 60));
+            };
+            const hourDiff = getHourDiff();
+
+            // 환율 계산 핸들러
+            const handleNzdChange = (e) => {
+                const val = e.target.value;
+                setNzd(val);
+                if (exchangeRate) setKrw(val ? Math.floor(val * exchangeRate).toLocaleString('ko-KR') : '');
+            };
+            const handleKrwChange = (e) => {
+                const rawVal = e.target.value.replace(/,/g, '');
+                if (isNaN(rawVal)) return;
+                setKrw(rawVal ? Number(rawVal).toLocaleString('ko-KR') : '');
+                if (exchangeRate) setNzd(rawVal ? (rawVal / exchangeRate).toFixed(2) : '');
             };
 
-            if (testModeUsers[empId]) {
-                setIsLoading(true);
-                setTimeout(() => {
-                    const result = testModeUsers[empId];
-                    setUserName(result.name);
-                    if (result.submitted) {
-                        setPrevAttendance(result.attendance);
-                        setRsvpStep('check_change');
-                    } else {
-                        setRsvpStep('selection');
-                    }
-                    setIsLoading(false);
-                }, 500);
-                return;
-            }
-
-            if (GOOGLE_SCRIPT_URL.includes("docs.google.com/spreadsheets")) {
-                setErrorMsg("오류: 스프레드시트 주소가 아닌 '웹 앱 배포 URL'을 입력해야 합니다.");
-                return;
-            }
-
-            setIsLoading(true);
-            setErrorMsg("");
-
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    cache: 'no-store', 
-                    body: JSON.stringify({ action: 'check', empId: empId })
-                });
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    setUserName(result.name);
+            return (
+                <header className="relative h-[60vh] min-h-[520px] w-full overflow-hidden shadow-2xl">
+                    <div className="absolute inset-0">
+                        <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent"></div>
+                    </div>
                     
-                    const isSubmitted = result.submitted === true || result.submitted === "true";
-                    
-                    if (isSubmitted) {
-                        const prevStatus = result.attendance === true || result.attendance === "true";
-                        setPrevAttendance(prevStatus);
-                        setRsvpStep('check_change'); 
-                    } else {
-                        setRsvpStep('selection');
-                    }
-                } else {
-                    setErrorMsg("일치하는 사번 정보가 없습니다.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                setErrorMsg("통신 중 오류가 발생했습니다.");
-            } finally {
-                setIsLoading(false);
-            }
-          };
-
-          const handleSelect = (isAttending) => {
-              setAttendance(isAttending);
-              setRsvpStep('confirm'); 
-          };
-
-          const handleFinalConfirm = async (isConfirmed) => {
-              if (!isConfirmed) {
-                  setRsvpStep('selection'); 
-                  return;
-              }
-
-              setIsLoading(true);
-              
-              if (GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
-                  setTimeout(() => {
-                      setRsvpStep('done');
-                      setIsLoading(false);
-                  }, 500);
-                  return;
-              }
-
-              try {
-                  await fetch(GOOGLE_SCRIPT_URL, {
-                      method: 'POST',
-                      body: JSON.stringify({ 
-                          action: 'rsvp', 
-                          empId: empId, 
-                          name: userName,
-                          attendance: attendance 
-                      })
-                  });
-                  setRsvpStep('done');
-              } catch (error) {
-                  setErrorMsg("저장 중 오류가 발생했습니다.");
-              } finally {
-                  setIsLoading(false);
-              }
-          };
-
-          return (
-            /* [수정] 반응형 헤더: 가로 모드에서 높이가 너무 작아지는 것을 방지하기 위해 min-h-[400px] 추가 */
-            <header className="relative h-[50vh] min-h-[400px] w-full overflow-hidden shadow-2xl">
-              <div className="absolute inset-0">
-                <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
-                {/* [수정] 배경 그라데이션을 별도 레이어로 분리하여 텍스트 영역과 독립시킴 (잘림 방지) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-              </div>
-              
-              {/* [수정] 텍스트 컨테이너: 절대 위치 + 패딩 방식에서 -> Flexbox 하단 정렬 방식으로 변경 */}
-              <div className="absolute inset-0 z-10 flex flex-col justify-end px-8 pb-10 text-white">
-                <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl">
-                    {data.subtitle.map((line, i) => (
-                        <span key={i} className="block">{line}</span>
-                    ))}
-                </div>
-                <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100 drop-shadow-lg">{data.title}</h1>
-                <div className="flex items-center mt-2 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
-                  <Calendar size={14} className="mr-2 text-amber-400" />
-                  {data.dateRange}
-                </div>
-
-                <div className="mt-6">
-                    {!showRSVP ? (
-                        <button 
-                            onClick={() => setShowRSVP(true)} 
-                            className="group relative overflow-hidden bg-white/10 backdrop-blur-md border border-amber-500/50 rounded-xl p-4 w-full max-w-sm flex items-center justify-between transition-all hover:bg-black/60 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-                        >
-                            <div className="flex items-center">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#aa771c] flex items-center justify-center text-slate-900 shadow-lg mr-4 group-hover:scale-110 transition-transform">
-                                    <Mail size={24} strokeWidth={2.5} />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-[#D4AF37] font-bold text-xl tracking-widest font-serif mb-1 group-hover:text-amber-300 transition-colors">ITA 초청장</p>
-                                    <p className="text-slate-200 text-xl font-bold">참석 여부를 확인해주세요</p>
-                                </div>
-                            </div>
-                            <div className="text-amber-500/70 group-hover:translate-x-1 transition-transform group-hover:text-amber-400">
-                                <ChevronRight size={24} />
-                            </div>
-                        </button>
-                    ) : (
-                        <div className="bg-black/85 backdrop-blur-md p-4 rounded-xl border border-slate-600 w-full max-w-sm animate-in slide-in-from-bottom-2 fade-in shadow-2xl relative">
-                            {isLoading && (
-                                <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center rounded-xl">
-                                    <div className="loader"></div>
-                                </div>
-                            )}
-
-                            <div className="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
-                                <span className="text-sm text-amber-500 font-bold uppercase tracking-widest">참석 여부 확인</span>
-                                <button onClick={resetRSVP}><X size={18} className="text-slate-400 hover:text-white" /></button>
-                            </div>
-
-                            {rsvpStep === 'input' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-slate-300">사번을 입력하여 본인 확인을 진행해주세요.</p>
-                                    <div className="flex gap-2">
-                                        <input 
-                                            type="text" 
-                                            value={empId} 
-                                            onChange={(e) => setEmpId(e.target.value)}
-                                            placeholder="사번 입력 (예: 1611499)"
-                                            className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 placeholder-slate-500"
-                                            onKeyPress={(e) => e.key === 'Enter' && handleCheckId()}
-                                        />
-                                        <button onClick={handleCheckId} className="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-2 rounded font-bold whitespace-nowrap transition-colors">확인</button>
-                                    </div>
-                                    {errorMsg && <p className="text-xs text-red-400 mt-1">{errorMsg}</p>}
-                                </div>
-                            )}
-
-                            {rsvpStep === 'check_change' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님은 이미 제출하셨습니다.</p>
-                                    <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2 text-center">
-                                        현재 상태: {prevAttendance ? <span className="text-green-400 font-bold">"참석"</span> : <span className="text-red-400 font-bold">"불참"</span>}
-                                        <br/><span className="text-xs text-slate-400 block mt-1">참석 여부를 변경하시겠습니까?</span>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <button onClick={() => setRsvpStep('selection')} className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">
-                                            네, 변경하겠습니다
-                                        </button>
-                                        <button onClick={() => {
-                                            setAttendance(prevAttendance); 
-                                            setRsvpStep('done'); 
-                                        }} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium transition-colors">
-                                            아니오 (여권 제출로 이동)
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'selection' && (
-                                <div className="space-y-3">
-                                    <p className="text-sm text-white font-bold"><span className="text-amber-400">{userName}</span>님, 환영합니다.</p>
-                                    <p className="text-xs text-slate-400 mb-2">이번 행사에 참석하시겠습니까?</p>
-                                    <div className="flex flex-col gap-2">
-                                        <button onClick={() => handleSelect(true)} className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded text-sm font-bold flex items-center justify-center transition-colors">
-                                            <UserCheck size={16} className="mr-2" /> 예, 참석하겠습니다.
-                                        </button>
-                                        <button onClick={() => handleSelect(false)} className="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 py-2 rounded text-sm font-medium flex items-center justify-center transition-colors">
-                                            <UserX size={16} className="mr-2" /> 아니오, 참석하지 않겠습니다.
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'confirm' && (
-                                <div className="space-y-3 text-center">
-                                    <div className="text-sm text-slate-200 bg-slate-800 p-3 rounded mb-2">
-                                        {attendance ? (
-                                            <span className="text-green-400 font-bold">"참석"</span>
-                                        ) : (
-                                            <span className="text-red-400 font-bold">"불참"</span>
-                                        )}
-                                        으로 선택하셨습니다.<br/>제출하시겠습니까?
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => handleFinalConfirm(true)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-sm font-bold transition-colors">네, 제출합니다</button>
-                                        <button onClick={() => handleFinalConfirm(false)} className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 rounded text-sm font-medium transition-colors">아니오</button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {rsvpStep === 'done' && (
-                                <div className="text-center py-4">
-                                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
-                                        <CheckCircle size={24} />
-                                    </div>
-                                    <p className="text-white font-bold mb-1">
-                                        {prevAttendance !== null && attendance === prevAttendance ? "확인이 완료되었습니다." : "제출이 완료되었습니다."}
-                                    </p>
-                                    <p className="text-xs text-slate-400 mb-4">{userName}님의 소중한 의견 감사합니다.</p>
-                                    
-                                    {attendance && (
-                                        <div className="mb-5 p-3 bg-slate-800/50 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
-                                            <p className="text-xs text-amber-400 mb-2 font-bold flex items-center justify-center">
-                                                <AlertTriangle size={12} className="mr-1" /> 원활한 출국 수속을 위해 필수
-                                            </p>
-                                            <a 
-                                                href="https://script.google.com/macros/s/AKfycbzgqzph_1Cqcvb08Li_qN1odolUX0qoaTx8uqPRXEZLaGWsPjDuRXlFa_qP_ONXYuN7/exec" 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center shadow-lg transition-all transform hover:scale-[1.02]"
-                                            >
-                                                <Plane size={18} className="mr-2" /> 여권 정보 제출하러 가기
-                                            </a>
-                                        </div>
-                                    )}
-
-                                    <button onClick={resetRSVP} className="text-xs text-slate-500 hover:text-slate-300 underline">닫기</button>
-                                </div>
-                            )}
+                    <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 sm:px-8 pb-10 text-white">
+                        <div className="text-4xl md:text-5xl text-amber-300 font-bold font-['Playfair_Display'] italic mb-1 leading-tight drop-shadow-xl">
+                            {data.subtitle.map((line, i) => <span key={i} className="block">{line}</span>)}
                         </div>
-                    )}
-                </div>
-              </div>
-            </header>
-          );
+                        <h1 className="text-lg md:text-xl font-black tracking-widest font-['Cinzel'] uppercase text-slate-100 drop-shadow-lg">{data.title}</h1>
+                        <div className="flex items-center mt-2 text-sm text-slate-300 font-medium tracking-wide bg-black/30 w-fit px-3 py-1 rounded-lg backdrop-blur-sm">
+                            <Calendar size={14} className="mr-2 text-amber-400" />
+                            {data.dateRange}
+                        </div>
+
+                        {/* 신규: 참석 확인 대체 헤더 위젯 (시간/환율) */}
+                        <div className="mt-6 bg-black/50 backdrop-blur-md border border-white/20 rounded-xl w-full max-w-sm overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.3)] animate-in slide-in-from-bottom-2 fade-in">
+                            <div className="flex border-b border-white/10">
+                                <button onClick={() => setActiveTab('time')} className={`flex-1 py-3 text-sm font-bold flex items-center justify-center transition-colors ${activeTab === 'time' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
+                                    <Clock size={16} className="mr-2"/> 현지 시간
+                                </button>
+                                <button onClick={() => setActiveTab('exchange')} className={`flex-1 py-3 text-sm font-bold flex items-center justify-center transition-colors ${activeTab === 'exchange' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
+                                    <Calculator size={16} className="mr-2"/> 환율 계산
+                                </button>
+                            </div>
+                            
+                            <div className="p-5">
+                                {activeTab === 'time' && (
+                                    <div className="animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="flex justify-between items-center mb-5">
+                                            <div className="text-center flex-1 pr-2 relative">
+                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-white/20"></div>
+                                                <span className="block text-[11px] text-amber-400 mb-1 font-bold tracking-widest relative inline-flex items-center justify-center w-full">
+                                                    NEW ZEALAND
+                                                    <span className="absolute -right-3 top-0 flex h-2 w-2">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                                    </span>
+                                                </span>
+                                                <span className="block text-[10px] text-slate-400 mb-1 font-mono uppercase">{nztDate}</span>
+                                                <span className="block text-xl font-bold text-white tabular-nums tracking-tight drop-shadow-md">{nztTime}</span>
+                                            </div>
+                                            <div className="text-center flex-1 pl-2">
+                                                <span className="block text-[11px] text-slate-400 mb-1 font-bold tracking-widest">SOUTH KOREA</span>
+                                                <span className="block text-[10px] text-slate-400 mb-1 font-mono uppercase">{kstDate}</span>
+                                                <span className="block text-xl font-bold text-slate-200 tabular-nums tracking-tight">{kstTime}</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white/10 rounded-lg px-3 py-2 text-center text-xs text-slate-300 border border-white/5">
+                                            뉴질랜드는 현재 한국보다 <strong className="text-amber-400">{hourDiff}시간</strong> 빠릅니다.
+                                        </div>
+                                    </div>
+                                )}
+                                {activeTab === 'exchange' && (
+                                    <div className="animate-in fade-in zoom-in-95 duration-200">
+                                        {exchangeRate === null ? (
+                                            <div className="flex justify-center py-6"><div className="loader border-white/20 border-top-amber-400"></div></div>
+                                        ) : (
+                                            <div className="space-y-3 relative">
+                                                <div className="relative group">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-amber-400">$</span>
+                                                    <input type="number" value={nzd} onChange={handleNzdChange} className="w-full bg-black/40 border border-white/20 rounded-lg py-2.5 pl-8 pr-4 text-right font-bold text-white focus:outline-none focus:border-amber-400 focus:bg-black/60 transition-all" placeholder="NZD" />
+                                                    <span className="absolute left-10 -top-2 bg-[#020617] text-[10px] text-slate-300 px-1.5 rounded border border-white/10 shadow">NZD</span>
+                                                </div>
+                                                
+                                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-[#1e293b] p-1.5 rounded-full border border-white/10 text-slate-400 shadow-xl pointer-events-none">
+                                                    <ArrowRightLeft size={14} />
+                                                </div>
+
+                                                <div className="relative group">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-amber-400">₩</span>
+                                                    <input type="text" value={krw} onChange={handleKrwChange} className="w-full bg-black/40 border border-white/20 rounded-lg py-2.5 pl-8 pr-4 text-right font-bold text-white focus:outline-none focus:border-amber-400 focus:bg-black/60 transition-all" placeholder="KRW" />
+                                                    <span className="absolute left-10 -top-2 bg-[#020617] text-[10px] text-slate-300 px-1.5 rounded border border-white/10 shadow">KRW</span>
+                                                </div>
+                                                <div className="text-right text-[10px] text-slate-400 mt-2 font-mono flex items-center justify-end">
+                                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></div>
+                                                    실시간 매매기준율: 1 NZD = {exchangeRate.toFixed(2)} KRW
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            );
         };
 
         const NoticeFooter = () => (
@@ -857,26 +648,23 @@
         );
 
         const TabNavigation = ({ activeTab, setActiveTab }) => {
+          // [수정] Tools(도구/정보) 탭 제거 (모바일 UI 최적화 위해 사이드바 메뉴로 이동)
           const tabs = [
             { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
             { id: 'Schedule', label: '일정', icon: Calendar },
             { id: 'Hotel', label: '숙소', icon: BedDouble },
             { id: 'Dining', label: '식사', icon: UtensilsCrossed },
-            { id: 'Attractions', label: '관광', icon: Mountain },
+            { id: 'Attractions', label: '관광', icon: Mountain }
           ];
           return (
             <div className="sticky top-0 z-40 bg-[#f8fafc]/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto no-scrollbar">
-              {/* [수정] 탭 너비: sm(모바일 가로) 이상에서 넓게 확장하도록 기준점 완화 (sm:max-w-4xl) */}
-              <div className="flex justify-between min-w-[360px] max-w-md sm:max-w-4xl mx-auto px-2">
+              <div className="flex justify-between min-w-[360px] max-w-md sm:max-w-4xl mx-auto px-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
                   return (
-                    <button key={tab.id} onClick={() => {
-                        setActiveTab(tab.id);
-                        /* [수정] 즉시 스크롤 제거 (App의 useEffect에서 처리) */
-                    }} className={`flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
-                      <Icon size={20} className="mb-1" />
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex flex-col items-center justify-center py-3 px-1 text-xs transition-all relative text-slate-600 hover:text-slate-800 ${isActive ? "font-bold" : "font-medium"}`}>
+                      <Icon size={18} className="mb-1" />
                       {tab.label}
                       {isActive && <div className="absolute bottom-0 w-full h-0.5 bg-amber-600 rounded-t-full"></div>}
                     </button>
@@ -928,10 +716,7 @@
             </div>
             <div className="p-6">
               <h3 className="font-serif text-2xl text-slate-900 mb-2 font-[Playfair Display]">{hotel.name}</h3>
-              <div className="flex items-center text-slate-500 text-sm mb-4">
-                <MapPin size={14} className="mr-1 text-amber-600" />
-                {hotel.location || "New Zealand"}
-              </div>
+              <div className="flex items-center text-slate-500 text-sm mb-4"><MapPin size={14} className="mr-1 text-amber-600" />{hotel.location || "New Zealand"}</div>
               <p className="text-slate-600 text-sm leading-relaxed mb-4 border-l-2 border-amber-200 pl-3">{hotel.desc}</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {hotel.features.map((feature, i) => <span key={i} className="text-xs bg-slate-50 text-slate-600 px-2 py-1 rounded border border-slate-100">{feature}</span>)}
@@ -958,9 +743,7 @@
               <div className="text-sm font-medium text-slate-500 mb-3 italic">{item.type}</div>
               <p className="text-slate-600 text-sm mb-4 flex-1">{item.desc}</p>
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center">
-                  <Utensils size={12} className="mr-1" /> 대표 메뉴
-                </div>
+                <div className="text-xs text-slate-400 font-bold uppercase mb-2 flex items-center"><Utensils size={12} className="mr-1" /> 대표 메뉴</div>
                 <ul className="text-sm text-slate-700 space-y-1">
                   {item.menu.map((menuItem, i) => <li key={i} className="flex items-start"><span className="mr-2 text-amber-500">•</span>{menuItem}</li>)}
                 </ul>
@@ -990,9 +773,7 @@
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
-                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center">
-                                <Info size={18} className="mr-2" /> Travel Checklist
-                            </h3>
+                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center"><Info size={18} className="mr-2" /> Travel Checklist</h3>
                             <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
                         </div>
                         <div className="p-5 overflow-y-auto">
@@ -1022,7 +803,6 @@
                 <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
                     <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
                 </h2>
-
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
                     <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
                     <div className="text-sm text-red-800 leading-snug font-bold">
@@ -1031,20 +811,16 @@
                         <p className="text-red-600 underline decoration-red-400 underline-offset-2">탑승 전 음식물은 절대 소지하지 말고 탑승하시기 바랍니다.</p>
                     </div>
                 </div>
-
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                     <div className="p-5">
                         <div className="space-y-6">
                             {travelData.entryInfo.map((info, idx) => (
                                 <div key={idx} className="border-b border-slate-100 last:border-0 pb-5 last:pb-0">
-                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base">
-                                        <CheckCircle size={18} className="mr-2 text-green-600" />{info.title}
-                                    </h4>
+                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base"><CheckCircle size={18} className="mr-2 text-green-600" />{info.title}</h4>
                                     <p className="text-sm text-slate-600 leading-relaxed pl-7 bg-slate-50 p-3 rounded-lg border border-slate-100/50">{info.content}</p>
                                 </div>
                             ))}
                         </div>
-
                         <div className="mt-8 pt-6 border-t border-slate-100">
                              <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
                                 <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
@@ -1052,9 +828,7 @@
                             <div className="grid gap-3">
                                 {travelData.contacts.map((contact, idx) => (
                                     <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span>
-                                        </div>
+                                        <div className="flex justify-between items-center mb-1"><span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span></div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
                                             {contact.phone === "추후 기재" ? (
@@ -1080,43 +854,27 @@
             
             useEffect(() => {
                 const visited = localStorage.getItem('hasVisited');
-                if (visited) {
-                    setHasVisited(true);
-                }
+                if (visited) setHasVisited(true);
             }, []);
 
-            // [추가] 탭 변경 시 스크롤 최상단 이동 (부드럽게)
-            // 탭 상태가 변경되고 화면이 그려진 후 실행되므로 스크롤 꼬임 방지
             useEffect(() => {
-                if (step === 'main') {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                if (step === 'main') window.scrollTo({ top: 0, behavior: 'smooth' });
             }, [activeTab]); 
 
-            const handleEnterClick = () => {
-                setStep('letter');
-            };
-
-            const handleLetterClose = () => {
-                localStorage.setItem('hasVisited', 'true');
-                setStep('main');
-            };
-
-            const handleSkip = () => {
-                localStorage.setItem('hasVisited', 'true');
-                setStep('main');
-            };
+            const handleEnterClick = () => setStep('letter');
+            const handleLetterClose = () => { localStorage.setItem('hasVisited', 'true'); setStep('main'); };
+            const handleSkip = () => { localStorage.setItem('hasVisited', 'true'); setStep('main'); };
 
             return (
                 <div className="min-h-screen font-sans antialiased text-slate-800 pb-20" style={{backgroundColor: step === 'main' ? '#f8fafc' : '#020617'}}>
                     {step === 'intro' && <IntroScreen onEnter={handleEnterClick} onSkip={handleSkip} showSkip={hasVisited} />}
                     {step === 'letter' && <LetterIntro onClose={handleLetterClose} />}
+                    
                     {step === 'main' && (
-                        <div className="fade-enter block bg-[#f8fafc] min-h-screen">
+                        <div className="fade-enter block bg-[#f8fafc] min-h-screen relative">
                             <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
                             <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
                             
-                            {/* [수정] 메인 컨텐츠 영역: sm(모바일 가로) 이상에서 넓게 확장 */}
                             <main className="max-w-md sm:max-w-4xl mx-auto px-5 py-6 min-h-[50vh]">
                                 {activeTab === 'Checklist' && <ChecklistView />}
                                 {activeTab === 'Schedule' && (
@@ -1145,7 +903,6 @@
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><BedDouble className="mr-2 text-amber-600" /> 숙소</h2>
-                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             {travelData.hotels.map(hotel => <HotelDetailCard key={hotel.id} hotel={hotel} />)}
                                         </div>
@@ -1155,7 +912,6 @@
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><UtensilsCrossed className="mr-2 text-amber-600" /> 식사</h2>
-                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             {travelData.dining.map((item, idx) => <DiningCard key={idx} item={item} />)}
                                         </div>
@@ -1165,13 +921,14 @@
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                         <NoticeFooter /> 
                                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]"><Mountain className="mr-2 text-amber-600" /> 관광</h2>
-                                        {/* [수정] 반응형 그리드: sm(모바일 가로) 이상에서 2열로 배치 */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             {travelData.spots.map((spot, idx) => <SpotCard key={idx} spot={spot} />)}
                                         </div>
                                     </div>
                                 )}
                             </main>
+                            
+                            {/* 각종 모달 */}
                             <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
                         </div>
                     )}
