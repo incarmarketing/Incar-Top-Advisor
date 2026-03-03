@@ -194,14 +194,27 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4gHGlLUSwikjL09bnx7VTtbgrO5OVtdljzPLKmQlMD9Jf5uNJRpLCkjWkyLeRWtMf/exec"; 
 
-        // --- 아이콘 컴포넌트 ---
+        // --- 아이콘 컴포넌트 (렌더링 에러 해결) ---
         const LucideIcon = ({ name, size = 16, className = "", ...props }) => {
-            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size }} className={`inline-block ${className}`} {...props}></i>;
+            const spanRef = useRef(null);
+            
+            useEffect(() => {
+                if (spanRef.current && window.lucide) {
+                    spanRef.current.innerHTML = `<i data-lucide="${name}"></i>`;
+                    window.lucide.createIcons({ root: spanRef.current });
+                    const svg = spanRef.current.querySelector('svg');
+                    if (svg) {
+                        svg.style.width = typeof size === 'number' ? `${size}px` : size;
+                        svg.style.height = typeof size === 'number' ? `${size}px` : size;
+                    }
+                }
+            }, [name, size]);
+
+            return <span ref={spanRef} className={`inline-flex items-center justify-center ${className}`} {...props}></span>;
         };
 
         const Plane = (p) => <LucideIcon name="plane" {...p} />;
@@ -210,6 +223,7 @@
         const Phone = (p) => <LucideIcon name="phone" {...p} />;
         const Calendar = (p) => <LucideIcon name="calendar" {...p} />;
         const ChevronRight = (p) => <LucideIcon name="chevron-right" {...p} />;
+        const ChevronDown = (p) => <LucideIcon name="chevron-down" {...p} />;
         const X = (p) => <LucideIcon name="x" {...p} />;
         const Coffee = (p) => <LucideIcon name="coffee" {...p} />;
         const Utensils = (p) => <LucideIcon name="utensils" {...p} />;
@@ -230,12 +244,25 @@
         const UserCheck = (p) => <LucideIcon name="user-check" {...p} />;
         const UserX = (p) => <LucideIcon name="user-x" {...p} />;
         const Mail = (p) => <LucideIcon name="mail" {...p} />; 
-        // [신규 도구용 아이콘]
         const Clock = (p) => <LucideIcon name="clock" {...p} />;
         const Calculator = (p) => <LucideIcon name="calculator" {...p} />;
         const ArrowRightLeft = (p) => <LucideIcon name="arrow-right-left" {...p} />;
         const Globe = (p) => <LucideIcon name="globe" {...p} />;
-        const MenuIcon = (p) => <LucideIcon name="menu" {...p} />;
+        const MessageSquare = (p) => <LucideIcon name="message-square" {...p} />;
+        const Cloud = (p) => <LucideIcon name="cloud" {...p} />;
+        const CloudSun = (p) => <LucideIcon name="cloud-sun" {...p} />;
+        const CloudRain = (p) => <LucideIcon name="cloud-rain" {...p} />;
+        const Snowflake = (p) => <LucideIcon name="snowflake" {...p} />;
+
+        // 날씨 코드를 아이콘으로 변환하는 헬퍼 함수
+        const getWeatherIcon = (code, size = 24) => {
+            if (code === 0) return <Sun size={size} className="text-amber-400" />;
+            if (code >= 1 && code <= 3) return <CloudSun size={size} className="text-slate-300" />;
+            if (code >= 45 && code <= 48) return <Cloud size={size} className="text-slate-400" />;
+            if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || (code >= 95)) return <CloudRain size={size} className="text-blue-400" />;
+            if (code >= 71 && code <= 86) return <Snowflake size={size} className="text-cyan-300" />;
+            return <Cloud size={size} className="text-slate-400" />;
+        };
 
         // --- 데이터 ---
         const travelData = {
@@ -246,8 +273,7 @@
             introImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/onlyyou.png",
             headerImage: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/queenstown.png",
             themeColor: { primary: "#1e293b", accent: "#d97706" },
-            // [추가] RSVP 기능 활성화 여부 토글
-            isRsvpActive: true 
+            isRsvpActive: false 
           },
           letter: {
             from: "대표이사 최병채 천대권",
@@ -270,11 +296,73 @@
             { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
             { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그가 필요합니다. (여행용 멀티 어댑터 회사 제공)" }
           ],
+          // 신규: 출국 정보 추가
+          departureInfo: [
+            { title: "액체류 반입 규정", content: "기내 반입 시 100ml 이하 용기에 담아 1L 투명 지퍼백 1개에 넣어야 합니다. 규정 위반 시 압수될 수 있습니다." },
+            { title: "수하물 무게 제한", content: "위탁 수하물은 23kg, 기내 수하물은 7kg까지 허용됩니다. 짐을 싸실 때 무게를 꼭 확인해 주세요." },
+            { title: "오클랜드 공항 이동", content: "마지막 날은 공항 이동 스케줄이 빠듯할 수 있습니다. 가이드의 미팅 시간 안내를 반드시 준수해 주시기 바랍니다." },
+            { title: "면세품 수령 안내", content: "오클랜드 공항 면세구역에서 구매한 물품은 영수증을 잘 보관하시고 지정된 수령처에서 픽업하세요." }
+          ],
           contacts: [
             { name: "김준형", phone: "010-9589-5768", type: "인카블루투어" },
             { name: "임호근", phone: "010-2271-2871", type: "인카블루투어" },
             { name: "퀸즈타운 가이드", phone: "추후 기재", type: "가이드" },
             { name: "오클랜드 가이드", phone: "추후 기재", type: "가이드" }
+          ],
+          phrases: [
+            {
+                icon: Plane, category: "공항 / 교통",
+                items: [
+                    { ko: "수하물을 찾는 곳이 어디인가요?", en: "Where is the baggage claim?", pron: "웨어 이즈 더 배기지 클레임?" },
+                    { ko: "환승 게이트는 어디로 가야 하나요?", en: "Where is the transfer gate?", pron: "웨어 이즈 더 트랜스퍼 게이트?" },
+                    { ko: "신고할 물건이 없습니다.", en: "I have nothing to declare.", pron: "아이 해브 낫띵 투 디클레어." },
+                    { ko: "시내로 가는 택시 승강장이 어디인가요?", en: "Where is the taxi stand to downtown?", pron: "웨어 이즈 더 택시 스탠드 투 다운타운?" }
+                ]
+            },
+            {
+                icon: Hotel, category: "호텔 / 숙박",
+                items: [
+                    { ko: "체크인/체크아웃 부탁드립니다.", en: "I'd like to check in/out, please.", pron: "아읻 라이크 투 체크 인/아웃, 플리즈." },
+                    { ko: "조식 시간은 언제인가요?", en: "What time is breakfast served?", pron: "왓 타임 이즈 브렉퍼스트 서브드?" },
+                    { ko: "수건과 물을 좀 더 주실 수 있나요?", en: "Could I have some extra towels and water?", pron: "쿧 아이 해브 썸 엑스트라 타월스 앤 워터?" },
+                    { ko: "방을 청소해 주세요.", en: "Please make up my room.", pron: "플리즈 메이크 업 마이 룸." },
+                    { ko: "짐을 잠시 맡겨도 될까요?", en: "Can I leave my luggage here?", pron: "캔 아이 리브 마이 러기지 히어?" }
+                ]
+            },
+            {
+                icon: Utensils, category: "식당 / 카페",
+                items: [
+                    { ko: "몇 분 정도 기다려야 하나요?", en: "How long is the wait?", pron: "하우 롱 이즈 더 웨이트?" },
+                    { ko: "메뉴판 좀 주시겠어요?", en: "Could we have the menu, please?", pron: "쿧 위 해브 더 메뉴, 플리즈?" },
+                    { ko: "추천해 주실 만한 메뉴가 있나요?", en: "What do you recommend?", pron: "왓 두 유 레커멘드?" },
+                    { ko: "이것과 같은 걸로 주세요.", en: "I'll have the same as this.", pron: "아일 해브 더 세임 애즈 디스." },
+                    { ko: "물 좀 주시겠어요?", en: "Can I get some water, please?", pron: "캔 아이 겟 썸 워터, 플리즈?" },
+                    { ko: "남은 음식 좀 포장해 주시겠어요?", en: "Could you pack this to go, please?", pron: "쿧 유 팩 디스 투 고, 플리즈?" },
+                    { ko: "계산할게요. (영수증 주세요)", en: "Check, please.", pron: "체크, 플리즈." }
+                ]
+            },
+            {
+                icon: Camera, category: "관광 / 쇼핑",
+                items: [
+                    { ko: "저희 사진 좀 찍어주시겠어요?", en: "Could you take a picture of us?", pron: "쿧 유 테이크 어 픽쳐 오브 어스?" },
+                    { ko: "이거 얼마인가요?", en: "How much is this?", pron: "하우 머치 이즈 디스?" },
+                    { ko: "이거 다른 색상이나 사이즈도 있나요?", en: "Do you have this in another color or size?", pron: "두 유 해브 디스 인 어나더 컬러 오어 사이즈?" },
+                    { ko: "조금만 둘러볼게요.", en: "I'm just looking, thanks.", pron: "아임 저스트 루킹, 땡스." },
+                    { ko: "조금 깎아주실 수 있나요?", en: "Can you give me a discount?", pron: "캔 유 기브 미 어 디스카운트?" },
+                    { ko: "화장실이 어디에 있나요?", en: "Where is the restroom?", pron: "웨어 이즈 더 레스트룸?" }
+                ]
+            },
+            {
+                icon: AlertTriangle, category: "긴급 상황 / 병원",
+                items: [
+                    { ko: "도와주세요!", en: "Help me, please!", pron: "헬프 미, 플리즈!" },
+                    { ko: "길을 잃었어요.", en: "I'm lost.", pron: "아임 로스트." },
+                    { ko: "근처에 약국/병원이 있나요?", en: "Is there a pharmacy/hospital nearby?", pron: "이즈 데어 어 파마시/호스피탈 니어바이?" },
+                    { ko: "머리가 아파요 / 감기 기운이 있어요.", en: "I have a headache / I have a cold.", pron: "아이 해브 어 헤드에이크 / 아이 해브 어 콜드." },
+                    { ko: "여권/지갑을 잃어버렸어요.", en: "I lost my passport/wallet.", pron: "아이 로스트 마이 패스포트/월렛." },
+                    { ko: "한국어 할 줄 아는 사람 있나요?", en: "Is there anyone who speaks Korean?", pron: "이즈 데어 애니원 후 스픽스 코리안?" }
+                ]
+            }
           ],
           itinerary: [
             {
@@ -308,7 +396,7 @@
                 { time: "08:00", title: "밀포드사운드 이동", type: "transport", desc: "미러레이크 경유" },
                 { time: "13:00", title: "점심 (크루즈 선상 뷔페)", type: "food", desc: "식사 후 크루즈 출항" },
                 { time: "13:40", title: "밀포드 사운드 크루즈", type: "ship", desc: "15:00 하선" },
-                { time: "17:00", title: "호텔 복귀 후 수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
+                { time: "17:00", title: "호텔 복 복귀 후 수상택시 탑승", type: "ship", desc: "퀸즈타운 시내로 이동" },
                 { time: "18:30", title: "저녁 (만다린)", type: "food", desc: "4대 해산물 (랍스터, 초록홍합, 연어, 전복)" }
               ]
             },
@@ -350,7 +438,7 @@
             { name: "플라잉 피쉬 레스토랑", type: "2일차 점심", desc: "오클랜드 공항 인근 젯팍 호텔에서 즐기는 여유로운 런치입니다.", menu: ["씨푸드 차우더", "피시 앤 칩스", "신선한 샐러드"], day: "2일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Lunch.png" },
             { name: "와카티푸 그릴 (힐튼)", type: "2일차 저녁", desc: "와카티푸 호수를 바라보며 즐기는 힐튼 호텔의 품격 있는 웰컴 디너 뷔페입니다.", menu: ["오픈 키친 그릴", "신선한 샐러드", "계절 디저트"], day: "2일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day1Dinner.png" },
             { name: "더 스토커 룸", type: "3일차 점심", desc: "오크통 직화 요리의 풍미가 가득한 뉴질랜드 필수 미식 코스입니다.", menu: ["오크통 요리", "스팀 & 훈연", "모둠 요리"], day: "3일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Lunch.png" },
-            { name: "시상식 갈라 디너", type: "3일차 저녁", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 케이크"], day: "3일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
+            { name: "시상식 갈라 디너", type: "3일차 저녁", desc: "ITA 시상식의 영예를 축하하는 특별 만찬입니다. 최고의 셰프가 준비한 코스 요리를 즐겨보세요.", menu: ["프리미엄 스테이크 코스", "와인 페어링", "축하 단체 케이크"], day: "3일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day3Dinner.png" },
             { name: "밀포드 사운드 크루즈", type: "4일차 점심", desc: "피오르드의 절경을 감상하며 선상에서 여유롭게 즐기는 인터내셔널 뷔페입니다.", menu: ["로스트 미트", "신선한 샐러드", "따뜻한 요리"], day: "4일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Lunch.png" },
             { name: "만다린 씨푸드", type: "4일차 저녁", desc: "뉴질랜드 청정 해산물을 즐길 수 있는 특선 코스입니다.", menu: ["락 랍스터 (크레이피쉬)", "자연산 전복 (12cm 이상)", "신선한 연어", "초록홍합 요리"], day: "4일차 저녁", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day4Dinner.png" },
             { name: "월터 피크 BBQ", type: "5일차 점심", desc: "호수를 바라보며 즐기는 야외 바비큐 뷔페입니다.", menu: ["양고기/소고기 구이", "샐러드 바", "뉴질랜드 치즈"], day: "5일차 점심", image: "https://raw.githubusercontent.com/incarmarketing/Incar-Top-Advisor/main/Day5Lunch.png" },
@@ -489,20 +577,91 @@
             );
         };
 
+        const WeatherModal = ({ isOpen, onClose, data }) => {
+            const [cityIndex, setCityIndex] = useState(0); // 0: Queenstown, 1: Auckland
+            if (!isOpen || !data) return null;
+
+            const cities = [
+                { key: 'queenstown', name: '퀸즈타운 (Queenstown)' },
+                { key: 'auckland', name: '오클랜드 (Auckland)' }
+            ];
+
+            const currentCityData = data[cities[cityIndex].key];
+            const daily = currentCityData.daily;
+
+            const formatDay = (dateStr) => {
+                const parts = dateStr.split('-');
+                const m = parseInt(parts[1], 10);
+                const d = parseInt(parts[2], 10);
+                const dateObj = new Date(parts[0], m - 1, d);
+                const days = ['일', '월', '화', '수', '목', '금', '토'];
+                return `${m}.${d} (${days[dateObj.getDay()]})`;
+            };
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-sm max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
+                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center">
+                                <CloudSun size={18} className="mr-2" /> Weekly Forecast
+                            </h3>
+                            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
+                        </div>
+                        
+                        <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
+                            {cities.map((city, idx) => (
+                                <button 
+                                    key={idx} 
+                                    onClick={() => setCityIndex(idx)} 
+                                    className={`flex-1 py-3 text-sm font-bold transition-colors ${cityIndex === idx ? 'bg-white text-amber-600 border-b-2 border-amber-500' : 'text-slate-500 hover:text-slate-700'}`}
+                                >
+                                    {city.name.split(' ')[0]}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="p-4 overflow-y-auto no-scrollbar">
+                            <div className="space-y-3">
+                                {daily.time.map((timeStr, i) => (
+                                    <div key={i} className="flex items-center justify-between bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center">
+                                            <span className={`text-sm font-bold ${i === 0 ? 'text-amber-600' : 'text-slate-700'}`}>
+                                                {formatDay(timeStr)}
+                                            </span>
+                                            {i === 0 && <span className="text-[10px] ml-2 bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold">오늘</span>}
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-8 flex justify-center">{getWeatherIcon(daily.weathercode[i], 24)}</div>
+                                            <div className="text-sm font-mono flex gap-2 w-20 justify-end">
+                                                <span className="text-blue-500 font-bold">{Math.round(daily.temperature_2m_min[i])}°</span>
+                                                <span className="text-slate-300">/</span>
+                                                <span className="text-red-500 font-bold">{Math.round(daily.temperature_2m_max[i])}°</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-4 text-center">※ 현지 기상 데이터 제공: Open-Meteo API</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const Header = ({ data, onInfoClick }) => {
             const [now, setNow] = useState(new Date());
-            const [activeTab, setActiveTab] = useState('time'); // 'time' or 'exchange'
+            const [activeTab, setActiveTab] = useState('time'); 
             const [exchangeRate, setExchangeRate] = useState(null);
             const [nzd, setNzd] = useState('1');
             const [krw, setKrw] = useState('');
+            const [weatherData, setWeatherData] = useState(null);
+            const [showWeatherModal, setShowWeatherModal] = useState(false);
 
-            // 시간 업데이트
             useEffect(() => {
                 const timer = setInterval(() => setNow(new Date()), 1000);
                 return () => clearInterval(timer);
             }, []);
 
-            // 실시간 환율 API 연동
             useEffect(() => {
                 fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/nzd.json')
                     .then(res => res.json())
@@ -512,11 +671,18 @@
                         setKrw(Math.floor(rate).toLocaleString('ko-KR'));
                     })
                     .catch(err => {
-                        console.error("Exchange rate fetch failed, using fallback", err);
-                        // API 호출 실패 시 최근 기준 환율 870원 적용 (Fallback)
                         setExchangeRate(870); 
                         setKrw((870).toLocaleString('ko-KR'));
                     });
+
+                const weatherUrl = 'https://api.open-meteo.com/v1/forecast?latitude=-45.0322,-36.8485&longitude=168.6627,174.7633&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Pacific%2FAuckland';
+                
+                fetch(weatherUrl)
+                    .then(res => res.json())
+                    .then(resData => {
+                        setWeatherData({ queenstown: resData[0], auckland: resData[1] });
+                    })
+                    .catch(err => console.error("Weather fetch failed", err));
             }, []);
 
             const getTimeFormat = (date, tz) => new Intl.DateTimeFormat('ko-KR', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(date);
@@ -527,7 +693,6 @@
             const kstDate = getDateFormat(now, 'Asia/Seoul');
             const nztDate = getDateFormat(now, 'Pacific/Auckland');
 
-            // 동적 시차 계산 (썸머타임 자동 반영)
             const getHourDiff = () => {
                 const krTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
                 const nzTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Auckland"}));
@@ -535,7 +700,6 @@
             };
             const hourDiff = getHourDiff();
 
-            // 환율 계산 핸들러
             const handleNzdChange = (e) => {
                 const val = e.target.value;
                 setNzd(val);
@@ -549,6 +713,7 @@
             };
 
             return (
+                <>
                 <header className="relative h-[60vh] min-h-[520px] w-full overflow-hidden shadow-2xl">
                     <div className="absolute inset-0">
                         <img src={data.headerImage} alt="New Zealand Landscape" onError={handleImageError} className="w-full h-full object-cover animate-in fade-in duration-1000"/>
@@ -565,21 +730,24 @@
                             {data.dateRange}
                         </div>
 
-                        {/* 신규: 참석 확인 대체 헤더 위젯 (시간/환율) */}
+                        {/* 통합 위젯 (시간/환율/날씨) */}
                         <div className="mt-6 bg-black/50 backdrop-blur-md border border-white/20 rounded-xl w-full max-w-sm overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.3)] animate-in slide-in-from-bottom-2 fade-in">
                             <div className="flex border-b border-white/10">
-                                <button onClick={() => setActiveTab('time')} className={`flex-1 py-3 text-sm font-bold flex items-center justify-center transition-colors ${activeTab === 'time' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
-                                    <Clock size={16} className="mr-2"/> 현지 시간
+                                <button onClick={() => setActiveTab('time')} className={`flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center transition-colors ${activeTab === 'time' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
+                                    <Clock size={14} className="mr-1.5"/> 시간
                                 </button>
-                                <button onClick={() => setActiveTab('exchange')} className={`flex-1 py-3 text-sm font-bold flex items-center justify-center transition-colors ${activeTab === 'exchange' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
-                                    <Calculator size={16} className="mr-2"/> 환율 계산
+                                <button onClick={() => setActiveTab('exchange')} className={`flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center transition-colors border-l border-white/5 ${activeTab === 'exchange' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
+                                    <Calculator size={14} className="mr-1.5"/> 환율
+                                </button>
+                                <button onClick={() => setActiveTab('weather')} className={`flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center transition-colors border-l border-white/5 ${activeTab === 'weather' ? 'bg-white/10 text-amber-400' : 'text-slate-400 hover:text-white'}`}>
+                                    <CloudSun size={14} className="mr-1.5"/> 날씨
                                 </button>
                             </div>
                             
-                            <div className="p-5">
+                            <div className="p-5 h-[160px] flex flex-col justify-center">
                                 {activeTab === 'time' && (
                                     <div className="animate-in fade-in zoom-in-95 duration-200">
-                                        <div className="flex justify-between items-center mb-5">
+                                        <div className="flex justify-between items-center mb-4">
                                             <div className="text-center flex-1 pr-2 relative">
                                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-white/20"></div>
                                                 <span className="block text-[11px] text-amber-400 mb-1 font-bold tracking-widest relative inline-flex items-center justify-center w-full">
@@ -632,10 +800,53 @@
                                         )}
                                     </div>
                                 )}
+                                {/* [수정] 날씨 영역 (간섭 해결을 위해 Flex 기반 하단 배치로 변경) */}
+                                {activeTab === 'weather' && (
+                                    <div 
+                                        className="animate-in fade-in zoom-in-95 duration-200 relative h-full flex flex-col justify-between cursor-pointer group" 
+                                        onClick={() => setShowWeatherModal(true)}
+                                    >
+                                        {weatherData === null ? (
+                                            <div className="flex justify-center py-6 h-full items-center"><div className="loader border-white/20 border-top-amber-400"></div></div>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between items-center mt-1">
+                                                    <div className="text-center flex-1 pr-2 relative flex flex-col items-center">
+                                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-white/20 group-hover:bg-white/40 transition-colors"></div>
+                                                        <span className="block text-[11px] text-amber-400 mb-1 font-bold tracking-widest">QUEENSTOWN</span>
+                                                        <div className="flex items-center gap-1.5 group-hover:scale-105 transition-transform">
+                                                            {getWeatherIcon(weatherData.queenstown.current_weather.weathercode, 22)}
+                                                            <span className="text-2xl font-bold text-white tabular-nums">{Math.round(weatherData.queenstown.current_weather.temperature)}°</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-center flex-1 pl-2 flex flex-col items-center">
+                                                        <span className="block text-[11px] text-slate-400 mb-1 font-bold tracking-widest group-hover:text-slate-300 transition-colors">AUCKLAND</span>
+                                                        <div className="flex items-center gap-1.5 group-hover:scale-105 transition-transform">
+                                                            {getWeatherIcon(weatherData.auckland.current_weather.weathercode, 22)}
+                                                            <span className="text-2xl font-bold text-slate-200 tabular-nums">{Math.round(weatherData.auckland.current_weather.temperature)}°</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-white/10 group-hover:bg-white/15 transition-colors rounded-lg px-3 py-1.5 mt-2 text-center text-[11px] text-slate-300 border border-white/5 flex items-start text-left">
+                                                    <Info size={14} className="mr-1.5 shrink-0 text-amber-400 mt-0.5" />
+                                                    <p className="leading-snug">
+                                                        일교차가 매우 크니, 얇은 겉옷과 패딩이 필수입니다.
+                                                    </p>
+                                                </div>
+                                                {/* 주간 예보 보기 버튼 - 안전한 Flex 배치 */}
+                                                <div className="text-right text-white/50 group-hover:text-amber-400 transition-colors flex items-center justify-end text-[10px] font-bold tracking-wider mt-1.5">
+                                                    주간 예보 보기 <ChevronRight size={12} className="ml-0.5"/>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </header>
+                <WeatherModal isOpen={showWeatherModal} onClose={() => setShowWeatherModal(false)} data={weatherData} />
+                </>
             );
         };
 
@@ -648,9 +859,9 @@
         );
 
         const TabNavigation = ({ activeTab, setActiveTab }) => {
-          // [수정] Tools(도구/정보) 탭 제거 (모바일 UI 최적화 위해 사이드바 메뉴로 이동)
+          // [수정] Checklist, Phrases를 합쳐 'TravelInfo(여행정보)' 탭으로 변경
           const tabs = [
-            { id: 'Checklist', label: '체크리스트', icon: ClipboardList }, 
+            { id: 'TravelInfo', label: '여행정보', icon: Info }, 
             { id: 'Schedule', label: '일정', icon: Calendar },
             { id: 'Hotel', label: '숙소', icon: BedDouble },
             { id: 'Dining', label: '식사', icon: UtensilsCrossed },
@@ -673,6 +884,155 @@
               </div>
             </div>
           );
+        };
+
+        // --- [신규 컴포넌트] 아코디언 UI 항목 ---
+        const AccordionItem = ({ title, icon: Icon, isOpen, onToggle, children }) => {
+            return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+                    <button
+                        onClick={onToggle}
+                        className="w-full flex items-center justify-between p-4 bg-white hover:bg-slate-50 transition-colors"
+                    >
+                        <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                                <Icon size={16} className="text-amber-600" />
+                            </div>
+                            <span className="font-bold text-slate-800 text-[15px]">{title}</span>
+                        </div>
+                        <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                            <ChevronDown size={20} className="text-slate-400" />
+                        </div>
+                    </button>
+                    <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                                {children}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- [수정된 컴포넌트] 여행 정보 통합 View ---
+        const TravelInfoView = () => {
+            const [openSection, setOpenSection] = useState('arrival'); // 기본값: 입국 시 주의사항 열림
+
+            const toggleSection = (section) => {
+                setOpenSection(prev => prev === section ? null : section);
+            };
+
+            return (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-500 pb-10">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center font-[Playfair Display]">
+                        <Info className="mr-2 text-amber-600" /> Travel Information
+                    </h2>
+
+                    {/* 1. 입국 시 안내 */}
+                    <AccordionItem 
+                        title="입국 시 주의사항" 
+                        icon={Plane} 
+                        isOpen={openSection === 'arrival'} 
+                        onToggle={() => toggleSection('arrival')}
+                    >
+                        <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
+                            <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
+                            <div className="text-sm text-red-800 leading-snug font-bold">
+                                <p className="mb-1">뉴질랜드는 음식물 반입 검사가 매우 까다롭습니다.</p>
+                                <p className="text-red-600 underline decoration-red-400 underline-offset-2">가방 속 과일 한 조각으로도 큰 벌금이 부과되니 절대 소지하지 마세요.</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            {travelData.entryInfo.map((info, idx) => (
+                                <div key={idx} className="border-b border-slate-200/60 last:border-0 pb-4 last:pb-0">
+                                    <h4 className="font-bold text-slate-800 mb-1.5 flex items-center text-sm"><CheckCircle size={14} className="mr-2 text-green-600" />{info.title}</h4>
+                                    <p className="text-sm text-slate-600 leading-relaxed pl-6">{info.content}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </AccordionItem>
+
+                    {/* 2. 출국 시 안내 */}
+                    <AccordionItem 
+                        title="출국 시 안내사항" 
+                        icon={Plane} 
+                        isOpen={openSection === 'departure'} 
+                        onToggle={() => toggleSection('departure')}
+                    >
+                        <div className="space-y-4">
+                            {travelData.departureInfo.map((info, idx) => (
+                                <div key={idx} className="border-b border-slate-200/60 last:border-0 pb-4 last:pb-0">
+                                    <h4 className="font-bold text-slate-800 mb-1.5 flex items-center text-sm"><CheckCircle size={14} className="mr-2 text-blue-500" />{info.title}</h4>
+                                    <p className="text-sm text-slate-600 leading-relaxed pl-6">{info.content}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </AccordionItem>
+
+                    {/* 3. 비상연락망 */}
+                    <AccordionItem 
+                        title="비상 연락망" 
+                        icon={Phone} 
+                        isOpen={openSection === 'contacts'} 
+                        onToggle={() => toggleSection('contacts')}
+                    >
+                        <div className="grid gap-3">
+                            {travelData.contacts.map((contact, idx) => (
+                                <div key={idx} className="bg-white p-3 rounded-lg border border-slate-200 flex flex-col shadow-sm">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{contact.type}</span>
+                                    </div>
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
+                                        {contact.phone === "추후 기재" ? (
+                                            <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
+                                        ) : (
+                                            <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </AccordionItem>
+
+                    {/* 4. 간단 여행 회화 */}
+                    <AccordionItem 
+                        title="간단 여행 회화" 
+                        icon={MessageSquare} 
+                        isOpen={openSection === 'phrases'} 
+                        onToggle={() => toggleSection('phrases')}
+                    >
+                        <div className="space-y-6">
+                            {travelData.phrases.map((section, idx) => {
+                                const Icon = section.icon;
+                                return (
+                                    <div key={idx} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                        <div className="bg-slate-100 border-b border-slate-200 px-4 py-2 flex items-center">
+                                            <Icon size={14} className="text-slate-600 mr-2" />
+                                            <h3 className="font-bold text-slate-700 text-sm">{section.category}</h3>
+                                        </div>
+                                        <div className="divide-y divide-slate-100">
+                                            {section.items.map((item, i) => (
+                                                <div key={i} className="p-3 hover:bg-slate-50 transition-colors">
+                                                    <p className="text-sm font-bold text-slate-800 mb-1 flex items-start">
+                                                        <span className="text-amber-500 mr-2 font-black text-xs mt-0.5">Q.</span>
+                                                        {item.ko}
+                                                    </p>
+                                                    <div className="pl-5 space-y-0.5">
+                                                        <p className="text-sm font-medium text-blue-700 font-serif">{item.en}</p>
+                                                        <p className="text-[11px] text-slate-400 font-medium">"{item.pron}"</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </AccordionItem>
+                </div>
+            );
         };
 
         const TimelineItem = ({ activity, isLast }) => (
@@ -767,89 +1127,9 @@
           </div>
         );
 
-        const EntryInfoModal = ({ isOpen, onClose }) => {
-            if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="bg-[#1e293b] p-4 flex justify-between items-center shrink-0">
-                            <h3 className="text-[#D4AF37] font-serif tracking-wide text-lg flex items-center"><Info size={18} className="mr-2" /> Travel Checklist</h3>
-                            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
-                        </div>
-                        <div className="p-5 overflow-y-auto">
-                            <div className="space-y-5">
-                                {travelData.entryInfo.map((info, idx) => (
-                                    <div key={idx} className="border-b border-slate-100 last:border-0 pb-4 last:pb-0">
-                                        <h4 className="font-bold text-slate-800 mb-1 flex items-center text-sm"><CheckCircle size={14} className="mr-2 text-green-600" />{info.title}</h4>
-                                        <p className="text-xs text-slate-500 leading-relaxed pl-6 bg-slate-50 p-2 rounded">{info.content}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
-                                <AlertTriangle size={16} className="text-amber-600 mr-2 shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-amber-800 leading-snug">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다. 가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
-                            </div>
-                        </div>
-                        <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
-                            <button onClick={onClose} className="w-full bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition-colors">확인했습니다</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ChecklistView = () => (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center font-[Playfair Display]">
-                    <ClipboardList className="mr-2 text-amber-600" /> Travel Checklist
-                </h2>
-                <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start shadow-sm">
-                    <AlertTriangle size={24} className="text-red-600 mr-3 shrink-0 mt-0.5" />
-                    <div className="text-sm text-red-800 leading-snug font-bold">
-                        <p className="mb-1">뉴질랜드는 음식물 반입 검사가 세계에서 가장 까다롭습니다.</p>
-                        <p className="mb-1">가방에 잊고 넣은 과일 하나로도 큰 벌금이 부과되니 각별히 주의해주세요.</p>
-                        <p className="text-red-600 underline decoration-red-400 underline-offset-2">탑승 전 음식물은 절대 소지하지 말고 탑승하시기 바랍니다.</p>
-                    </div>
-                </div>
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    <div className="p-5">
-                        <div className="space-y-6">
-                            {travelData.entryInfo.map((info, idx) => (
-                                <div key={idx} className="border-b border-slate-100 last:border-0 pb-5 last:pb-0">
-                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center text-base"><CheckCircle size={18} className="mr-2 text-green-600" />{info.title}</h4>
-                                    <p className="text-sm text-slate-600 leading-relaxed pl-7 bg-slate-50 p-3 rounded-lg border border-slate-100/50">{info.content}</p>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-8 pt-6 border-t border-slate-100">
-                             <h4 className="font-bold text-slate-800 mb-4 flex items-center text-base">
-                                <Phone size={18} className="mr-2 text-amber-600" /> Emergency Contacts
-                            </h4>
-                            <div className="grid gap-3">
-                                {travelData.contacts.map((contact, idx) => (
-                                    <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col">
-                                        <div className="flex justify-between items-center mb-1"><span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100">{contact.type}</span></div>
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-slate-800 font-bold text-sm">{contact.name}</span>
-                                            {contact.phone === "추후 기재" ? (
-                                                <span className="text-slate-400 font-mono text-sm tracking-wide font-bold">{contact.phone}</span>
-                                            ) : (
-                                                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="text-amber-700 font-mono text-sm tracking-wide font-bold hover:underline">{contact.phone}</a>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-
         function App() {
             const [step, setStep] = useState('intro');
             const [activeTab, setActiveTab] = useState('Schedule');
-            const [showEntryInfo, setShowEntryInfo] = useState(false);
             const [hasVisited, setHasVisited] = useState(false);
             
             useEffect(() => {
@@ -872,11 +1152,12 @@
                     
                     {step === 'main' && (
                         <div className="fade-enter block bg-[#f8fafc] min-h-screen relative">
-                            <Header data={travelData.meta} onInfoClick={() => setShowEntryInfo(true)} />
+                            <Header data={travelData.meta} />
                             <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
                             
                             <main className="max-w-md sm:max-w-4xl mx-auto px-5 py-6 min-h-[50vh]">
-                                {activeTab === 'Checklist' && <ChecklistView />}
+                                {/* 탭 이름 변경 및 통폐합: Checklist -> TravelInfo */}
+                                {activeTab === 'TravelInfo' && <TravelInfoView />}
                                 {activeTab === 'Schedule' && (
                                     <div className="animate-in fade-in duration-500">
                                         <NoticeFooter /> 
@@ -927,9 +1208,6 @@
                                     </div>
                                 )}
                             </main>
-                            
-                            {/* 각종 모달 */}
-                            <EntryInfoModal isOpen={showEntryInfo} onClose={() => setShowEntryInfo(false)} />
                         </div>
                     )}
                 </div>
