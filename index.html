@@ -297,6 +297,7 @@
             { title: "어메니티 제공", content: "편안한 비행을 위한 목베개와 호텔에서 사용하실 수 있도록 샤워 타월과 비누를 제공해드릴 예정입니다." },  
             { title: "날씨 및 복장", content: "4월 뉴질랜드는 가을로, 일교차가 큽니다. (평균 10-18도). 얇은 긴팔과 바람막이, 경량 패딩을 겹쳐 입는 것이 좋습니다." },
             { title: "전압 (어댑터)", content: "230V, 50Hz를 사용하며 'O'자형 삼발 플러그가 필요합니다. (여행용 멀티 어댑터 회사 제공)" }
+            { title: "수하물 준비 팁", content: "귀국 시 현지 기념품 구매 등으로 짐이 늘어날 수 있으니, 넉넉한 캐리어를 챙겨주시길 권장합니다." }
           ],
           // 신규: 출국 정보 추가
           departureInfo: [
@@ -920,7 +921,7 @@
 
         // --- [수정된 컴포넌트] 여행 정보 통합 View ---
         const TravelInfoView = () => {
-            const [openSection, setOpenSection] = useState('arrival'); // 기본값: 입국 시 주의사항 열림
+            const [openSection, setOpenSection] = useState('arrival'); // 기본값: 출국 시 주의사항 열림
 
             const toggleSection = (section) => {
                 setOpenSection(prev => prev === section ? null : section);
@@ -932,9 +933,9 @@
                         <Info className="mr-2 text-amber-600" /> Travel Information
                     </h2>
 
-                    {/* 1. 입국 시 안내 */}
+                    {/* 1. 출국 시 안내 */}
                     <AccordionItem 
-                        title="입국 시 안내사항"
+                        title="출국 시 안내사항"
                         icon={Plane} 
                         isOpen={openSection === 'arrival'} 
                         onToggle={() => toggleSection('arrival')}
@@ -956,9 +957,9 @@
                         </div>
                     </AccordionItem>
 
-                    {/* 2. 출국 시 안내 */}
+                    {/* 2. 귀국 시 안내 */}
                     <AccordionItem 
-                        title="출국 시 안내사항" 
+                        title="귀국 시 안내사항" 
                         icon={Plane} 
                         isOpen={openSection === 'departure'} 
                         onToggle={() => toggleSection('departure')}
